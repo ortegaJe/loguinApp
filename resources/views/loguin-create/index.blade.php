@@ -2,12 +2,13 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('/js/plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('/js/plugins/sweetalert2/sweetalert2.min.css') }}">
 @endsection
 
 @section('js')
     <script src="{{ asset('js/lib/jquery.min.js') }}"></script>
-
-    <script src="{{ asset('js/plugins/select2/js/select2.full.min.js') }}"></script>
+    <script src="{{ asset('/js/plugins/select2/js/select2.full.min.js') }}"></script>
+    <script src="{{ asset('/js/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
 
     <script type="module">
         Codebase.helpersOnLoad(['jq-select2']);
@@ -137,67 +138,58 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row push">
-                                        <div class="col-lg-8 col-xl-5">
-                                            <div class="mb-4">
-                                                <label class="form-label">Inline Checkboxes</label>
-                                                <div class="space-x-2" id="checkbox-container" >
-                                                    <!-- Aquí se agregarán dinámicamente los checkboxes -->
-                                                </div>
-                                            </div>
+                                    <div class="row item-push">
+                                        <div class="mb-4">
+                                            <label class="form-label">Aplicaciones y perfiles disponibles para el cargo
+                                                seleccionado:</label>
+                                            <div class="space-x-2" id="checkbox-container"></div>
                                         </div>
                                     </div>
                                     <div class="row push">
                                         <div class="col-lg-4">
-                                          <p class="text-muted">
-                                            Checkboxes, radios and switches in various layouts
-                                          </p>
+                                            <p class="text-muted">
+                                                Aplicaciones y perfiles disponibles para el cargo seleccionado:
+                                            </p>
                                         </div>
-                                        <div class="col-lg-8 col-xl-5">
-                                          <div class="mb-4">
-                                            <label class="form-label">Inline Checkboxes</label>
-                                            <div class="space-x-2">
-                                              <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" value="" id="example-checkbox-inline1" name="example-checkbox-inline1" checked="">
-                                                <label class="form-check-label" for="example-checkbox-inline1">Option 1</label>
-                                              </div>
-                                              <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" value="" id="example-checkbox-inline2" name="example-checkbox-inline2">
-                                                <label class="form-check-label" for="example-checkbox-inline2">Option 2</label>
-                                              </div>
-                                              <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" value="" id="example-checkbox-inline3" name="example-checkbox-inline3" disabled="">
-                                                <label class="form-check-label" for="example-checkbox-inline3">Option 3</label>
-                                              </div>
+                                        <div class="col-lg-8">
+                                            <div class="row items-push">
+                                                <div class="col-md-6">
+                                                    <div class="form-check form-block">
+                                                        <input class="form-check-input" type="checkbox" value=""
+                                                            id="example-checkbox-block1" name="example-checkbox-block1">
+                                                        <label class="form-check-label" for="example-checkbox-block1">
+                                                            <span class="d-flex align-items-center">
+                                                                <i class="fa fa-user-tag fa-2x"></i>
+                                                                <span class="ms-2">
+                                                                    <span class="fw-bold">LINEA DE FRENTE</span>
+                                                                    <span class="d-block fs-sm text-muted">
+                                                                        DIGITURNO
+                                                                    </span>
+                                                                </span>
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-check form-block">
+                                                        <input class="form-check-input" type="checkbox" value=""
+                                                            id="example-checkbox-block1" name="example-checkbox-block1">
+                                                        <label class="form-check-label" for="example-checkbox-block1">
+                                                            <span class="d-flex align-items-center">
+                                                                <i class="fa fa-user-tag fa-2x"></i>
+                                                                <span class="ms-2">
+                                                                    <span class="fw-bold">AUXILIAR ADMISIONES</span>
+                                                                    <span class="d-block fs-sm text-muted">
+                                                                        EVEREST
+                                                                    </span>
+                                                                </span>
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                </div>
                                             </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    <div class="form-floating mb-4">
-                                        <select class="form-select" id="app-dropdown" name="app-dropdown"
-                                            style="width: 100%;" disabled>
-                                            <option></option>
-                                            <!-- Required for data-placeholder attribute to work with Select2 plugin -->
-                                        </select>
-                                        <label class="form-label" for="app-dropdown">Aplicación</label>
-                                    </div>
-                                    <div class="row mb-4">
-                                        <div class="col-10">
-                                            <div class="form-floating mb-4">
-                                                <select class="form-select" id="perfil-dropdown" name="perfil-dropdown"
-                                                    disabled>
-                                                </select>
-                                                <label class="form-label" for="perfil-dropdown">Perfil</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-2">
-                                            <button type="button" id="btn-add"
-                                                class="btn btn-lg btn-alt-success py-sm-6 py-md-3 mb-4" disabled>
-                                                <i class="fa fa-plus opacity-50"></i>
-                                            </button>
                                         </div>
                                     </div>
-                                    <div id="applications-list"></div>
                                 </div>
                             </div>
                         </div>

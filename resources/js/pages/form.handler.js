@@ -1,6 +1,4 @@
 class ApplicationFormManager {
-    static panaAppNames = ["PANA PROFESIONALES", "PANA ADMINISTRATIVO"];
-    static selectedPerfiles = [];
 
     static initFormElements() {
         this.mainForm = document.getElementById('main-form');
@@ -34,29 +32,28 @@ class ApplicationFormManager {
     }
 
     static resetAll() {
-        this.updateDropdown('sede-dropdown', [], 'Seleccione Sede..');
-        this.updateDropdown('app-dropdown', [], 'Seleccione Aplicación..');
+        this.updateDropdown('sede-dropdown', [], 'Seleccione sede..');
+        this.updateDropdown('tipo-cargo-dropdown', [], 'Seleccione tipo de cargo..');
+        this.updateDropdown('cargo-dropdown', [], 'Seleccione cargo..');
         this.resetPerfilDropdown();
-        this.applicationsList.innerHTML = '';
-        this.btnAdd.disabled = true;
-        this.selectedPerfiles = [];
     }
 
-    static resetPerfilDropdown() {
-        this.perfilDropdown.innerHTML = '<option value="">Seleccione Perfil..</option>';
-        this.perfilDropdown.disabled = true;
-        this.btnAdd.disabled = true;
+     static resetPerfilDropdown() {
+        this.checkboxContainer.innerHTML = '';
     }
 
-    static disableSelectedPerfiles() {
-        const options = this.perfilDropdown.querySelectorAll('option');
-        options.forEach(option => {
-            if (this.selectedPerfiles.includes(option.value)) {
-                option.disabled = true;
-            } else {
-                option.disabled = false;
+    static async showToast(title, message, type) {
+        let toast = Swal.mixin({
+            buttonsStyling: false,
+            target: '#page-container',
+            customClass: {
+                confirmButton: 'btn btn-primary m-1',
+                cancelButton: 'btn btn-danger m-1',
+                input: 'form-control'
             }
         });
+    
+        toast.fire(title, message, type);
     }
 
     static async zonalChangeHandler() {
@@ -79,9 +76,10 @@ class ApplicationFormManager {
 
             const data = await this.handleFetchResponse(response);
             //console.log(data);
-            this.updateDropdown('sede-dropdown', data.sedes, 'Seleccione Sede..');
-            this.resetPerfilDropdown();
-            this.applicationsList.innerHTML = '';
+            this.updateDropdown('sede-dropdown', data.sedes, 'Seleccione sede..');
+            this.updateDropdown('tipo-cargo-dropdown', [], 'Seleccione tipo de cargo..');
+            this.updateDropdown('cargo-dropdown', [], 'Seleccione cargo..');
+            //this.resetPerfilDropdown();
         } catch (error) {
             console.error('Fetch error:', error);
         }
@@ -105,10 +103,8 @@ class ApplicationFormManager {
             });
 
             const data = await this.handleFetchResponse(response);
-            this.updateDropdown('tipo-cargo-dropdown', data.tipo_cargo_sede, 'Seleccione tipo cargo..');
+            this.updateDropdown('tipo-cargo-dropdown', data.tipo_cargo_sede, 'Seleccione tipo de cargo..');
             this.resetPerfilDropdown();
-            this.applicationsList.innerHTML = '';
-            this.selectedPerfiles = [];
         } catch (error) {
             console.error('Fetch error:', error);
         }
@@ -139,8 +135,6 @@ class ApplicationFormManager {
             console.log(data);
             this.resetPerfilDropdown();
             this.checkboxContainer.innerHTML = '';
-            this.applicationsList.innerHTML = '';
-            this.selectedPerfiles = [];
         } catch (error) {
             console.error('Fetch error:', error);
         }
@@ -166,9 +160,14 @@ class ApplicationFormManager {
                 body: JSON.stringify({ cargo_id: idCargo, sede_id: idSede })
             });
 
+            if (!response.ok) {
+                const errorData = await response.json();  // Extraer el mensaje desde el backend
+                throw new Error(errorData.message || 'Something went wrong..');
+            }
+
             const data = await this.handleFetchResponse(response);
-            //this.updateDropdown('cargo-dropdown', data.perfiles, 'Seleccione cargo..');
             console.log(data);
+
             // Limpia el contenedor de checkboxes antes de agregar nuevos elementos
             this.checkboxContainer.innerHTML = '';
 
@@ -182,15 +181,17 @@ class ApplicationFormManager {
                 const checkboxInput = document.createElement('input');
                 checkboxInput.classList.add('form-check-input');
                 checkboxInput.type = 'checkbox';
-                checkboxInput.value = perfil.perfil; // Puedes cambiar el valor según tu lógica
+                checkboxInput.value = perfil.perfil;
                 checkboxInput.id = `perfil-${index}`;
-                checkboxInput.name = 'perfiles[]';
+                checkboxInput.setAttribute('data-perfil-id', perfil.perfil_id);
+                checkboxInput.setAttribute('data-app-id', perfil.aplicacion_id);
+                checkboxInput.name = `perfil-${index}`;
 
                 // Crea la etiqueta del checkbox
                 const checkboxLabel = document.createElement('label');
                 checkboxLabel.classList.add('form-check-label');
                 checkboxLabel.htmlFor = `perfil-${index}`;
-                checkboxLabel.textContent = `${perfil.aplicacion} - ${perfil.perfil}`; // Muestra el nombre del perfil
+                checkboxLabel.textContent = `${perfil.aplicacion} - ${perfil.perfil}`;
 
                 // Añade el checkbox y su etiqueta al div contenedor
                 checkboxDiv.appendChild(checkboxInput);
@@ -199,12 +200,12 @@ class ApplicationFormManager {
                 // Añade el div al contenedor de checkboxes
                 this.checkboxContainer.appendChild(checkboxDiv);
             });
-            this.resetPerfilDropdown();
+            //this.resetPerfilDropdown();
             //this.checkboxContainer.innerHTML = '';
-            this.applicationsList.innerHTML = '';
-            this.selectedPerfiles = [];
         } catch (error) {
-            console.error('Fetch error:', error);
+            //console.error('Fetch error:', error);
+            this.showToast('Oops...', `${error.message}`, 'info');
+            this.cargoSedeDropdown.value = '';
         }
     }
 
@@ -327,13 +328,15 @@ class ApplicationFormManager {
     }
 
     static clearForm() {
+        document.getElementById('type_identity_number').value = '',
         document.getElementById('identity_number').value = '';
         document.getElementById('first_name').value = '';
-        document.getElementById('job_title').value = '';
+        document.getElementById('type_identity_number').value = '';
         document.getElementById('email').value = '';
         this.zonalDropdown.value = '';
         this.sedeDropdown.value = '';
-        this.btnRefresh.click;
+        this.tipoCargoDropdown.value = '';
+        this.cargoSedeDropdown.value = '';
         this.resetAll();
     }
 
@@ -341,31 +344,35 @@ class ApplicationFormManager {
         event.preventDefault();
 
         const appData = [];
-        const appDivs = this.applicationsList.querySelectorAll('.form-group');
+        const appDivs = this.checkboxContainer.querySelectorAll('.form-check');
 
         appDivs.forEach(div => {
-            const appInput = div.querySelector('input[data-app-id]');
-            const perfilInput = div.querySelector('input[data-perfil-id]');
+            const appInput = div.querySelector('input[data-app-id]:checked');
+            const perfilInput = div.querySelector('input[data-perfil-id]:checked');
 
             if (appInput && perfilInput) {
                 const appId = appInput.getAttribute('data-app-id');
                 const perfilId = perfilInput.getAttribute('data-perfil-id');
-                appData.push({ app_id: appId, perfil_id: perfilId });
+                appData.push({app_id: appId, perfil_id: perfilId });
             }
         });
 
         const formData = {
-            cc: document.getElementById('identity_number').value,
+            tipo_identificacion: document.getElementById('type_identity_number').value,
+            identificacion: document.getElementById('identity_number').value,
             nombre: document.getElementById('first_name').value,
-            cargo: document.getElementById('job_title').value,
+            apellido: document.getElementById('type_identity_number').value,
             email: document.getElementById('email').value,
             zonal_id: this.zonalDropdown.value,
             sede_id: this.sedeDropdown.value,
             aplicaciones: appData
         };
 
-        try {
-            const response = await fetch('/saveApplications', {
+        console.log(formData);
+        this.showToast('Oops...', `Formulario loguin enviado correctamente`, 'success');
+
+/*         try {
+            const response = await fetch('/saveApplicacionesPerfiles', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -376,13 +383,13 @@ class ApplicationFormManager {
 
             if (response.ok) {
                 console.log('Formulario enviado correctamente');
-                this.clearForm(); // Limpiar el formulario después de enviar los datos
+                this.clearForm();
             } else {
                 console.error('Error al enviar el formulario:', response.statusText);
             }
         } catch (error) {
             console.error('Error al enviar el formulario:', error);
-        }
+        } */
     }
 
     static init() {
@@ -391,9 +398,6 @@ class ApplicationFormManager {
         this.sedeDropdown.addEventListener('change', () => this.sedeChangeHandler());
         this.tipoCargoDropdown.addEventListener('change', () => this.cargoSedeChangeHandler());
         this.cargoSedeDropdown.addEventListener('change', () => this.CargoAppPerfilChangeHandler());
-        this.appDropdown.addEventListener('change', () => this.appChangeHandler());
-        this.applicationsList.addEventListener('click', (event) => this.removeApplicationHandler(event));
-        this.btnAdd.addEventListener('click', () => this.addApplicationHandler());
         this.btnReset.addEventListener('click', () => this.clearForm());
         this.mainForm.addEventListener('submit', (event) => this.handleSubmit(event));
     }

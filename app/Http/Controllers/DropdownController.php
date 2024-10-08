@@ -94,7 +94,7 @@ class DropdownController extends Controller
                                         ->join('loguin_aplicaciones as e', 'e.id', 'd.aplicacion_id')
                                         ->where('a.cargo_id', $cargo_id)
                                         ->where('a.sede_id',  $sede_id)
-                                        ->get(['d.name as perfil', 'e.name as aplicacion']);
+                                        ->get(['d.id as perfil_id','d.name as perfil','e.id as aplicacion_id','e.name as aplicacion']);
 
 
         if ($data['perfiles']->isEmpty()) {
@@ -134,18 +134,20 @@ class DropdownController extends Controller
     public function store(Request $request)
     {
         // Datos enviados desde el frontend
+        $identificacion = $request->input('identificacion');
+        $tipo_identificacion = $request->input('tipo_identificacion');
         $nombre = $request->input('nombre');
-        $cc = $request->input('cc');
-        $cargo = $request->input('cargo');
+        $apellido = $request->input('apellido');
         $email = $request->input('email');
         $zonal_id = $request->input('zonal_id');
         $sede_id = $request->input('sede_id');
         $aplicaciones = $request->input('aplicaciones'); // Array con los IDs de apps y perfiles
 
         $appUserId = DB::table('app_user')->insertGetId([
+            'tipo_identificacion' => $tipo_identificacion,
+            'identificacion' => $identificacion,
+            'apellido' => $apellido,
             'nombre' => $nombre,
-            'cc' => $cc,
-            'cargo' => $cargo,
             'email' => $email,
             'created_at' => now(),
             'updated_at' => now(),
