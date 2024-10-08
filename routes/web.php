@@ -13,10 +13,19 @@ Route::view('/pages/slick', 'pages.slick');
 Route::view('/pages/datatables', 'pages.datatables');
 Route::view('/pages/blank', 'pages.blank');
 
-Route::get('creacion-usuarios', [DropdownController::class, 'index']);
+Route::get('loguin', [DropdownController::class, 'index']);
 Route::post('fetchSedes', [DropdownController::class, 'fetchSedes']);
 Route::post('fetchApps', [DropdownController::class, 'fetchApps']);
 Route::post('fetchAppsPerfiles', [DropdownController::class, 'fetchAppsPerfiles']);
+Route::post('fetchTipoCargoSede', [DropdownController::class, 'fetchTipoCargoSede']);
+Route::post('fetchCargoSede', [DropdownController::class, 'fetchCargoSede']);
+Route::post('fetchCargoAppPerfil', [DropdownController::class, 'fetchCargoAppPerfil']);
 Route::post('saveApplications', [DropdownController::class, 'store']);
+Route::get('/get-mysecond-connection', function () {
+    $glpi = DB::connection('glpi');
+    $products = $glpi->table('glpi_locations')->where('sw_regional', 1)->get();
+      
+    return response()->json($products);
+});
 //Route::view('creacion-usuarios', 'loguin-create.index');
 //Route::view('loguin', 'loguin-create.index');

@@ -7,9 +7,23 @@ use Illuminate\Support\Facades\DB;
 
 class DropdownController extends Controller
 {
+    protected $glpi;
+
+    public function __construct()
+    {
+        $this->glpi = DB::connection('glpi');
+    }
+
     public function index()
     {
-        $data['zonales'] = DB::table('app_zonales')->get(['nombre', 'id']);
+        $data = [];
+
+        //LOCAL
+        //$data['zonales'] = DB::table('glpi_locations')->where('sw_regional', 1)->get(['name', 'id']);
+        //REMOTO
+        $data['zonales'] = $this->glpi->table('glpi_locations')->where('sw_regional', 1)->orderBy('name')->get(['name', 'id']);
+        $data['tipos_identificacion'] = $this->glpi->table('loguin_tipo_identificacion')->orderBy('abreviatura')->get(['abreviatura', 'id']);
+
         return view('loguin-create.index', $data);
     }
 
@@ -17,8 +31,77 @@ class DropdownController extends Controller
     {
         $zonal_id = $request->input('zonal_id');
 
-        $data['sedes'] = DB::table('app_sedes')->where('zonal_id', $zonal_id)->get(['nombre', 'id']);
+        //LOCAL
+        //$data['sedes'] = DB::table('app_sedes')->where('zonal_id', $zonal_id)->get(['nombre', 'id']);
+        //REMOTO
+        $data['sedes'] = $this->glpi->table('glpi_locations')->where('locations_id', $zonal_id)->orderBy('name')->get(['name', 'id']);
         return response()->json($data);
+    }
+
+    public function fetchTipoCargoSede(Request $request)
+    {
+        $request->validate([
+            'sede_id' => 'required|integer',
+        ]);
+
+        $sede_id = $request->input('sede_id');
+
+        $data['tipo_cargo_sede'] = $this->glpi->table('loguin_rel_tipo_cargo_sede as a')
+                                        ->join('loguin_tipo_cargo as b', 'b.id', 'a.tipocargo_id')
+                                        ->join('glpi_locations as c', 'c.id', 'a.sede_id')
+                                        ->where('c.id', $sede_id)
+                                        ->where('b.estado', true)
+                                        ->distinct('b.name')
+                                        ->orderBy('b.name')
+                                        ->get(['b.name', 'b.id']);
+
+        return response()->json($data);
+    }
+
+    public function fetchCargoSede(Request $request)
+    {
+       $request->validate([
+            'tipo_cargo_id' => 'required|integer',
+        ]);
+
+        $tipo_cargo_id = $request->input('tipo_cargo_id');
+
+        $data['cargo_sede'] = $this->glpi->table('loguin_rel_tipo_cargo_sede as a')
+                                        ->join('loguin_tipo_cargo as b', 'b.id', 'a.tipocargo_id')
+                                        ->join('glpi_locations as c', 'c.id', 'a.sede_id')
+                                        ->join('loguin_cargo as d', 'd.id', 'a.cargo_id')
+                                        //->where('c.id', 16)
+                                        ->where('a.tipocargo_id', $tipo_cargo_id)
+                                        //->get(['b.name as tipo_cargo','d.name as cargo']);
+                                        ->get(['d.name','d.id']);
+
+        return response()->json($data);
+    }
+
+    public function fetchCargoAppPerfil(Request $request)
+    {
+       /* $request->validate([
+            'cargo_id' => 'required|integer',
+        ]); */
+
+        $cargo_id = $request->input('cargo_id');
+        $sede_id = $request->input('sede_id');
+
+        $data['perfiles'] = $this->glpi->table('loguin_rel_cargo_sede as a')
+                                        ->join('loguin_cargo as b', 'b.id', 'a.cargo_id')
+                                        ->join('glpi_locations as c', 'c.id', 'a.sede_id')
+                                        ->join('loguin_perfil as d', 'd.id', 'a.perfil_id')
+                                        ->join('loguin_aplicaciones as e', 'e.id', 'd.aplicacion_id')
+                                        ->where('a.cargo_id', $cargo_id)
+                                        ->where('a.sede_id',  $sede_id)
+                                        ->get(['d.name as perfil', 'e.name as aplicacion']);
+
+
+        if ($data['perfiles']->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron perfiles para este cargo'], 404);
+        }
+
+        return response()->json($data, 200);
     }
 
     public function fetchApps(Request $request)

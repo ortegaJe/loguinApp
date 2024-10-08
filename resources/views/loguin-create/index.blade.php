@@ -39,11 +39,31 @@
                         </div>
                         <div class="block-content">
                             <div class="row justify-content-center py-sm-3 py-md-5">
-                                <div class="col-lg-8 col-xl-6">
-                                    <div class="form-floating mb-4">
-                                        <input type="text" class="form-control" id="identity_number"
-                                            name="identity_number" placeholder="identity_number">
-                                        <label class="form-label" for="identity_number">Número de documento</label>
+                                <div class="col-lg-8 col-xl-10">
+                                    <div class="row mb-4">
+                                        <div class="col-6">
+                                            <div class="form-floating">
+                                                <select class="form-select" id="type_identity_number"
+                                                    name="type_identity_number" style="width: 100%;">
+                                                    <option selected disabled>Seleccione tipo..</option>
+                                                    <!-- Required for data-placeholder attribute to work with Select2 plugin -->
+                                                    @foreach ($tipos_identificacion as $data)
+                                                        <option value="{{ $data->id }}">
+                                                            {{ $data->abreviatura }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <label class="form-label" for="type_identity_number">Tipo de
+                                                    documento</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="identity_number"
+                                                    name="identity_number" placeholder="identity_number">
+                                                <label class="form-label" for="identity_number">Número de documento</label>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="row mb-4">
                                         <div class="col-6">
@@ -61,50 +81,105 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-12 mb-4">
+                                        <div class="form-floating">
+                                            <input type="email" class="form-control" id="email" name="email"
+                                                placeholder="email">
+                                            <label class="form-label" for="email">Correo</label>
+                                        </div>
+                                    </div>
                                     <div class="row mb-4">
                                         <div class="col-6">
                                             <div class="form-floating">
-                                                <input type="text" class="form-control" id="job_title" name="job_title"
-                                                    placeholder="job_title">
-                                                <label class="form-label" for="job_title">Cargo</label>
+                                                <select class="form-select" id="zonal-dropdown" name="zonal-dropdown"
+                                                    style="width: 100%;">
+                                                    <option selected disabled>Seleccione zonal..</option>
+                                                    <!-- Required for data-placeholder attribute to work with Select2 plugin -->
+                                                    @foreach ($zonales as $data)
+                                                        <option value="{{ $data->id }}">
+                                                            {{ $data->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <label class="form-label" for="zonal-dropdown">Zonal</label>
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <div class="form-floating">
-                                                <input type="email" class="form-control" id="email" name="email"
-                                                    placeholder="email">
-                                                <label class="form-label" for="email">Correo</label>
+                                                <select class="form-select" id="sede-dropdown" name="sede-dropdown"
+                                                    style="width: 100%;" disabled>
+                                                    <option></option>
+                                                    <!-- Required for data-placeholder attribute to work with Select2 plugin -->
+                                                </select>
+                                                <label class="form-label" for="sede-dropdown">Sede</label>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-floating mb-4">
-                                        <select class="form-select" id="zonal-dropdown" name="zonal-dropdown"
-                                            style="width: 100%;">
-                                            <option selected disabled>Seleccione zonal..</option>
-                                            <!-- Required for data-placeholder attribute to work with Select2 plugin -->
-                                            @foreach ($zonales as $data)
-                                                <option value="{{ $data->id }}">
-                                                    {{ $data->nombre }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <label class="form-label" for="zonal-dropdown">Zonal</label>
+                                    <div class="row mb-4">
+                                        <div class="col-6">
+                                            <div class="form-floating">
+                                                <select class="form-select" id="tipo-cargo-dropdown"
+                                                    name="tipo-cargo-dropdown" style="width: 100%;" disabled>
+                                                    <option></option>
+                                                    <!-- Required for data-placeholder attribute to work with Select2 plugin -->
+                                                </select>
+                                                <label class="form-label" for="tipo-cargo-dropdown">Tipo de cargo</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-floating">
+                                                <select class="form-select" id="cargo-dropdown" name="cargo-dropdown"
+                                                    style="width: 100%;" disabled>
+                                                    <option></option>
+                                                    <!-- Required for data-placeholder attribute to work with Select2 plugin -->
+                                                </select>
+                                                <label class="form-label" for="cargo-dropdown">Cargo</label>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="form-floating mb-4">
-                                        <select class="form-select" id="sede-dropdown" name="sede-dropdown"
-                                            style="width: 100%;" disabled>
-                                            <option></option>
-                                            <!-- Required for data-placeholder attribute to work with Select2 plugin -->
-                                        </select>
-                                        <label class="form-label" for="zonal-dropdown">Sede</label>
+                                    <div class="row push">
+                                        <div class="col-lg-8 col-xl-5">
+                                            <div class="mb-4">
+                                                <label class="form-label">Inline Checkboxes</label>
+                                                <div class="space-x-2" id="checkbox-container" >
+                                                    <!-- Aquí se agregarán dinámicamente los checkboxes -->
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
+                                    <div class="row push">
+                                        <div class="col-lg-4">
+                                          <p class="text-muted">
+                                            Checkboxes, radios and switches in various layouts
+                                          </p>
+                                        </div>
+                                        <div class="col-lg-8 col-xl-5">
+                                          <div class="mb-4">
+                                            <label class="form-label">Inline Checkboxes</label>
+                                            <div class="space-x-2">
+                                              <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" value="" id="example-checkbox-inline1" name="example-checkbox-inline1" checked="">
+                                                <label class="form-check-label" for="example-checkbox-inline1">Option 1</label>
+                                              </div>
+                                              <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" value="" id="example-checkbox-inline2" name="example-checkbox-inline2">
+                                                <label class="form-check-label" for="example-checkbox-inline2">Option 2</label>
+                                              </div>
+                                              <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" value="" id="example-checkbox-inline3" name="example-checkbox-inline3" disabled="">
+                                                <label class="form-check-label" for="example-checkbox-inline3">Option 3</label>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
                                     <div class="form-floating mb-4">
                                         <select class="form-select" id="app-dropdown" name="app-dropdown"
                                             style="width: 100%;" disabled>
                                             <option></option>
                                             <!-- Required for data-placeholder attribute to work with Select2 plugin -->
                                         </select>
-                                        <label class="form-label" for="zonal-dropdown">Aplicación</label>
+                                        <label class="form-label" for="app-dropdown">Aplicación</label>
                                     </div>
                                     <div class="row mb-4">
                                         <div class="col-10">
@@ -112,7 +187,7 @@
                                                 <select class="form-select" id="perfil-dropdown" name="perfil-dropdown"
                                                     disabled>
                                                 </select>
-                                                <label class="form-label" for="zonal-dropdown">Perfil</label>
+                                                <label class="form-label" for="perfil-dropdown">Perfil</label>
                                             </div>
                                         </div>
                                         <div class="col-2">
@@ -128,10 +203,10 @@
                         </div>
                         <div class="block-content block-content-full block-content-sm bg-body-light text-end">
                             <button type="reset" class="btn btn-alt-secondary" id="btn-reset">
-                                <i class="fa fa-sync-alt opacity-50 me-1"></i> Reset
+                                <i class="fa fa-eraser opacity-50 me-1"></i> Limpiar
                             </button>
                             <button type="submit" class="btn btn-alt-primary" id="btn-save">
-                                <i class="fa fa-check opacity-50 me-1"></i> Submit
+                                <i class="fa fa-check opacity-50 me-1"></i> Enviar
                             </button>
                         </div>
                     </div>
