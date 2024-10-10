@@ -190,6 +190,16 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-6 mb-4">
+                                        <div class="d-grid gap-2">
+                                            <button type="button" id="btn-add"
+                                                class="btn btn-lg btn-block btn-alt-success py-sm-6 py-md-3" disabled>
+                                                <i class="fa fa-plus opacity-50 me-1"></i>
+                                                Añadir cargo
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="applications-list"></div>
                                 </div>
                             </div>
                         </div>

@@ -7,7 +7,7 @@ class ApplicationFormManager {
         this.tipoCargoDropdown = document.getElementById('tipo-cargo-dropdown');
         this.cargoSedeDropdown = document.getElementById('cargo-dropdown');
         this.checkboxContainer = document.getElementById('checkbox-container');
-        this.appDropdown = document.getElementById('app-dropdown');
+        //this.appDropdown = document.getElementById('app-dropdown');
         this.perfilDropdown = document.getElementById('perfil-dropdown');
         this.applicationsList = document.getElementById('applications-list');
         this.btnAdd = document.getElementById('btn-add');
@@ -36,13 +36,27 @@ class ApplicationFormManager {
         this.updateDropdown('tipo-cargo-dropdown', [], 'Seleccione tipo de cargo..');
         this.updateDropdown('cargo-dropdown', [], 'Seleccione cargo..');
         this.resetPerfilDropdown();
+        this.applicationsList.innerHTML = '';
+        //this.btnAdd.disabled = true;
     }
 
      static resetPerfilDropdown() {
         this.checkboxContainer.innerHTML = '';
+        //this.btnAdd.disabled = true;
     }
 
-    static async showToast(title, message, type) {
+    static disableSelectedPerfiles() {
+        const options = this.cargoSedeDropdown.querySelectorAll('option');
+        options.forEach(option => {
+            if (this.selectedPerfiles.includes(option.value)) {
+                option.disabled = true;
+            } else {
+                option.disabled = false;
+            }
+        });
+    }
+
+    static showToast(title, message, type) {
         let toast = Swal.mixin({
             buttonsStyling: false,
             target: '#page-container',
@@ -104,6 +118,7 @@ class ApplicationFormManager {
 
             const data = await this.handleFetchResponse(response);
             this.updateDropdown('tipo-cargo-dropdown', data.tipo_cargo_sede, 'Seleccione tipo de cargo..');
+            this.updateDropdown('cargo-dropdown', [], 'Seleccione cargo..');
             this.resetPerfilDropdown();
         } catch (error) {
             console.error('Fetch error:', error);
@@ -138,6 +153,17 @@ class ApplicationFormManager {
         } catch (error) {
             console.error('Fetch error:', error);
         }
+    }
+
+    static validateButtonState() {
+        // Seleccionar todos los checkboxes dentro del contenedor
+        const checkboxes = this.checkboxContainer.querySelectorAll('input[type="checkbox"]');
+    
+        // Comprobar si al menos uno de los checkboxes está marcado
+        const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+    
+        // Habilitar o deshabilitar el botón en función de si hay un checkbox marcado
+        this.btnAdd.disabled = !isAnyChecked;
     }
 
     static async CargoAppPerfilChangeHandler() {
@@ -190,7 +216,7 @@ class ApplicationFormManager {
                 // Crea la etiqueta del checkbox
                 const checkboxLabel = document.createElement('label');
                 checkboxLabel.classList.add('form-check-label');
-                checkboxLabel.htmlFor = `perfil-${index}`;
+                checkboxLabel.htmlFor = `${perfil.aplicacion} - ${perfil.perfil}`;
                 checkboxLabel.textContent = `${perfil.aplicacion} - ${perfil.perfil}`;
 
                 // Añade el checkbox y su etiqueta al div contenedor
@@ -199,8 +225,12 @@ class ApplicationFormManager {
 
                 // Añade el div al contenedor de checkboxes
                 this.checkboxContainer.appendChild(checkboxDiv);
+
+                // Añadir evento change al checkbox para validar el estado del botón
+                checkboxInput.addEventListener('change', () => this.validateButtonState());
             });
-            //this.resetPerfilDropdown();
+            // Validar el estado del botón por si no se selecciona ningún checkbox
+            this.validateButtonState();
             //this.checkboxContainer.innerHTML = '';
         } catch (error) {
             //console.error('Fetch error:', error);
@@ -245,24 +275,30 @@ class ApplicationFormManager {
         }
     }
 
-    static addApplicationHandler() {
-        const selectedAppId = this.appDropdown.value;
-        const selectedAppText = this.appDropdown.options[this.appDropdown.selectedIndex].text;
-        const selectedPerfilOptions = [...this.perfilDropdown.selectedOptions];
+    static addApplicacionPerfilHandler() {
+        const selectedAppId = this.cargoSedeDropdown.value;
     
-        if (!selectedAppId || selectedPerfilOptions.length === 0) return;
+        // Recoge los checkboxes seleccionados
+        const selectedPerfilCheckboxes = [...this.checkboxContainer.querySelectorAll('input[type="checkbox"]:checked')];
+        
+        // Verifica que haya una aplicación seleccionada y al menos un perfil seleccionado
+        if (!selectedAppId || selectedPerfilCheckboxes.length === 0) return;
     
-        selectedPerfilOptions.forEach(option => {
-            const selectedPerfilId = option.value;
-            const selectedPerfilText = option.text;
+        // Recorre los checkboxes seleccionados para crear el HTML correspondiente
+        selectedPerfilCheckboxes.forEach(checkbox => {
+            const selectedPerfilId = checkbox.getAttribute('data-perfil-id');  // ID del perfil
+            const selectedAppId = checkbox.getAttribute('data-app-id');        // ID de la aplicación
+            const selectedPerfilText = checkbox.value;                         // Nombre del perfil
+            const selectedAppText = checkbox.closest('.form-check-inline').querySelector('label').textContent;  // Nombre de la aplicación desde el label
     
+            // Genera el HTML para mostrar la aplicación y el perfil seleccionados
             const appHtml = `<div class="form-group mb-2">
-                <div class="row">
-                    <div class="col-5">
-                        <input type="text" class="form-control" value="${selectedAppText}" data-app-id="${selectedAppId}" readonly>
+                <div class="row push">
+                    <div class="col-4">
+                        <input type="text" class="form-control" value="${selectedAppText}" data-app-id="${selectedAppId}" data-app-id="${selectedPerfilId}" readonly>
                     </div>
-                    <div class="col-5">
-                        <input type="text" class="form-control" value="${selectedPerfilText}" data-perfil-id="${selectedPerfilId}" readonly>
+                    <div class="col-4">
+                    <h2><span class="badge bg-success" data-app-id="${selectedAppId}" data-app-id="${selectedPerfilId}">${selectedAppText}</span></h2>
                     </div>
                     <div class="col-2">
                         <button type="button" class="btn btn-alt-danger btn-remove"><i class="fa fa-trash-can"></i></button>
@@ -270,31 +306,20 @@ class ApplicationFormManager {
                 </div>
             </div>`;
     
+            // Inserta el HTML en la lista de aplicaciones y perfiles
             this.applicationsList.insertAdjacentHTML('beforeend', appHtml);
     
             // Añadir el perfil seleccionado a la lista de perfiles seleccionados
-            this.selectedPerfiles.push(selectedPerfilId);
+            //this.selectedPerfiles.push(selectedPerfilId);
     
-            // Deshabilitar el perfil seleccionado
-            this.perfilDropdown.querySelectorAll('option').forEach(option => {
-                if (option.value === selectedPerfilId) {
-                    option.disabled = true; // Deshabilitar el perfil en el dropdown
-                }
-            });
-    
-            if (!this.panaAppNames.includes(selectedAppText)) {
-                this.appDropdown.querySelectorAll('option').forEach(appOption => {
-                    if (appOption.text === selectedAppText) {
-                        appOption.disabled = true; // Deshabilitar la aplicación si no es PANA
-                    }
-                });
-            }
+            // Deshabilitar el perfil seleccionado en los checkboxes
+            checkbox.disabled = true;
         });
     
-        this.appDropdown.value = '';
-        this.resetPerfilDropdown();
+        // Restablecer el dropdown de aplicaciones y desactivar el botón 'Agregar'
+        this.cargoSedeDropdown.value = '';
         this.btnAdd.disabled = true;
-    }
+    }    
 
     static removeApplicationHandler(event) {
         if (event.target.classList.contains('btn-remove')) {
@@ -398,6 +423,7 @@ class ApplicationFormManager {
         this.sedeDropdown.addEventListener('change', () => this.sedeChangeHandler());
         this.tipoCargoDropdown.addEventListener('change', () => this.cargoSedeChangeHandler());
         this.cargoSedeDropdown.addEventListener('change', () => this.CargoAppPerfilChangeHandler());
+        this.btnAdd.addEventListener('click', () => this.addApplicacionPerfilHandler());
         this.btnReset.addEventListener('click', () => this.clearForm());
         this.mainForm.addEventListener('submit', (event) => this.handleSubmit(event));
     }
