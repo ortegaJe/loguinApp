@@ -135,18 +135,18 @@ class DropdownController extends Controller
     {
         // Datos enviados desde el frontend
         $identificacion = $request->input('identificacion');
-        $tipo_identificacion = $request->input('tipo_identificacion');
+        //$tipo_identificacion = $request->input('tipo_identificacion');
         $nombre = $request->input('nombre');
-        $apellido = $request->input('apellido');
+        //$apellido = $request->input('apellido');
         $email = $request->input('email');
         $zonal_id = $request->input('zonal_id');
         $sede_id = $request->input('sede_id');
         $aplicaciones = $request->input('aplicaciones'); // Array con los IDs de apps y perfiles
 
         $appUserId = DB::table('app_user')->insertGetId([
-            'tipo_identificacion' => $tipo_identificacion,
+            //'tipo_identificacion' => $tipo_identificacion,
             'identificacion' => $identificacion,
-            'apellido' => $apellido,
+            //'apellido' => $apellido,
             'nombre' => $nombre,
             'email' => $email,
             'created_at' => now(),
@@ -165,6 +165,58 @@ class DropdownController extends Controller
                 'updated_at' => now(),
             ]);
         }
+
+        $ticket = $this->glpi->table('glpi_tickets')->insertGetId([
+            'name' => '[PRUEBA] SOLICITUD USUARIO LOGIN DE PANA EVEREST - '.$identificacion, 
+            'date'=> now('America/Bogota'), 
+            'content' => '[PRUEBA] SOLICITUD USUARIO LOGIN DE PANA EVEREST - '.$identificacion, 
+            'users_id_recipient' => 102, //usuario quien envia solicitud
+            'date_mod'=> now('America/Bogota'), //revisar
+            'users_id_lastupdater' => 102, //usuario quien envia solicitud
+            'itilcategories_id' => 8, // categoria loguin
+            'time_to_resolve' => now('America/Bogota'), 
+            'time_to_own' => now('America/Bogota'), 
+            'locations_id' => 183, //sede
+            'date_creation' => now('America/Bogota'),
+
+            'entities_id' => 0, 
+            'closedate' => null, 
+            'solvedate' => null , 
+            'takeintoaccountdate' => null, 
+            'status' => 2, 
+            'requesttypes_id' => 1, 
+            'urgency' => 3, 
+            'impact' => 3, 
+            'priority' => 3, 
+            'type' => 2, 
+            'global_validation' => 1, 
+            'slas_id_ttr' => 5, 
+            'slas_id_tto' => 7, 
+            'slalevels_id_ttr' => 0, 
+            'begin_waiting_date' => null,
+            'sla_waiting_duration' => 0,
+            'ola_waiting_duration' => 0, 
+            'olas_id_tto' => 0, 
+            'olas_id_ttr' => 0, 
+            'olalevels_id_ttr' => 0, 
+            'ola_ttr_begin_date' => null, 
+            'internal_time_to_resolve' => null, 
+            'internal_time_to_own'=> null, 
+            'waiting_duration' => 0, 
+            'close_delay_stat' => 0, 
+            'solve_delay_stat' => 0, 
+            'takeintoaccount_delay_stat' => 0, 
+            'actiontime' => 0, 
+            'is_deleted' => 0, 
+            'validation_percent' => 0, 
+            'ola_tto_begin_date' => null
+        ]);
+
+        $this->glpi->table('glpi_groups_tickets')->insert([
+            'tickets_id' => $ticket,
+            'groups_id' => 6,
+            'type' => 2
+        ]);
 
         return response()->json(['message' => 'Datos guardados exitosamente'], 200);
     }

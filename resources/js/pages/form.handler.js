@@ -369,9 +369,9 @@ class ApplicationFormManager {
         };
 
         console.log(formData);
-        this.showToast('Oops...', `Formulario loguin enviado correctamente`, 'success');
+        //this.showToast('Oops...', `Formulario loguin enviado correctamente`, 'success');
 
-/*         try {
+         try {
             const response = await fetch('/saveApplicacionesPerfiles', {
                 method: 'POST',
                 headers: {
@@ -383,13 +383,14 @@ class ApplicationFormManager {
 
             if (response.ok) {
                 console.log('Formulario enviado correctamente');
+                this.showToast('Oops...', `Formulario loguin enviado correctamente`, 'success');
                 this.clearForm();
             } else {
                 console.error('Error al enviar el formulario:', response.statusText);
             }
         } catch (error) {
             console.error('Error al enviar el formulario:', error);
-        } */
+        }
     }
 
     static init() {
