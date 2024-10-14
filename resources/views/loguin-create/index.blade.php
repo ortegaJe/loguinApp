@@ -9,6 +9,8 @@
     <script src="{{ asset('js/lib/jquery.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/select2/js/select2.full.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('/js/plugins/jquery-validation/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('/js/plugins/jquery-validation/additional-methods.js"') }}></script>
 
     <script type="module">
         Codebase.helpersOnLoad(['jq-select2']);
@@ -27,7 +29,7 @@
                 <form id="main-form">
                     <div class="block block-rounded">
                         <div class="block-header block-header-default">
-                            <h3 class="block-title">Block Form</h3>
+                            <h3 class="block-title">Formulario Loguin</h3>
                             <div class="block-options">
                                 <button type="button" class="btn-block-option" data-toggle="block-option"
                                     data-action="content_toggle">
@@ -45,7 +47,8 @@
                                         <div class="col-6">
                                             <div class="form-floating">
                                                 <select class="form-select" id="type_identity_number"
-                                                    name="type_identity_number" style="width: 100%;">
+                                                    for="type_identity_number" name="type_identity_number"
+                                                    style="width: 100%;">
                                                     <option selected disabled>Seleccione tipo..</option>
                                                     <!-- Required for data-placeholder attribute to work with Select2 plugin -->
                                                     @foreach ($tipos_identificacion as $data)
@@ -61,7 +64,8 @@
                                         <div class="col-6">
                                             <div class="form-floating">
                                                 <input type="text" class="form-control" id="identity_number"
-                                                    name="identity_number" placeholder="identity_number">
+                                                    for="identity_number" name="identity_number"
+                                                    placeholder="identity_number">
                                                 <label class="form-label" for="identity_number">Número de documento</label>
                                             </div>
                                         </div>
@@ -70,14 +74,14 @@
                                         <div class="col-6">
                                             <div class="form-floating">
                                                 <input type="text" class="form-control" id="first_name" name="first_name"
-                                                    placeholder="first_name">
+                                                    for="first_name" placeholder="first_name">
                                                 <label class="form-label" for="first_name">Nombres</label>
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <div class="form-floating">
                                                 <input type="text" class="form-control" id="last_name" name="last_name"
-                                                    placeholder="last_name">
+                                                    for="last_name" placeholder="last_name">
                                                 <label class="form-label" for="last_name">Apellidos</label>
                                             </div>
                                         </div>
@@ -85,7 +89,7 @@
                                     <div class="col-12 mb-4">
                                         <div class="form-floating">
                                             <input type="email" class="form-control" id="email" name="email"
-                                                placeholder="email">
+                                                for="email" placeholder="email">
                                             <label class="form-label" for="email">Correo</label>
                                         </div>
                                     </div>
@@ -93,7 +97,7 @@
                                         <div class="col-6">
                                             <div class="form-floating">
                                                 <select class="form-select" id="zonal-dropdown" name="zonal-dropdown"
-                                                    style="width: 100%;">
+                                                    for="zonal-dropdown" style="width: 100%;">
                                                     <option selected disabled>Seleccione zonal..</option>
                                                     <!-- Required for data-placeholder attribute to work with Select2 plugin -->
                                                     @foreach ($zonales as $data)
@@ -108,7 +112,7 @@
                                         <div class="col-6">
                                             <div class="form-floating">
                                                 <select class="form-select" id="sede-dropdown" name="sede-dropdown"
-                                                    style="width: 100%;" disabled>
+                                                    for="sede-dropdown" style="width: 100%;" disabled>
                                                     <option></option>
                                                     <!-- Required for data-placeholder attribute to work with Select2 plugin -->
                                                 </select>
@@ -120,7 +124,8 @@
                                         <div class="col-6">
                                             <div class="form-floating">
                                                 <select class="form-select" id="tipo-cargo-dropdown"
-                                                    name="tipo-cargo-dropdown" style="width: 100%;" disabled>
+                                                    for="tipo-cargo-dropdown" name="tipo-cargo-dropdown"
+                                                    style="width: 100%;" disabled>
                                                     <option></option>
                                                     <!-- Required for data-placeholder attribute to work with Select2 plugin -->
                                                 </select>
@@ -130,7 +135,7 @@
                                         <div class="col-6">
                                             <div class="form-floating">
                                                 <select class="form-select" id="cargo-dropdown" name="cargo-dropdown"
-                                                    style="width: 100%;" disabled>
+                                                    for="cargo-dropdown" style="width: 100%;" disabled>
                                                     <option></option>
                                                     <!-- Required for data-placeholder attribute to work with Select2 plugin -->
                                                 </select>
@@ -138,14 +143,32 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row item-push">
+                                    <div class="row item-push" id="checkbox-row" hidden>
                                         <div class="mb-4">
-                                            <label class="form-label">Aplicaciones y perfiles disponibles para el cargo
-                                                seleccionado:</label>
+                                            <label class="form-label" id="checkbox-label"></label>
                                             <div class="space-x-2" id="checkbox-container"></div>
                                         </div>
                                     </div>
-                                    <div class="row push">
+                                    @foreach ($opciones_constantes as $opcion)
+                                        <div class="mb-4" id="radio-container">
+                                            <label class="form-label">{{ $opcion['label'] }}</label>
+                                            <div class="space-x-2">
+                                                @foreach ($opcion['opciones'] as $value => $label)
+                                                    <div class="form-check form-check-inline radio-check">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="{{ $opcion['label'] }}" value="{{ $value }}"
+                                                            id="{{ $value }}_{{ $opcion['label'] }}"
+                                                            data-radio-value="{{ $opcion['label'] }}"
+                                                            checked>
+                                                        <label for="{{ $value }}_{{ $opcion['label'] }}">
+                                                            {{ $label }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                    {{-- <div class="row push">
                                         <div class="col-lg-4">
                                             <p class="text-muted">
                                                 Aplicaciones y perfiles disponibles para el cargo seleccionado:
@@ -189,7 +212,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                         </div>
