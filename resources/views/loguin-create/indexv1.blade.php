@@ -41,7 +41,7 @@
     <!-- Page Content -->
     <div class="content">
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-7">
                 <form id="main-form">
                     <div class="block block-rounded">
                         <div class="block-header block-header-default">
@@ -253,6 +253,77 @@
                         </div>
                     </div>
                 </form>
+            </div>
+            <div class="col-lg-5">
+                <div class="block block-rounded block-transparent">
+                    <div class="block-header">
+                        <h3 class="block-title">Aplicaciones y perfiles disponibles para el cargo
+                            seleccionado</h3>
+                    </div>
+                    <div class="block-content">
+                        <div class="col-md-8 col-xl-12">
+                            <!-- Tasks -->
+                            <!-- Tasks functionality is initialized in js/pages/be_pages_generic_todo.min.js which was auto compiled from _js/pages/be_pages_generic_todo.js -->
+                            <div class="js-tasks">
+                                <h2
+                                    class="content-heading pb-0 mb-3 border-0 d-flex justify-content-between align-items-center">
+                                    Disponibles <span
+                                        class="js-task-badge badge rounded-pill bg-primary animated fadeIn"></span>
+                                </h2>
+                                <div class="js-task-list">
+                                    <!-- Task -->
+                                    <div class="js-task block block-rounded mb-2 animated fadeIn overflow-hidden"
+                                        data-task-id="9" data-task-completed="false" data-task-starred="false">
+                                        <table class="table table-borderless table-vcenter mb-0">
+                                            <tr>
+                                                <td class="js-task-content fw-medium ps-2">
+                                                    DIGITURNO - LINEA DE FRENTE
+                                                </td>
+                                                <td class="text-end" style="width: 100px;">
+                                                    <button type="button"
+                                                        class="js-task-star btn btn-sm btn-link text-primary">
+                                                        <i class="fa fa-fw fa-check text-muted opacity-50"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <!-- END Task -->
+                                </div>
+                                <!-- END Tasks List -->
+
+                                <!-- Starred Tasks List -->
+                                <h2
+                                    class="content-heading pb-0 mb-3 border-0 d-flex justify-content-between align-items-center">
+                                    Seleccionadas <span
+                                        class="js-task-badge-starred badge rounded-pill bg-primary animated fadeIn"></span>
+                                </h2>
+                                <div class="js-task-list-starred">
+                                    <!-- Task -->
+                                    <div class="js-task block block-rounded mb-2 animated fadeIn overflow-hidden"
+                                        data-task-id="5" data-task-completed="false" data-task-starred="true">
+                                        <table class="table table-borderless table-vcenter mb-0">
+                                            <tr>
+                                                <td class="js-task-content fw-medium ps-2">
+                                                    EVEREST - AUXILIAR DE ADMISIONES
+                                                </td>
+                                                <td class="text-end" style="width: 100px;">
+                                                    <button type="button"
+                                                        class="js-task-star btn btn-sm btn-link text-primary">
+                                                        <i class="fa fa-fw fa-check"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <!-- END Task -->
+                                </div>
+                                <!-- END Starred Tasks List -->
+                            </div>
+                            <!-- END Tasks -->
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

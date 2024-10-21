@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DropdownController;
+use App\Http\Controllers\LoguinTicketStoreController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -18,7 +19,8 @@ Route::post('fetchSedes', [DropdownController::class, 'fetchSedes']);
 Route::post('fetchTipoCargoSede', [DropdownController::class, 'fetchTipoCargoSede']);
 Route::post('fetchCargoSede', [DropdownController::class, 'fetchCargoSede']);
 Route::post('fetchCargoAppPerfil', [DropdownController::class, 'fetchCargoAppPerfil']);
-Route::post('saveApplicacionesPerfiles', [DropdownController::class, 'store']);
+Route::get('fetchEspecialidades', [DropdownController::class, 'fetchEspecialidades']);
+Route::post('storeLoguinTicket', [LoguinTicketStoreController::class, 'storeLoguinTicket']);
 
 Route::get('/get-mysecond-connection', function () {
     $glpi = DB::connection('glpi');
