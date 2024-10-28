@@ -1,7 +1,5 @@
 class ApplicationFormManager {
-    static cargoTipo = ["ADMINISTRATIVO"];
     static perfilesEspecialistaId = ["5","6"] // ID desde la base de datos especilidades everest y pana
-    static nameEspecialidad = [];
 
     static initFormElements() {
         this.mainForm = document.getElementById('main-form');
@@ -9,19 +7,24 @@ class ApplicationFormManager {
         this.sedeDropdown = document.getElementById('sede-dropdown');
         this.tipoCargoDropdown = document.getElementById('tipo-cargo-dropdown');
         this.cargoSedeDropdown = document.getElementById('cargo-dropdown');
+        this.blockElement  = document.querySelector('.block.block-rounded.block-transparent');
+        this.blockSolicitud = document.getElementById('block-solicitud');
         this.rowEspecialidad = document.getElementById('row-especialidad');
         this.searchEspecialidad = document.getElementById('search-especialidad');
         this.checkboxRow = document.getElementById('checkbox-row');
         this.checkboxDescLabel = document.getElementById('checkbox-label');
         this.checkboxContainer = document.getElementById('checkbox-container');
-        this.radioContainer = document.getElementById('radio-container');
-        this.radioCheck = document.getElementById('radio-check');
+        this.checboxInfraRow = document.getElementById('checkbox-infra-row');
+        this.cheboxInfraLabel = document.getElementById('checkbox-infra-label');
+        this.checkboxInfraContainer = document.getElementById('checkbox-infra-container');
+
         this.appDropdown = document.getElementById('app-dropdown');
         this.perfilDropdown = document.getElementById('perfil-dropdown');
         this.applicationsList = document.getElementById('applications-list');
         this.btnAdd = document.getElementById('btn-add');
+
+        this.btnRefreshBlock = document.getElementById('btn-refresh');
         this.btnReset = document.getElementById('btn-reset');
-        this.btnRefresh = document.getElementById('btn-refresh');
         this.toast = Swal.mixin({
             buttonsStyling: false,
             target: '#page-container',
@@ -32,7 +35,7 @@ class ApplicationFormManager {
             }
           });
         // Load default options for jQuery Validation plugin
-        Codebase.helpers('jq-validation');
+        //Codebase.helpers('jq-validation');
 
         jQuery.validator.addMethod("atLeastOneChecked", function(value, element, params) {
             return jQuery(params).filter(':checked').length > 0;
@@ -73,73 +76,49 @@ class ApplicationFormManager {
             'checkbox-group': {
             atLeastOneChecked: '.checkbox-group' // Aplica la validación a los checkboxes con la clase .checkbox-group
             },
-/*             'search-especialidad': {
-            required: true,
-            }, */
-            'val-currency': {
-            required: true,
-            currency: ['$', true]
+            'search-especialidad': {
+            required: {
+                    depends: function (element) {
+                        return !jQuery(element).is(':hidden'); // La validación solo ocurre si el campo NO está oculto
+                    }
+                }
             },
-            'val-website': {
-            required: true,
-            url: true
-            },
-            'val-phoneus': {
-            required: true,
-            phoneUS: true
-            },
-            'val-digits': {
-            required: true,
-            digits: true
-            },
-            'val-number': {
-            required: true,
-            number: true
-            },
-            'val-range': {
-            required: true,
-            range: [1, 5]
-            },
-            'val-terms': {
-            required: true
-            },
-            'val-select2': {
-            required: true
-            },
-            'val-select2-multiple': {
-            required: true,
-            minlength: 2
-            }
         },
         messages: {
+            'type_identity_number': {
+                required: "Este campo es obligatorio",
+            },
             'first_name': {
-            required: 'Please enter a username',
-            minlength: 'Your username must consist of at least 3 characters'
+                required: "Este campo es obligatorio",
             },
-            'val-email': 'Please enter a valid email address',
-            'val-password': {
-            required: 'Please provide a password',
-            minlength: 'Your password must be at least 5 characters long'
+            'identity_number': {
+                required: "Este campo es obligatorio",
             },
-            'val-confirm-password': {
-            required: 'Please provide a password',
-            minlength: 'Your password must be at least 5 characters long',
-            equalTo: 'Please enter the same password as above'
+            'last_name': {
+                required: "Este campo es obligatorio",
+            },
+            'email': {
+                required: "Este campo es obligatorio",
+                emailWithDot: "Debe ser un correo válido"
+            },
+            'zonal-dropdown': {
+                required: "Este campo es obligatorio",
+            },
+            'sede-dropdown': {
+                required: "Este campo es obligatorio",
+            },
+            'tipo-cargo-dropdown': {
+                required: "Este campo es obligatorio",
+            },
+            'cargo-dropdown': {
+                required: "Este campo es obligatorio",
             },
             'checkbox-group': {
-                atLeastOneChecked: 'Please select at least one checkbox.'
+                atLeastOneChecked: "Debe seleccionar al menos una opción"
             },
-            'val-select2': 'Please select a value!',
-            'val-select2-multiple': 'Please select at least 2 values!',
-            'val-suggestions': 'What can we do to become better?',
-            'val-skill': 'Please select a skill!',
-            'val-currency': 'Please enter a price!',
-            'val-website': 'Please enter your website!',
-            'val-phoneus': 'Please enter a US phone!',
-            'val-digits': 'Please enter only digits!',
-            'val-number': 'Please enter a number!',
-            'val-range': 'Please enter a number between 1 and 5!',
-            'val-terms': 'You must agree to the service terms!'
+            'search-especialidad': {
+                required: "Este campo es obligatorio"
+            }
         }
         });
 
@@ -162,24 +141,43 @@ class ApplicationFormManager {
             dropdown.insertAdjacentHTML('beforeend', `<option value="${item.id}">${item.name.toUpperCase()}</option>`);
         });
         dropdown.disabled = data.length === 0;
+    }   
+
+    static resetCheckboxesButtons()
+    {
+        this.checkboxRow.hidden = true;
+        this.checkboxDescLabel.innerHTML = '';
+        this.checkboxContainer.innerHTML = '';
+
+        this.checboxInfraRow.hidden = true;
+        this.cheboxInfraLabel.innerHTML = '';
+        this.checkboxInfraContainer.innerHTML = '';
+
+        // Desmarcar todos los radios
+        jQuery('#checkbox-container input[type="checkbox"]').prop('checked', false);
+        jQuery('#checkbox-infra-container input[type="checkbox"]').prop('checked', false);
+
+        // Marcar un valor específico (por ejemplo, "NO" para cada grupo)
+        //jQuery('#checkbox-infra-container input[type="checkbox"][value="0"]').prop('checked', true);
     }
 
-    static resetAll() {
+    static resetAll() 
+    {
         this.updateDropdown('sede-dropdown', [], 'Seleccione sede..');
         this.updateDropdown('tipo-cargo-dropdown', [], 'Seleccione tipo de cargo..');
         this.updateDropdown('cargo-dropdown', [], 'Seleccione cargo..');
         this.resetPerfilDropdown();
     }
 
-     static resetPerfilDropdown() {
-        this.checkboxRow.hidden = true;
-        this.checkboxDescLabel.innerHTML = '';
-        this.checkboxContainer.innerHTML = '';
-        this.radioContainer.hidden = true;
+     static resetPerfilDropdown() 
+    {
+        this.resetCheckboxesButtons();
         this.rowEspecialidad.hidden = true;
+        this.searchEspecialidad.value = '';
     }
 
-    static async showToast(title, message, type) {
+    static async showToast(title, message, type) 
+    {
         let toast = Swal.mixin({
             buttonsStyling: false,
             target: '#page-container',
@@ -193,7 +191,54 @@ class ApplicationFormManager {
         toast.fire(title, message, type);
     }
 
-    static async zonalChangeHandler() {
+    static async AutocompleteDataLoguin() 
+    {
+        const route = "/fetchDataIdentificacionLoguin";
+        const routeAutocompletarDatoUsuario = "/fetchDataAutoCompleteLoguin";
+    
+        jQuery('#identity_number').typeahead({
+            source: function(query, process) {
+                fetch(`${route}?query=${query}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Convertir cada identificacion a string
+                    const stringData = data.map(item => item.toString());
+                    return process(stringData);
+                })
+                //.catch(error => console.error('Error en la búsqueda:', error));
+                .catch(error => {
+                    AutocompleteDataLoguin.showToast('Oops...', `${error}`, 'warning')
+                });
+            },
+            afterSelect: function(item) {
+                fetch(`${routeAutocompletarDatoUsuario}?identificacion=${item}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Rellenar los campos del formulario con la información recibida
+                    jQuery('#type_identity_number').val(data.tipo_doc_id);
+                    jQuery('#identity_number').val(data.identificacion);
+                    jQuery('#first_name').val(data.nombres);
+                    jQuery('#last_name').val(data.apellidos);
+                    jQuery('#email').val(data.email);
+                })
+                .catch(error => console.error('Error al obtener los datos del usuario:', error));
+
+            }
+        });
+    }
+
+    static async zonalChangeHandler() 
+    {
         const idZonal = this.zonalDropdown.value;
         //console.log(idZonal);
         if (!idZonal) {
@@ -216,13 +261,14 @@ class ApplicationFormManager {
             this.updateDropdown('sede-dropdown', data.sedes, 'Seleccione sede..');
             this.updateDropdown('tipo-cargo-dropdown', [], 'Seleccione tipo de cargo..');
             this.updateDropdown('cargo-dropdown', [], 'Seleccione cargo..');
-            //this.resetPerfilDropdown();
+            this.resetPerfilDropdown();
         } catch (error) {
             console.error('Fetch error:', error);
         }
     }
 
-    static async sedeChangeHandler() {
+    static async sedeChangeHandler() 
+    {
         const idSede = this.sedeDropdown.value;
         if (!idSede) {
             this.resetAll();
@@ -248,7 +294,8 @@ class ApplicationFormManager {
         }
     }
 
-    static async cargoSedeChangeHandler() {
+    static async cargoSedeChangeHandler() 
+    {
         const idTipoCargo = this.tipoCargoDropdown.value;
         const idSede = this.sedeDropdown.value;
         if (!idTipoCargo) {
@@ -268,31 +315,31 @@ class ApplicationFormManager {
 
             const data = await this.handleFetchResponse(response);
             this.updateDropdown('cargo-dropdown', data.cargo_sede, 'Seleccione cargo..');
-            //console.log(data);
             this.resetPerfilDropdown();
-            this.checkboxContainer.innerHTML = '';
-            this.rowEspecialidad.hidden = true;
-            this.searchEspecialidad.value = '';
+            //this.rowEspecialidad.hidden = true;
+            //this.searchEspecialidad.value = '';
 
         } catch (error) {
             console.error('Fetch error:', error);
         }
     }
 
-    static async CargoAppPerfilChangeHandler() {
+    static async CargoAppPerfilChangeHandler() 
+    {
         const idSede = this.sedeDropdown.value;
         const idCargo = this.cargoSedeDropdown.value;
-        const selectedTipoCargoText = this.tipoCargoDropdown.options[this.tipoCargoDropdown.selectedIndex].text;
-        const selectedCargoText = this.cargoSedeDropdown.options[this.cargoSedeDropdown.selectedIndex].text;
-        console.log(selectedCargoText);
-        //console.log(idSede);
-        console.log(idCargo);
+    
         if (!idCargo) {
             this.resetAll();
             return;
         }
-
+    
         try {
+            // Mostrar el bloque
+            this.blockSolicitud.hidden = false;
+            // Mostrar el bloque de solicitudes y activar el estado de "cargando"
+            this.blockElement.classList.add('block-mode-loading');
+    
             const response = await fetch("/fetchCargoAppPerfil", {
                 method: "POST",
                 headers: {
@@ -301,27 +348,40 @@ class ApplicationFormManager {
                 },
                 body: JSON.stringify({ cargo_id: idCargo, sede_id: idSede })
             });
-
+    
             if (!response.ok) {
                 const errorData = await response.json();  // Extraer el mensaje desde el backend
                 throw new Error(errorData.message || 'Something went wrong..');
             }
-
+    
             const data = await this.handleFetchResponse(response);
-            //console.log(data);
+            console.log(data);
+            const renderPerfilesCheckboxes = data.perfiles;
+            const renderInfraCheckboxes = data.solicitud_infra;
 
-            this.checkboxRow.hidden = false;
+            //console.log(this.perfilesEspecialistaId);
+    
+            // oculta y setea el contenedor del input especialidaddes antes de agregar nuevos elementos
+            this.rowEspecialidad.hidden = this.perfilesEspecialistaId.includes(idCargo) ? false : true;
+            this.searchEspecialidad.value = '';
+            
+            // Limpiar los contenedores de checkboxes después de la animación
             this.checkboxContainer.innerHTML = '';
-
-            // Crea los checkboxes dinámicamente con los datos recibidos
-            data.perfiles.forEach((perfil, index) => {
+            this.checkboxInfraContainer.innerHTML = '';
+            // Mostrar los nuevos checkboxes
+            this.checkboxRow.hidden = false;
+            this.checboxInfraRow.hidden = false;
+                
+            // Remover las clases de animación para próximas ejecuciones
+            this.blockElement.classList.remove('block-mode-loading');
+            
+            // Crear los checkboxes dinámicamente
+            renderPerfilesCheckboxes.forEach((perfil, index) => {
                 this.checkboxDescLabel.textContent = 'Aplicaciones y perfiles disponibles para el cargo seleccionado:';
-
-                // Crea un div para cada checkbox
+                
                 const checkboxDiv = document.createElement('div');
                 checkboxDiv.classList.add('form-check', 'form-check-inline');
 
-                // Crea el input del checkbox
                 const checkboxInput = document.createElement('input');
                 checkboxInput.classList.add('form-check-input', 'checkbox-group');
                 checkboxInput.type = 'checkbox';
@@ -331,37 +391,55 @@ class ApplicationFormManager {
                 checkboxInput.setAttribute('data-app-id', perfil.aplicacion_id);
                 checkboxInput.name = `checkbox-group`;
 
-                // Crea la etiqueta del checkbox
                 const checkboxLabel = document.createElement('label');
                 checkboxLabel.classList.add('form-check-label');
                 checkboxLabel.htmlFor = `perfil-${index}`;
                 checkboxLabel.textContent = `${perfil.aplicacion} - ${perfil.perfil.toUpperCase()}`;
 
-                // Añade el checkbox y su etiqueta al div contenedor
                 checkboxDiv.appendChild(checkboxInput);
                 checkboxDiv.appendChild(checkboxLabel);
 
-                // Añade el div al contenedor de checkboxes
                 this.checkboxContainer.appendChild(checkboxDiv);
             });
+
+            renderInfraCheckboxes.forEach((solicitud, index) => {
+                this.cheboxInfraLabel.textContent = 'Solicitudes de Infraestructura disponibles para el cargo seleccionado:';
+
+                const checkboxCorreo = document.createElement('div');
+                checkboxCorreo.className = 'form-check';
+                checkboxCorreo.innerHTML = `
+                    <input type="checkbox" class="form-check-input" name="sw_correo_${index}" value="1"
+                        id="sw_correo_${solicitud.sw_correo}" ${solicitud.sw_correo === 0 ? 'disabled' : ''}>
+                    <label for="sw_correo_${solicitud.sw_correo}" class="form-check-label">Requiere Correo Institucional</label>`;
+                                    
+                const checkboxDominio = document.createElement('div');
+                checkboxDominio.className = 'form-check';
+                checkboxDominio.innerHTML = `
+                    <input type="checkbox" class="form-check-input" name="sw_dominio_${index}" value="1"
+                        id="sw_dominio_${solicitud.sw_dominio}" ${solicitud.sw_dominio === 0 ? 'disabled' : ''}>
+                    <label for="sw_dominio_${solicitud.sw_dominio}" class="form-check-label">Requiere Usuario Dominio</label>`;
+                
+                const checkboxVPN = document.createElement('div');
+                checkboxVPN.className = 'form-check';
+                checkboxVPN.innerHTML = `
+                    <input type="checkbox" class="form-check-input" name="sw_vpn_${index}" value="1"
+                        id="sw_vpn_${solicitud.sw_vpn}" ${solicitud.sw_vpn === 0 ? 'disabled' : ''}>
+                    <label for="sw_vpn_${solicitud.sw_vpn}" class="form-check-label">Requiere VPN</label>`;
+
+                this.checkboxInfraContainer.appendChild(checkboxCorreo);
+                this.checkboxInfraContainer.appendChild(checkboxDominio);
+                this.checkboxInfraContainer.appendChild(checkboxVPN);
+            });  
         } catch (error) {
-            //console.error('Fetch error:', error);
+            // Remover la clase `block-mode-loading` si ocurre un error
+            this.blockElement.classList.remove('block-mode-loading');
+            //console.log('Error', error);
             this.showToast('Oops...', `${error.message}`, 'warning');
             this.cargoSedeDropdown.value = '';
-            this.checkboxRow.hidden = true;
-            this.radioContainer.hidden = true;
+            this.resetPerfilDropdown();
         }
-
-        // Limpia el contenedor de checkboxes antes de agregar nuevos elementos PENDIENTE SETEAR
-        this.radioContainer.hidden = this.cargoTipo.includes(selectedTipoCargoText) ? false : true;
-
-        //console.log(this.perfilesEspecialistaId);
-
-        // oculta y setea el contenedor del input especialidaddes antes de agregar nuevos elementos
-        this.rowEspecialidad.hidden = this.perfilesEspecialistaId.includes(idCargo) ? false : true;
-        this.perfilesEspecialistaId.includes(idCargo) ? this.searchEspecialidad.value = '' : this.rowEspecialidad.value;
     }
-
+    
     static async appChangeHandler() {
         const idApp = this.appDropdown.value;
         const selectedAppText = this.appDropdown.options[this.appDropdown.selectedIndex].text;
@@ -480,7 +558,8 @@ class ApplicationFormManager {
         }
     }
 
-    static clearForm() {
+    static clearForm() 
+    {
         document.getElementById('type_identity_number').value = '',
         document.getElementById('identity_number').value = '';
         document.getElementById('first_name').value = '';
@@ -494,10 +573,9 @@ class ApplicationFormManager {
         this.resetAll();
     }
 
-    static async handleSubmit(event) {
+    static async handleSubmit(event) 
+    {
         event.preventDefault();
-
-        //console.log(this.searchEspecialidad.value);
 
         if (!jQuery('#main-form').valid()) {
             // Si la validación falla, detén el proceso y no envíes el formulario
@@ -522,17 +600,16 @@ class ApplicationFormManager {
         console.log(appData);
 
         const radioData = [];
-        const radioContainers = document.querySelectorAll('#radio-container'); // Seleccionamos todos los contenedores de radio
+        const radioContainers = this.checkboxInfraContainer.querySelectorAll('.form-check'); // Seleccionamos todos los contenedores de checkbox
         
         radioContainers.forEach(container => {
-            const checkedRadio = container.querySelector('input[type="radio"]:checked'); // Buscamos el radio seleccionado dentro del contenedor
-                if (checkedRadio) {
-                    const radioSolicitud = container.querySelector('.form-label').textContent.trim();
-                    const radioLabel = container.querySelector('label[for="' + checkedRadio.id + '"]').textContent.trim();
-                    const radioValue = (radioLabel === "SI") ? 1 : 0;
+            const checkedRadio = container.querySelector('input[type="checkbox"]:checked'); // Buscamos el checkbox seleccionado dentro del contenedor
+                 
+            if (checkedRadio) {
+                    const radioSolicitud = container.querySelector('.form-check-label').textContent.trim();
+                    const radioValue = checkedRadio.value;
                     radioData.push({radio_solicitud: radioSolicitud,radio_valor: radioValue});
             }
-
         });
 
         console.log(radioData);
@@ -597,13 +674,15 @@ class ApplicationFormManager {
                     }
 
                     console.log('ID de ticketLoguin:', ticketLoguinNumber);
-                    this.showToast('Enviado!', `Formulario Loguin enviado <br> correctamente TICKET Loguin #${ticketLoguinNumber}`, 'success');
+                    const URLTicketLoguin = `<a class"fw-semibold" href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${ticketLoguinNumber}" target="_blank">#${ticketLoguinNumber}</a>`;
+                    this.showToast('Formulario Loguin Enviado!', `TICKET Loguin ${URLTicketLoguin}`, 'success');
 
                     const ticketInfraNumber = result.ticketInfraestructura !== null ? result.ticketInfraestructura : null 
 
+                    const URLticketInfraNumber = `<a class"fw-semibold" href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${ticketInfraNumber}" target="_blank">#${ticketInfraNumber}</a>`;
                     if (ticketInfraNumber) {
                         console.log('ID de ticketInfraestructura:', ticketInfraNumber);
-                        this.showToast('Enviado!', `Formulario Loguin enviado correctamente <br> TICKET Loguin #${ticketLoguinNumber} <br> TICKET Infraestructura #${ticketInfraNumber}`, 'success');
+                        this.showToast('Formulario Loguin Enviado!', `TICKET Loguin ${URLTicketLoguin} <br> TICKET Infraestructura ${URLticketInfraNumber}`, 'success');
                     }
                     this.clearForm();
                 } catch (error) {
@@ -616,8 +695,10 @@ class ApplicationFormManager {
           });
     }
 
-    static init() {
+    static init() 
+    {
         this.initFormElements();
+        this.AutocompleteDataLoguin();
         this.zonalDropdown.addEventListener('change', () => this.zonalChangeHandler());
         this.sedeDropdown.addEventListener('change', () => this.sedeChangeHandler());
         this.tipoCargoDropdown.addEventListener('change', () => this.cargoSedeChangeHandler());

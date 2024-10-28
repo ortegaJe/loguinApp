@@ -17,6 +17,19 @@ class DropdownController extends Controller
 
     public function index()
     {
+/*         return $this->glpi->table('loguin_solicitud as a')
+            ->join('loguin_solicitud_detalle as b', 'b.solicitud_id', 'a.id')
+            ->join('glpi_locations as c', 'c.id', 'a.sede_id')
+            ->join('loguin_aplicaciones as d', 'd.id', 'b.aplicacion_id')
+            ->join('loguin_perfil as e', 'e.id', 'b.perfil_id')
+            ->where('a.usuario_id', 1)
+            ->where('b.solicitud_id', 284)
+            ->select([
+                'a.usuario_id',
+                'c.name as sede',
+                'd.name as aplicaciones',
+                'e.name as perfiles',
+            ])->get(); */
 
 /*           $word = 'CIRUGIA GENERAL';
                 $especialidadId = $this->glpi->table('loguin_especialidades')
@@ -90,13 +103,13 @@ class DropdownController extends Controller
         $sede_id = $request->input('sede_id');
 
         $data['tipo_cargo_sede'] = $this->glpi->table('loguin_rel_tipo_cargo_sede as a')
-                                        ->join('loguin_tipo_cargo as b', 'b.id', 'a.tipocargo_id')
-                                        ->join('glpi_locations as c', 'c.id', 'a.sede_id')
-                                        ->where('c.id', $sede_id)
-                                        ->where('b.estado', true)
-                                        ->distinct('b.name')
-                                        ->orderBy('b.name')
-                                        ->get(['b.name', 'b.id']);
+        ->join('loguin_tipo_cargo as b', 'b.id', 'a.tipocargo_id')
+        ->join('glpi_locations as c', 'c.id', 'a.sede_id')
+        ->where('c.id', $sede_id)
+        ->where('b.estado', true)
+        ->distinct('b.name')
+        ->orderBy('b.name')
+        ->get(['b.name', 'b.id']);
 
         return response()->json($data);
     }
@@ -112,13 +125,13 @@ class DropdownController extends Controller
         $sede_id = $request->input('sede_id');
 
         $data['cargo_sede'] = $this->glpi->table('loguin_rel_tipo_cargo_sede as a')
-                                        ->join('loguin_tipo_cargo as b', 'b.id', 'a.tipocargo_id')
-                                        ->join('glpi_locations as c', 'c.id', 'a.sede_id')
-                                        ->join('loguin_cargo as d', 'd.id', 'a.cargo_id')
-                                        ->where('c.id', $sede_id)
-                                        ->where('a.tipocargo_id', $tipo_cargo_id)
-                                        //->get(['b.name as tipo_cargo','d.name as cargo']);
-                                        ->get(['d.name','d.id']);
+        ->join('loguin_tipo_cargo as b', 'b.id', 'a.tipocargo_id')
+        ->join('glpi_locations as c', 'c.id', 'a.sede_id')
+        ->join('loguin_cargo as d', 'd.id', 'a.cargo_id')
+        ->where('c.id', $sede_id)
+        ->where('a.tipocargo_id', $tipo_cargo_id)
+        //->get(['b.name as tipo_cargo','d.name as cargo']);
+        ->get(['d.name','d.id']);
 
         return response()->json($data);
     }
@@ -133,19 +146,42 @@ class DropdownController extends Controller
         $cargo_id = $request->input('cargo_id');
         $sede_id = $request->input('sede_id');
 
-        $data['perfiles'] = $this->glpi->table('loguin_rel_cargo_sede as a')
-                                        ->join('loguin_cargo as b', 'b.id', 'a.cargo_id')
-                                        ->join('glpi_locations as c', 'c.id', 'a.sede_id')
-                                        ->join('loguin_perfil as d', 'd.id', 'a.perfil_id')
-                                        ->join('loguin_aplicaciones as e', 'e.id', 'd.aplicacion_id')
-                                        ->where('a.cargo_id', $cargo_id)
-                                        ->where('a.sede_id',  $sede_id)
-                                        ->get(['d.id as perfil_id','d.name as perfil','e.id as aplicacion_id','e.name as aplicacion']);
+        $perfiles = $this->glpi->table('loguin_rel_cargo_sede as a')
+        ->join('loguin_cargo as b', 'b.id', 'a.cargo_id')
+        ->join('glpi_locations as c', 'c.id', 'a.sede_id')
+        ->join('loguin_perfil as d', 'd.id', 'a.perfil_id')
+        ->join('loguin_aplicaciones as e', 'e.id', 'd.aplicacion_id')
+        ->where('a.cargo_id', $cargo_id)
+        ->where('a.sede_id',  $sede_id)
+        ->get([
+            'd.id as perfil_id',
+            'd.name as perfil',
+            'e.id as aplicacion_id',
+            'e.name as aplicacion',
+        ]);
 
+        $solicitud_infra = $this->glpi->table('loguin_rel_cargo_sede as a')
+            ->join('loguin_cargo as b', 'b.id', 'a.cargo_id')
+            ->join('glpi_locations as c', 'c.id', 'a.sede_id')
+            ->join('loguin_perfil as d', 'd.id', 'a.perfil_id')
+            ->join('loguin_aplicaciones as e', 'e.id', 'd.aplicacion_id')
+            ->where('a.cargo_id', $cargo_id)
+            ->where('a.sede_id',  $sede_id)
+            ->distinct('cargo_id')
+            ->get([
+                'b.sw_correo',
+                'b.sw_dominio',
+                'b.sw_vpn'
+            ]);
 
-        if ($data['perfiles']->isEmpty()) {
-            return response()->json(['message' => 'No se encontraron perfiles para este cargo'], 404);
+        if ($perfiles->isEmpty() && $solicitud_infra->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron perfiles o solicitudes de infraestructuras para este cargo'], 404);
         }
+
+        $data = [
+            'perfiles' => $perfiles,
+            'solicitud_infra' => $solicitud_infra,
+        ];
 
         return response()->json($data, 200);
     }
@@ -155,18 +191,63 @@ class DropdownController extends Controller
         $query = $request->get('search');
 
         $filterResult = $this->glpi->table('loguin_especialidades')
-                        ->where('name', 'LIKE', '%' . $query . '%')
-                        ->where('estado', 1)
-                        ->orderBy('name')
-                        ->get(['name', 'id']);
-
-        //$data['especialidades'] = $this->glpi->table('loguin_especialidades')->where('estado', 1)->orderBy('name')->get(['name', 'id']);
+            ->where('name', 'LIKE', '%' . $query . '%')
+            ->where('estado', 1)
+            ->orderBy('name')
+            ->get(['name', 'id']);
 
         if ($filterResult->isEmpty()) {
             return response()->json(['message' => 'No se encontraron especialidades para este cargo'], 404);
         }
 
         return response()->json($filterResult, 200);
+    }
+
+    public function fetchDataIdentificacionLoguin(Request $request)
+    {
+        $query = $request->input('query');
+
+        $filterResult = $this->glpi->table('loguin_usuarios')
+            ->where('identificacion', 'LIKE', '%' . $query . '%')
+            ->pluck('identificacion')
+            ->map(function ($item) {
+                return (string) $item; // Convertir cada identificacion a string
+            })
+            ->toArray();
+
+        if (!$filterResult) {
+            return response()->json(['message' => 'Indentificacion no encontrada'], 404);
+        }
+
+        return response()->json($filterResult, 200);
+    }
+
+    public function fetchDataAutoCompleteLoguin(Request $request)
+    {
+        $userId = $request->input('identificacion');
+
+        $user = $this->glpi->table('loguin_usuarios as a')
+            ->join('loguin_tipo_identificacion as b', 'b.id', 'a.tipoidentificacion_id')
+            ->where('a.identificacion', $userId)
+            ->select([
+                'b.id as tipo_doc_id',
+                'a.identificacion',
+                'a.nombres',
+                'a.apellidos',
+                'a.email'
+            ])->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
+
+        return response()->json([
+            'tipo_doc_id' => $user->tipo_doc_id,
+            'identificacion' => $user->identificacion,
+            'nombres' => $user->nombres,
+            'apellidos' => $user->apellidos,
+            'email' => $user->email,
+        ]);
     }
 
     public function fetchApps(Request $request)

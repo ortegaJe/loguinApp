@@ -56,12 +56,12 @@ class LoguinTicketStoreController extends Controller
             $this->registerUserApplications($aplicaciones, $solicitudId);
     
             // Registrar especialidad si es necesario
-            $this->registerUserSpeciality($nombre_especialidad, $appUserId);
+            $nombreEspecialidad = $this->registerUserSpeciality($nombre_especialidad, $appUserId);
     
             // Generar tabla codificada para el ticket
             $dataUsuario = $this->getUserData($appUserId);
-            $dataAplicacioPerfil = $this->getUserApplicationsAndProfiles($appUserId);
-            $encodedTable = $this->generateEncodedTable($dataUsuario, $dataAplicacioPerfil);
+            $dataAplicacioPerfil = $this->getUserApplicationsAndProfiles($appUserId, $solicitudId);
+            $encodedTable = $this->generateEncodedTable($dataUsuario, $dataAplicacioPerfil, $nombreEspecialidad);
     
             // Crear el ticket de loguin
             $ticketLoguin = $this->createLoguinTicket($identificacion, $encodedTable);
@@ -165,14 +165,18 @@ class LoguinTicketStoreController extends Controller
             $especialidadId = $this->glpi->table('loguin_especialidades')
                 ->whereIn('name', [$nombre_especialidad])
                 ->where('estado', 1)
-                ->first('id');
+                ->first(['id', 'name']);
     
             if ($especialidadId) {
-                $this->glpi->table('loguin_especialidad_usuario')->insert([
+                 $this->glpi->table('loguin_especialidad_usuario')->insert([
                     'especialidad_id' => $especialidadId->id,
                     'usuario_id' => $appUserId,
                     'fecha_creacion' => now('America/Bogota'),
                 ]);
+                
+                $nombreEspecialidad = $especialidadId->name;
+    
+                return $nombreEspecialidad;
             }
         }
     }
@@ -194,7 +198,7 @@ class LoguinTicketStoreController extends Controller
     }
     
     // Función para obtener las aplicaciones y perfiles asociados al usuario
-    private function getUserApplicationsAndProfiles($appUserId)
+    private function getUserApplicationsAndProfiles($appUserId, $solicitudId)
     {
         return $this->glpi->table('loguin_solicitud as a')
             ->join('loguin_solicitud_detalle as b', 'b.solicitud_id', 'a.id')
@@ -202,6 +206,7 @@ class LoguinTicketStoreController extends Controller
             ->join('loguin_aplicaciones as d', 'd.id', 'b.aplicacion_id')
             ->join('loguin_perfil as e', 'e.id', 'b.perfil_id')
             ->where('a.usuario_id', $appUserId)
+            ->where('b.solicitud_id', $solicitudId)
             ->select([
                 'a.usuario_id',
                 'c.name as sede',
@@ -211,7 +216,7 @@ class LoguinTicketStoreController extends Controller
     }
     
     // Función para generar la tabla codificada para el ticket
-    private function generateEncodedTable($dataUsuario, $dataAplicacioPerfil)
+    private function generateEncodedTable($dataUsuario, $dataAplicacioPerfil, $nombreEspecialidad)
     {
         $encodedTable = '
         <div tabindex="0">
@@ -260,7 +265,25 @@ class LoguinTicketStoreController extends Controller
         $encodedTable .= '
                 <tbody></tbody>
             </table>
-        </div>';
+        </div>
+        <br>';
+
+        if ($nombreEspecialidad) {
+            $encodedTable .= '
+                <div tabindex="0">
+                    <table style="border: 1px solid #87aa8a;">
+                        <thead>
+                            <tr>
+                                <th>ESPECIALIDAD</th>
+                            </tr>
+                        </thead>
+                        <tr>
+                            <td>' . $nombreEspecialidad . '</td>
+                        </tr>
+                        <tbody></tbody>
+                    </table>
+                </div>';
+        }
     
         return $encodedTable;
     }

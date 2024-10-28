@@ -20,6 +20,8 @@ Route::post('fetchTipoCargoSede', [DropdownController::class, 'fetchTipoCargoSed
 Route::post('fetchCargoSede', [DropdownController::class, 'fetchCargoSede']);
 Route::post('fetchCargoAppPerfil', [DropdownController::class, 'fetchCargoAppPerfil']);
 Route::get('fetchEspecialidades', [DropdownController::class, 'fetchEspecialidades']);
+Route::get('fetchDataIdentificacionLoguin', [DropdownController::class, 'fetchDataIdentificacionLoguin']);
+Route::get('fetchDataAutoCompleteLoguin', [DropdownController::class, 'fetchDataAutoCompleteLoguin']);
 Route::post('storeLoguinTicket', [LoguinTicketStoreController::class, 'storeLoguinTicket']);
 
 Route::get('/get-mysecond-connection', function () {
