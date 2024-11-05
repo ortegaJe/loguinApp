@@ -41,9 +41,8 @@
     <script src="{{ asset('/js/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/jquery-validation/jquery.validate.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/jquery-validation/additional-methods.js') }}"></script>
-    <script src="{{ asset('/js/plugins/bootstrap3-typeahead.min.js') }}"></script>
-    <script src="assets/js/plugins/bootstrap-notify/bootstrap-notify.min.js"></script>
-
+    <script src="{{ asset('/js/plugins/bootstrap3-typeahead.min.js') }}" async></script>
+{{--     <script src="assets/js/plugins/bootstrap-notify/bootstrap-notify.min.js"></script>--}}
     <script type="module">
         Codebase.helpersOnLoad(['jq-select2','jq-notify', 'jq-validation']);
     </script>
@@ -76,7 +75,7 @@
                 <form id="main-form">
                     <div class="block block-rounded">
                         <div class="block-header block-header-default">
-                            <h3 class="block-title">Formulario Creación de Usuarios</h3>
+                            <h3 class="block-title">Formulario de Solicitud Loguin</h3>
                             <div class="block-options">
                                 {{--<button type="button" class="btn-block-option" data-toggle="block-option"
                                     data-action="content_toggle" hidden>

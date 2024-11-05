@@ -161,18 +161,18 @@ class DropdownController extends Controller
         ]);
 
         $solicitud_infra = $this->glpi->table('loguin_rel_cargo_sede as a')
-            ->join('loguin_cargo as b', 'b.id', 'a.cargo_id')
-            ->join('glpi_locations as c', 'c.id', 'a.sede_id')
-            ->join('loguin_perfil as d', 'd.id', 'a.perfil_id')
-            ->join('loguin_aplicaciones as e', 'e.id', 'd.aplicacion_id')
-            ->where('a.cargo_id', $cargo_id)
-            ->where('a.sede_id',  $sede_id)
-            ->distinct('cargo_id')
-            ->get([
-                'b.sw_correo',
-                'b.sw_dominio',
-                'b.sw_vpn'
-            ]);
+        ->join('loguin_cargo as b', 'b.id', 'a.cargo_id')
+        ->join('glpi_locations as c', 'c.id', 'a.sede_id')
+        ->join('loguin_perfil as d', 'd.id', 'a.perfil_id')
+        ->join('loguin_aplicaciones as e', 'e.id', 'd.aplicacion_id')
+        ->where('a.cargo_id', $cargo_id)
+        ->where('a.sede_id',  $sede_id)
+        ->distinct('cargo_id')
+        ->get([
+            'b.sw_correo',
+            'b.sw_dominio',
+            'b.sw_vpn'
+        ]);
 
         if ($perfiles->isEmpty() && $solicitud_infra->isEmpty()) {
             return response()->json(['message' => 'No se encontraron perfiles o solicitudes de infraestructuras para este cargo'], 404);

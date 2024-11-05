@@ -210,10 +210,7 @@ class ApplicationFormManager {
                     const stringData = data.map(item => item.toString());
                     return process(stringData);
                 })
-                //.catch(error => console.error('Error en la búsqueda:', error));
-                .catch(error => {
-                    AutocompleteDataLoguin.showToast('Oops...', `${error}`, 'warning')
-                });
+                .catch(error => console.error('Error en la búsqueda o documento no encontrado:', error.message));
             },
             afterSelect: function(item) {
                 fetch(`${routeAutocompletarDatoUsuario}?identificacion=${item}`, {

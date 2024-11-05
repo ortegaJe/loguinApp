@@ -80,7 +80,8 @@
 
       'sidebar-dark page-header-dark dark-mode'   Enable dark mode (light sidebar/header is not supported with dark mode)
   -->
-    <div id="page-container" class="sidebar-o enable-page-overlay side-scroll page-header-modern main-content-boxed sidebar-dark page-header-dark dark-mode">
+    <div id="page-container"
+        class="sidebar-o enable-page-overlay side-scroll page-header-modern main-content-boxed sidebar-dark page-header-dark dark-mode">
         <!-- Side Overlay-->
         {{-- <aside id="side-overlay">
       <!-- Side Header -->
@@ -203,46 +204,34 @@
                     <!-- Side Navigation -->
                     <div class="content-side content-side-full">
                         <ul class="nav-main">
-                            <li class="nav-main-item">
-                                <a class="nav-main-link{{ request()->is('dashboard') ? ' active' : '' }}"
-                                    href="/dashboard">
-                                    <i class="nav-main-link-icon fa fa-house-user"></i>
-                                    <span class="nav-main-link-name">Dashboard</span>
-                                </a>
-                            </li>
-                            <li class="nav-main-heading">Various</li>
-                            <li class="nav-main-item{{ request()->is('pages/*') ? ' open' : '' }}">
+                            <li class="nav-main-heading">Contratación</li>
+                            <li class="nav-main-item{{ request()->is('*') ? ' open' : '' }}">
                                 <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu"
                                     aria-haspopup="true" aria-expanded="true" href="#">
-                                    <i class="nav-main-link-icon fa fa-lightbulb"></i>
-                                    <span class="nav-main-link-name">Examples</span>
+                                    <i class="nav-main-link-icon fa fa-users"></i>
+                                    <span class="nav-main-link-name">Loguin</span>
                                 </a>
                                 <ul class="nav-main-submenu">
                                     <li class="nav-main-item">
-                                        <a class="nav-main-link{{ request()->is('pages/datatables') ? ' active' : '' }}"
-                                            href="/pages/datatables">
-                                            <span class="nav-main-link-name">DataTables</span>
+                                        <a class="nav-main-link{{ request()->is('loguin') ? ' active' : '' }}"
+                                            href="/loguin">
+                                            <span class="nav-main-link-name">Registrar Solicitud</span>
                                         </a>
                                     </li>
                                     <li class="nav-main-item">
-                                        <a class="nav-main-link{{ request()->is('pages/slick') ? ' active' : '' }}"
-                                            href="/pages/slick">
-                                            <span class="nav-main-link-name">Slick Slider</span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-main-item">
-                                        <a class="nav-main-link{{ request()->is('pages/blank') ? ' active' : '' }}"
-                                            href="/pages/blank">
-                                            <span class="nav-main-link-name">Blank</span>
+                                        <a class="nav-main-link{{ request()->is('loguin/solicitudes') ? ' active' : '' }}"
+                                            href="/loguin/solicitudes">
+                                            <span class="nav-main-link-name">Solicitudes</span>
                                         </a>
                                     </li>
                                 </ul>
                             </li>
-                            <li class="nav-main-heading">More</li>
+                            <li class="nav-main-heading">Aplicaciones</li>
                             <li class="nav-main-item">
-                                <a class="nav-main-link" href="/">
-                                    <i class="nav-main-link-icon fa fa-globe"></i>
-                                    <span class="nav-main-link-name">Landing</span>
+                                <a class="nav-main-link" href="javascript:void(0)">
+                                    <i class="nav-main-link-icon fa fa-database"></i>
+                                    <i class="nav-main-link-icon fa fa-users"></i>
+                                    <span class="nav-main-link-name">Credenciales Loguin</span>
                                 </a>
                             </li>
                         </ul>

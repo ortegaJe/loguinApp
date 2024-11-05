@@ -15,6 +15,8 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/pages/datatables.js',
                 'resources/js/pages/form.handler.js',
+                'resources/js/pages/solicitud.detalle.viewer.js',
+                'resources/js/pages/datatables.solicitudes.js',              
             ],
             refresh: true,
         }),

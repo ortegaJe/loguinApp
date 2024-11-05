@@ -56,7 +56,7 @@ class LoguinTicketStoreController extends Controller
             $this->registerUserApplications($aplicaciones, $solicitudId);
     
             // Registrar especialidad si es necesario
-            $nombreEspecialidad = $this->registerUserSpeciality($nombre_especialidad, $appUserId);
+            $nombreEspecialidad = $this->registerUserSpeciality($nombre_especialidad, $appUserId, $solicitudId);
     
             // Generar tabla codificada para el ticket
             $dataUsuario = $this->getUserData($appUserId);
@@ -71,7 +71,7 @@ class LoguinTicketStoreController extends Controller
     
             // Crear el ticket de infraestructura si es necesario
             if ($this->shouldCreateInfrastructureTicket($infraestructura)) {
-                $ticketInfra = $this->createInfrastructureTicket($identificacion, $dataUsuario, $infraestructura, $appUserId);
+                $ticketInfra = $this->createInfrastructureTicket($identificacion, $dataUsuario, $infraestructura, $appUserId, $zonal_id, $sede_id);
             }
 
             // Confirmar la transacción si todo salió bien
@@ -159,7 +159,7 @@ class LoguinTicketStoreController extends Controller
     }
     
     // Función para registrar la especialidad del usuario si aplica
-    private function registerUserSpeciality($nombre_especialidad, $appUserId)
+    private function registerUserSpeciality($nombre_especialidad, $appUserId, $solicitudId)
     {
         if (!empty($nombre_especialidad)) {
             $especialidadId = $this->glpi->table('loguin_especialidades')
@@ -171,6 +171,7 @@ class LoguinTicketStoreController extends Controller
                  $this->glpi->table('loguin_especialidad_usuario')->insert([
                     'especialidad_id' => $especialidadId->id,
                     'usuario_id' => $appUserId,
+                    'solicitud_id' => $solicitudId,
                     'fecha_creacion' => now('America/Bogota'),
                 ]);
                 
@@ -418,13 +419,15 @@ class LoguinTicketStoreController extends Controller
     }
     
     // Función para crear el ticket de infraestructura
-    private function createInfrastructureTicket($identificacion, $dataUsuario, $infraestructura, $appUserId)
+    private function createInfrastructureTicket($identificacion, $dataUsuario, $infraestructura, $appUserId, $zonal_id, $sede_id)
     {
         $encodedTableInfra = $this->generateInfrastructureEncodedTable($dataUsuario, $infraestructura);
 
         // Insertar en la base de datos
         $solicitudes = [
             'usuario_id' => $appUserId,
+            'zonal_id' => $zonal_id,
+            'sede_id' => $sede_id,
             'solicito_correo' => isset($infraestructura[0]['radio_valor']) ? $infraestructura[0]['radio_valor'] : 0,
             'solicito_usuario_dominio' => isset($infraestructura[1]['radio_valor']) ? $infraestructura[1]['radio_valor'] : 0,
             'solicito_vpn' => isset($infraestructura[2]['radio_valor']) ? $infraestructura[2]['radio_valor'] : 0,

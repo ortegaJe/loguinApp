@@ -2,14 +2,15 @@
 
 use App\Http\Controllers\DropdownController;
 use App\Http\Controllers\LoguinTicketStoreController;
+use App\Http\Controllers\SolicitudController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 // Example Routes
-Route::view('/', 'landing');
+/* Route::view('/', 'landing');
 Route::match(['get', 'post'], '/dashboard', function(){
     return view('dashboard');
-});
+}); */
 Route::view('/pages/slick', 'pages.slick');
 Route::view('/pages/datatables', 'pages.datatables');
 Route::view('/pages/blank', 'pages.blank');
@@ -22,7 +23,13 @@ Route::post('fetchCargoAppPerfil', [DropdownController::class, 'fetchCargoAppPer
 Route::get('fetchEspecialidades', [DropdownController::class, 'fetchEspecialidades']);
 Route::get('fetchDataIdentificacionLoguin', [DropdownController::class, 'fetchDataIdentificacionLoguin']);
 Route::get('fetchDataAutoCompleteLoguin', [DropdownController::class, 'fetchDataAutoCompleteLoguin']);
+
 Route::post('storeLoguinTicket', [LoguinTicketStoreController::class, 'storeLoguinTicket']);
+
+Route::get('loguin/solicitudes', [SolicitudController::class, 'index']);
+Route::post('fetchSolicitudLoguin', [SolicitudController::class, 'fetchSolicitudLoguin']);
+Route::post('buscarPorDocumento', [SolicitudController::class, 'buscarPorDocumento']);
+Route::get('getUsuariosConSolicitudes', [SolicitudController::class, 'getUsuariosConSolicitudes']);
 
 Route::get('/get-mysecond-connection', function () {
     $glpi = DB::connection('glpi');
