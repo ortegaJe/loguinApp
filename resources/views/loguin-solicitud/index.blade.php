@@ -51,58 +51,58 @@
                     </thead>
                     <tbody>
                         @php $contador = 1; @endphp
-                        @foreach ($loguin as $usuario)
-                            <tr data-usuario-id="{{ $usuario->usuario_id }}">
+                        @foreach ($data['loguin'] as $loguin)
+                            <tr data-usuario-id="{{ $loguin->usuario_id }}">
                                 <td class="text-center d-none d-md-table-cell">{{ $contador++ }}</td>
                                 <td class="text-center"><a class="fw-semibold"
-                                        href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id={{ $usuario->loguin_ticket }}"
-                                        target="_blank">LOG.{{ $usuario->loguin_ticket }}</a></td>
+                                        href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id={{ $loguin->loguin_ticket }}"
+                                        target="_blank">LOG.{{ $loguin->loguin_ticket }}</a></td>
                                 <td class="d-none d-sm-table-cell">
                                     <span
-                                        class="badge bg-{{ $usuario->status_color }} w-100">{{ $usuario->status_title }}</span>
+                                        class="badge bg-{{ $loguin->status_color }} w-100">{{ $loguin->status_title }}</span>
                                 </td>
                                 <td class="text-muted d-none d-md-table-cell">
-                                    {{ Carbon\Carbon::parse($usuario->fecha_creacion)->format('d/m/Y') }}
+                                    {{ Carbon\Carbon::parse($loguin->fecha_creacion)->format('d/m/Y') }}
                                 </td>
-                                <td class="fw-semibold">{{ $usuario->identificacion }}</td>
-                                <td class="fw-semibold d-none d-md-table-cell">{{ $usuario->nombreCompleto }}</td>
+                                <td class="fw-semibold">{{ $loguin->identificacion }}</td>
+                                <td class="fw-semibold d-none d-md-table-cell">{{ $loguin->nombreCompleto }}</td>
                                 <td class="text-center">
                                     <div class="btn-group">
                                         <button type="button" class="btn btn-sm btn-secondary btn-show"
                                             data-toggle="click-ripple" data-bs-toggle="tooltip" title="Ver detalle"
-                                            data-solicitud-id="{{ $usuario->solicitud_id }}" data-solicitud-tipo="loguin">
+                                            data-solicitud-id="{{ $loguin->solicitud_id }}" data-solicitud-tipo="loguin">
                                             <i class="fa fa-eye"></i>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-                            @if ($usuario->infra_ticket)
-                                <tr data-usuario-id="{{ $usuario->usuario_id }}">
-                                    <td class="text-center d-none d-md-table-cell">{{ $contador++ }}</td>
-                                    <td class="text-center"><a class="fw-semibold"
-                                            href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id={{ $usuario->infra_ticket }}"
-                                            target="_blank">INF.{{ $usuario->infra_ticket }}</a></td>
-                                    <td class="d-none d-sm-table-cell">
-                                        <span
-                                            class="badge bg-{{ $usuario->status_color }} w-100">{{ $usuario->status_title }}</span>
-                                    </td>
-                                    <td class="text-muted d-none d-md-table-cell">
-                                        {{ Carbon\Carbon::parse($usuario->fecha_creacion)->format('d/m/Y') }}
-                                    </td>
-                                    <td class="fw-semibold">{{ $usuario->identificacion }}</td>
-                                    <td class="fw-semibold d-none d-md-table-cell">{{ $usuario->nombreCompleto }}</td>
-                                    <td class="text-center">
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-sm btn-secondary btn-show"
-                                                data-toggle="click-ripple" data-bs-toggle="tooltip" title="Ver detalle"
-                                                data-solicitud-id="{{ $usuario->solicitud_infra_id }}"
-                                                data-solicitud-tipo="infra">
-                                                <i class="fa fa-eye"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endif
+                        @endforeach
+                        @foreach ($data['infra'] as $infra_ticket)
+                            <tr data-usuario-id="{{ $infra_ticket->usuario_id }}">
+                                <td class="text-center d-none d-md-table-cell">{{ $contador++ }}</td>
+                                <td class="text-center"><a class="fw-semibold"
+                                        href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id={{ $infra_ticket->infra_ticket }}"
+                                        target="_blank">INF.{{ $infra_ticket->infra_ticket }}</a></td>
+                                <td class="d-none d-sm-table-cell">
+                                    <span
+                                        class="badge bg-{{ $infra_ticket->status_color }} w-100">{{ $infra_ticket->status_title }}</span>
+                                </td>
+                                <td class="text-muted d-none d-md-table-cell">
+                                    {{ Carbon\Carbon::parse($infra_ticket->fecha_creacion)->format('d/m/Y') }}
+                                </td>
+                                <td class="fw-semibold">{{ $infra_ticket->identificacion }}</td>
+                                <td class="fw-semibold d-none d-md-table-cell">{{ $infra_ticket->nombreCompleto }}</td>
+                                <td class="text-center">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-secondary btn-show"
+                                            data-toggle="click-ripple" data-bs-toggle="tooltip" title="Ver detalle"
+                                            data-solicitud-id="{{ $infra_ticket->solicitud_infra_id }}"
+                                            data-solicitud-tipo="infra">
+                                            <i class="fa fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>

@@ -42,7 +42,7 @@
     <script src="{{ asset('/js/plugins/jquery-validation/jquery.validate.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/jquery-validation/additional-methods.js') }}"></script>
     <script src="{{ asset('/js/plugins/bootstrap3-typeahead.min.js') }}" async></script>
-{{--     <script src="assets/js/plugins/bootstrap-notify/bootstrap-notify.min.js"></script>--}}
+    <script src="{{ asset('/js/plugins/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
     <script type="module">
         Codebase.helpersOnLoad(['jq-select2','jq-notify', 'jq-validation']);
     </script>

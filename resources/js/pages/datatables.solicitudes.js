@@ -17,7 +17,13 @@ class pageTablesDatatables {
         const solicitudTipo = button.getAttribute('data-solicitud-tipo');
         const usuarioId = button.closest('tr').getAttribute('data-usuario-id');
   
-        this.fetchSolicitudData(solicitudId, solicitudTipo, usuarioId);
+        if (solicitudTipo === 'loguin') {
+          this.fetchSolicitudLoguinData(solicitudId, usuarioId);
+        }
+  
+        if (solicitudTipo === 'infra') {
+          this.fetchSolicitudInfraData(solicitudId, usuarioId);
+        }
       }
     });
   }
@@ -36,7 +42,7 @@ class pageTablesDatatables {
     toast.fire(title, message, type);
   }
 
-  static async fetchSolicitudData(solicitudId, solicitudTipo, usuarioId) {
+  static async fetchSolicitudLoguinData(solicitudId, usuarioId) {
     if (!solicitudId) {
       this.showToast('Error', 'No se pudo cargar los datos de la solicitud', 'error');
       return;
@@ -56,17 +62,11 @@ class pageTablesDatatables {
 
       const data = await response.json();
       //console.log(data);
-      if (!data.usuario || !data.usuario[0] || !data.loguin_solicitud) {
+      if (!data.usuario || !data.usuario[0] || !data.loguin_solicitud || !data.especialidad_usuario) {
         throw new Error('Datos incompletos recibidos del servidor');
       }
 
-      if (solicitudTipo === 'loguin') {
-        this.showSolicitudModal(data.usuario[0], data.loguin_solicitud, data.especialidad_usuario);
-      }
-
-      if (solicitudTipo === 'infra') {
-        this.showSolicitudInfraModal(data.usuario[0], data.infra_solicitud[0]);
-      }
+      this.showSolicitudModal(data.usuario[0], data.loguin_solicitud, data.especialidad_usuario);
 
     } catch (error) {
       this.showToast('Error', `${error}`, 'error');
@@ -123,28 +123,75 @@ class pageTablesDatatables {
     modalInstance.show();
   }
 
-  static async showSolicitudInfraModal(usuario, InfraSolicitud) {
+  static async fetchSolicitudInfraData(solicitudId, usuarioId) {
+    if (!solicitudId) {
+      this.showToast('Error', 'No se pudo cargar los datos de la solicitud', 'error');
+      return;
+    }
+
+    try {
+      const response = await fetch("/fetchSolicitudInfra", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+        },
+        body: JSON.stringify({ solicitud_id: solicitudId, usuario_id: usuarioId })
+      });
+
+      if (!response.ok) throw new Error('Error al obtener los datos de la solicitud');
+
+      const data = await response.json();
+      //console.log(data);
+      if (!data.infra_solicitud || !data.infra_solicitud[0]) {
+        throw new Error('Datos incompletos recibidos del servidor');
+      }
+
+      this.showSolicitudInfraModal(data.infra_solicitud[0]);
+
+    } catch (error) {
+      this.showToast('Error', `${error}`, 'error');
+      console.error('Fetch error:', error);
+    }
+  }
+
+  static async showSolicitudInfraModal(InfraSolicitud) {
     //console.log(InfraSolicitud);
     const modalInfra = document.getElementById('solicitudModalInfra');
-    modalInfra.querySelector('#modal-infra-documento').textContent = usuario.identificacion || 'N/A';
-    modalInfra.querySelector('#modal-infra-nombre').textContent = usuario.nombreCompleto || 'N/A';
-    modalInfra.querySelector('#modal-infra-email').textContent = usuario.email || 'N/A';
+    modalInfra.querySelector('#modal-infra-documento').textContent = InfraSolicitud.identificacion || 'N/A';
+    modalInfra.querySelector('#modal-infra-nombre').textContent = InfraSolicitud.nombreCompleto || 'N/A';
+    modalInfra.querySelector('#modal-infra-email').textContent = InfraSolicitud.email || 'N/A';
     modalInfra.querySelector('#modal-infra-sede').textContent = InfraSolicitud.sede || 'N/A';
     modalInfra.querySelector('#modal-infra-ticket').href = `http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${InfraSolicitud.ticket_id}` || 'N/A';
     modalInfra.querySelector('#modal-infra-ticket').setAttribute('target', '_blank');
     modalInfra.querySelector('#modal-infra-ticket-numero').textContent = `#${InfraSolicitud.ticket_id}` || 'N/A';
     modalInfra.querySelector('#modal-infra-fecha').textContent = InfraSolicitud.fecha_creacion || 'N/A';
+    //console.log(InfraSolicitud.solicito_correo,InfraSolicitud.solicito_usuario_dominio,InfraSolicitud.solicito_vpn);
     const infraElements = {
       solicito_correo: '#correo',
       solicito_usuario_dominio: '#dominio',
       solicito_vpn: '#vpn'
     };
-    
+
+    Object.values(infraElements).forEach(selector => {
+      modalInfra.querySelector(selector).hidden = true;
+    });
+
     Object.keys(infraElements).forEach(key => {
       if (InfraSolicitud[key] === 1) {
         modalInfra.querySelector(infraElements[key]).hidden = false;
       }
     });
+
+   /*  if (InfraSolicitud.solicito_correo) {
+      modalInfra.querySelector('#correo').hidden = false;
+    }
+    if (InfraSolicitud.solicito_usuario_dominio) {
+      modalInfra.querySelector('#dominio').hidden = false;
+    }
+    if (InfraSolicitud.solicito_vpn) {
+      modalInfra.querySelector('#vpn').hidden = false;
+    } */
 
     const modalInfraInstance = new bootstrap.Modal(modalInfra);
     modalInfraInstance.show();

@@ -17,62 +17,7 @@ class DropdownController extends Controller
 
     public function index()
     {
-/*         return $this->glpi->table('loguin_solicitud as a')
-            ->join('loguin_solicitud_detalle as b', 'b.solicitud_id', 'a.id')
-            ->join('glpi_locations as c', 'c.id', 'a.sede_id')
-            ->join('loguin_aplicaciones as d', 'd.id', 'b.aplicacion_id')
-            ->join('loguin_perfil as e', 'e.id', 'b.perfil_id')
-            ->where('a.usuario_id', 1)
-            ->where('b.solicitud_id', 284)
-            ->select([
-                'a.usuario_id',
-                'c.name as sede',
-                'd.name as aplicaciones',
-                'e.name as perfiles',
-            ])->get(); */
-
-/*           $word = 'CIRUGIA GENERAL';
-                $especialidadId = $this->glpi->table('loguin_especialidades')
-        ->whereIn('name', [$word])
-        ->where('estado', 1)
-        ->first('id');
-
-        return count($especialidadId); */
-
-/*         $dataUsuario = $this->glpi->table('loguin_solicitud as a')
-        ->join('loguin_usuarios as b', 'b.id', 'a.usuario_id')
-        ->join('loguin_tipo_identificacion as c', 'c.id', 'b.tipoidentificacion_id')
-        ->where('a.usuario_id', 117)
-        ->select([
-            'a.usuario_id',
-            'c.abreviatura',
-            'b.identificacion',
-            DB::raw("CONCAT(b.nombres,' ',b.apellidos) as nombres_apellidos"),
-            'b.email',
-        ])->first();
-
-        //return $dataUsuario;
-
-        $dataAplicacioPerfil = $this->glpi->table('loguin_solicitud as a')
-        ->leftJoin('loguin_usuarios as b', 'b.id', 'a.usuario_id')
-        ->leftJoin('glpi_locations as c', 'c.id', 'a.sede_id')
-        ->leftJoin('loguin_aplicaciones as d', 'd.id', 'a.aplicacion_id')
-        ->leftJoin('loguin_perfil as e', 'e.id', 'a.perfil_id')
-        ->leftJoin('loguin_especialidad_usuario as f', 'f.usuario_id', 'b.id')
-        ->leftJoin('loguin_especialidades as g', 'g.id', 'f.especialidad_id')
-        ->where('a.usuario_id', $dataUsuario->usuario_id)
-        ->select([
-            'a.usuario_id',
-            'c.name as sede',
-            'd.name as aplicaciones',
-            'e.name as perfiles',
-            'g.name as especialidad'
-        ])->get();
-
-        return ['usuario' => $dataUsuario, 'aplicacionesPerfiles' => $dataAplicacioPerfil]; */
-
         $data = [];
-
         //LOCAL
         //$data['zonales'] = DB::table('glpi_locations')->where('sw_regional', 1)->get(['name', 'id']);
         //REMOTO

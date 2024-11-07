@@ -34,12 +34,13 @@ class ApplicationFormManager {
               input: 'form-control'
             }
           });
-        // Load default options for jQuery Validation plugin
-        //Codebase.helpers('jq-validation');
 
         jQuery.validator.addMethod("atLeastOneChecked", function(value, element, params) {
             return jQuery(params).filter(':checked').length > 0;
         }, "Please select at least one option.");
+
+        // Inicializar validación del formulario
+        let notificationShown = false; // Variable para rastrear si la notificación ya fue mostrada
 
         // Init Form Validation
         jQuery('#main-form').validate({
@@ -119,12 +120,40 @@ class ApplicationFormManager {
             'search-especialidad': {
                 required: "Este campo es obligatorio"
             }
+        },
+        errorPlacement: function(error, element) {
+            // No mostrar mensajes de error junto a los checkboxes
+            if (element.hasClass('checkbox-group')) {
+                return;
+            }
+            error.insertAfter(element); // Colocar errores para otros elementos
+        },
+        invalidHandler: function(event, validator) {
+            // Verifica si la validación falló en el grupo de checkboxes
+            if (validator.errorList.some(error => error.method === "atLeastOneChecked")) {
+                Codebase.helpers('jq-notify', {
+                    align: 'right',
+                    from: 'top',
+                    type: 'danger',
+                    icon: 'fa fa-exclamation-triangle me-5',
+                    message: 'Debe seleccionar al menos una opción en la sección de Aplicaciones y Perfiles o Solicitudes de Infraestructura disponibles'
+                });
+                notificationShown = true; // Marca la notificación como mostrada
+            }
+        },
+        success: function(label) {
+            // Reinicia la variable para permitir futuras notificaciones si se arregla el error y luego vuelve a ocurrir
+            notificationShown = false;
         }
-        });
+    });
 
-        jQuery('.js-select2').on('change', e => {
-            jQuery(e.currentTarget).valid();
-        });
+    jQuery('.checkbox-group').on('change', function() {
+        jQuery('#main-form').validate().element('.checkbox-group');
+    });
+
+    jQuery('.js-select2').on('change', e => {
+        jQuery(e.currentTarget).valid();
+    });
     }
 
     static async handleFetchResponse(response) {
@@ -352,7 +381,7 @@ class ApplicationFormManager {
             }
     
             const data = await this.handleFetchResponse(response);
-            console.log(data);
+            //console.log(data);
             const renderPerfilesCheckboxes = data.perfiles;
             const renderInfraCheckboxes = data.solicitud_infra;
 
@@ -405,21 +434,21 @@ class ApplicationFormManager {
                 const checkboxCorreo = document.createElement('div');
                 checkboxCorreo.className = 'form-check';
                 checkboxCorreo.innerHTML = `
-                    <input type="checkbox" class="form-check-input" name="sw_correo_${index}" value="1"
+                    <input type="checkbox" class="form-check-input checkbox-group" name="sw_correo_${index}" value="1"
                         id="sw_correo_${solicitud.sw_correo}" ${solicitud.sw_correo === 0 ? 'disabled' : ''}>
                     <label for="sw_correo_${solicitud.sw_correo}" class="form-check-label">Requiere Correo Institucional</label>`;
                                     
                 const checkboxDominio = document.createElement('div');
                 checkboxDominio.className = 'form-check';
                 checkboxDominio.innerHTML = `
-                    <input type="checkbox" class="form-check-input" name="sw_dominio_${index}" value="1"
+                    <input type="checkbox" class="form-check-input checkbox-group" name="sw_dominio_${index}" value="1"
                         id="sw_dominio_${solicitud.sw_dominio}" ${solicitud.sw_dominio === 0 ? 'disabled' : ''}>
                     <label for="sw_dominio_${solicitud.sw_dominio}" class="form-check-label">Requiere Usuario Dominio</label>`;
                 
                 const checkboxVPN = document.createElement('div');
                 checkboxVPN.className = 'form-check';
                 checkboxVPN.innerHTML = `
-                    <input type="checkbox" class="form-check-input" name="sw_vpn_${index}" value="1"
+                    <input type="checkbox" class="form-check-input checkbox-group" name="sw_vpn_${index}" value="1"
                         id="sw_vpn_${solicitud.sw_vpn}" ${solicitud.sw_vpn === 0 ? 'disabled' : ''}>
                     <label for="sw_vpn_${solicitud.sw_vpn}" class="form-check-label">Requiere VPN</label>`;
 
@@ -670,12 +699,13 @@ class ApplicationFormManager {
                         throw new Error('ticketLoguin Error');
                     }
 
-                    console.log('ID de ticketLoguin:', ticketLoguinNumber);
                     const URLTicketLoguin = `<a class"fw-semibold" href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${ticketLoguinNumber}" target="_blank">#${ticketLoguinNumber}</a>`;
-                    this.showToast('Formulario Loguin Enviado!', `TICKET Loguin ${URLTicketLoguin}`, 'success');
+                    if (ticketLoguinNumber) {
+                        console.log('ID de ticketLoguin:', ticketLoguinNumber);
+                        this.showToast('Formulario Loguin Enviado!', `TICKET Loguin ${URLTicketLoguin}`, 'success');
+                    }
 
                     const ticketInfraNumber = result.ticketInfraestructura !== null ? result.ticketInfraestructura : null 
-
                     const URLticketInfraNumber = `<a class"fw-semibold" href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${ticketInfraNumber}" target="_blank">#${ticketInfraNumber}</a>`;
                     if (ticketInfraNumber) {
                         console.log('ID de ticketInfraestructura:', ticketInfraNumber);

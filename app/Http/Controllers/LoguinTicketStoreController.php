@@ -29,7 +29,7 @@ class LoguinTicketStoreController extends Controller
                 'email' => 'required|email|max:255',
                 'zonal_id' => 'required|integer',
                 'sede_id' => 'required|integer',
-                'aplicaciones' => 'required|array',
+                'aplicaciones' => 'nullable|array',
                 'infraestructura' => 'nullable|array',
                 'especialidad' => 'nullable|string|max:255',
             ]);
@@ -42,7 +42,7 @@ class LoguinTicketStoreController extends Controller
             $email = $validatedData['email'];
             $zonal_id = $validatedData['zonal_id'];
             $sede_id = $validatedData['sede_id'];
-            $aplicaciones = $validatedData['aplicaciones'];
+            $aplicaciones = $validatedData['aplicaciones'] ?? [];
             $infraestructura = $validatedData['infraestructura'] ?? [];
             $nombre_especialidad = $validatedData['especialidad'] ?? null;
     

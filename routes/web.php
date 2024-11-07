@@ -28,6 +28,7 @@ Route::post('storeLoguinTicket', [LoguinTicketStoreController::class, 'storeLogu
 
 Route::get('loguin/solicitudes', [SolicitudController::class, 'index']);
 Route::post('fetchSolicitudLoguin', [SolicitudController::class, 'fetchSolicitudLoguin']);
+Route::post('fetchSolicitudInfra', [SolicitudController::class, 'fetchSolicitudInfra']);
 Route::post('buscarPorDocumento', [SolicitudController::class, 'buscarPorDocumento']);
 Route::get('getUsuariosConSolicitudes', [SolicitudController::class, 'getUsuariosConSolicitudes']);
 
