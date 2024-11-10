@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class LoguinTicketStoreController extends Controller
 {
@@ -18,7 +19,7 @@ class LoguinTicketStoreController extends Controller
     {
         // Iniciar una transacción para asegurar la consistencia de los datos
         DB::beginTransaction();
-
+    
         try {
             // Validar los datos del request para asegurar que sean válidos
             $validatedData = $request->validate([
@@ -32,8 +33,10 @@ class LoguinTicketStoreController extends Controller
                 'aplicaciones' => 'nullable|array',
                 'infraestructura' => 'nullable|array',
                 'especialidad' => 'nullable|string|max:255',
+                'observaciones' => 'nullable|string',
+                'cargo_id' => 'integer',
             ]);
-
+    
             // Datos enviados desde el frontend
             $tipo_identificacion_id = $validatedData['tipo_identificacion'];
             $identificacion = $validatedData['identificacion'];
@@ -45,51 +48,29 @@ class LoguinTicketStoreController extends Controller
             $aplicaciones = $validatedData['aplicaciones'] ?? [];
             $infraestructura = $validatedData['infraestructura'] ?? [];
             $nombre_especialidad = $validatedData['especialidad'] ?? null;
+            $observaciones = $validatedData['observaciones'];
+            $cargo_id = $validatedData['cargo_id'];
     
             // Crear usuario en la tabla loguin_usuarios
             $appUserId = $this->createUser($tipo_identificacion_id, $identificacion, $nombre, $apellido, $email);
-    
-            // Registrar solicitudes asociados al usuario
-            $solicitudId = $this->registerUserRequest($appUserId, $zonal_id, $sede_id);
+            //error_log(__LINE__ . __METHOD__ . ' ID usuario creado --->' .var_export($appUserId, true));
 
-            // Registrar aplicaciones y perfiles asociados al usuario
-            $this->registerUserApplications($aplicaciones, $solicitudId);
+            // Lógica para decidir y crear los tickets
+            $tickets = $this->processTickets($aplicaciones, $infraestructura, $identificacion, $appUserId, $nombre_especialidad, $zonal_id, $sede_id, $observaciones, $cargo_id);
     
-            // Registrar especialidad si es necesario
-            $nombreEspecialidad = $this->registerUserSpeciality($nombre_especialidad, $appUserId, $solicitudId);
-    
-            // Generar tabla codificada para el ticket
-            $dataUsuario = $this->getUserData($appUserId);
-            $dataAplicacioPerfil = $this->getUserApplicationsAndProfiles($appUserId, $solicitudId);
-            $encodedTable = $this->generateEncodedTable($dataUsuario, $dataAplicacioPerfil, $nombreEspecialidad);
-    
-            // Crear el ticket de loguin
-            $ticketLoguin = $this->createLoguinTicket($identificacion, $encodedTable);
-
-            // Actualizar la solicitud con el ticket de loguin
-            $this->updateLoguinRequest($solicitudId, $ticketLoguin);
-    
-            // Crear el ticket de infraestructura si es necesario
-            if ($this->shouldCreateInfrastructureTicket($infraestructura)) {
-                $ticketInfra = $this->createInfrastructureTicket($identificacion, $dataUsuario, $infraestructura, $appUserId, $zonal_id, $sede_id);
-            }
-
             // Confirmar la transacción si todo salió bien
             DB::commit();
 
-            //error_log(__LINE__ . __METHOD__ . ' respuesta --->' .var_export($ticketLoguin, true));
-    
             return response()->json([
                 'message' => 'Datos guardados exitosamente',
-                'ticketLoguin' => $ticketLoguin,
-                'ticketInfraestructura' => $ticketInfra ?? null,
+                'ticketLoguin' => $tickets['ticketLoguin'] ?? null,
+                'ticketInfraestructura' => $tickets['ticketInfraestructura'] ?? null,
             ], 200);
     
         } catch (\Exception $e) {
             // Manejar errores y hacer rollback si es necesario
-            // En caso de error, revertir la transacción
             DB::rollBack();
-
+    
             return response()->json([
                 'message' => 'Error al guardar los datos '.$e->getMessage(), 
                 'error' => $e->getFile(), 'line '.$e->getLine(),
@@ -100,6 +81,10 @@ class LoguinTicketStoreController extends Controller
     // Función para crear un usuario
     private function createUser($tipo_identificacion_id, $identificacion, $nombre, $apellido, $email)
     {
+        $nombreStr = Str::title($nombre);
+        $apellidoStr = Str::title($apellido);
+        $emailStr = Str::lower($email);
+        
         // Intentar encontrar el usuario existente
         $user = $this->glpi->table('loguin_usuarios')
             ->where('tipoidentificacion_id', $tipo_identificacion_id)
@@ -111,9 +96,9 @@ class LoguinTicketStoreController extends Controller
             $this->glpi->table('loguin_usuarios')
                 ->where('id', $user->id)
                 ->update([
-                    'apellidos' => $apellido,
-                    'nombres' => $nombre,
-                    'email' => $email,
+                    'nombres' => $nombreStr,
+                    'apellidos' => $apellidoStr,
+                    'email' => $emailStr,
                 ]);
 
             // Usar el ID del usuario existente
@@ -123,23 +108,129 @@ class LoguinTicketStoreController extends Controller
             $appUserId = $this->glpi->table('loguin_usuarios')->insertGetId([
                 'tipoidentificacion_id' => $tipo_identificacion_id,
                 'identificacion' => $identificacion,
-                'apellidos' => $apellido,
-                'nombres' => $nombre,
-                'email' => $email,
+                'nombres' => $nombreStr,
+                'apellidos' => $apellidoStr,
+                'email' => $emailStr,
                 'fecha_creacion' => now('America/Bogota'),
             ]);
         }
 
         return $appUserId;
     }
+
+    // Función para obtener la información del usuario
+    private function getUserData($appUserId)
+    {
+        return $this->glpi->table('loguin_usuarios as a')
+            ->join('loguin_tipo_identificacion as b', 'b.id', 'a.tipoidentificacion_id')
+            ->where('a.id', $appUserId)
+            ->select([
+                'a.id',
+                'b.abreviatura as tipo_documento',
+                'a.identificacion',
+                DB::raw("CONCAT(a.nombres,' ',a.apellidos) as nombres_apellidos"),
+                'a.email',
+            ])->first();
+    }
+
+    // Función para verificar si se debe crear un ticket de loguin
+    private function shouldCreateLoguinTicket(array $aplicaciones): bool
+    {
+        foreach ($aplicaciones as $req) {
+            if (isset($req['app_id']) && $req['perfil_id'] > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Función para verificar si se debe crear un ticket de infraestructura
+    private function shouldCreateInfrastructureTicket(array $infraestructura): bool
+    {
+        foreach ($infraestructura as $req) {
+            if (isset($req['radio_valor']) && $req['radio_valor'] == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function getCargoName($solicitudId, $cargo_id)
+    {
+        return $this->glpi->table('loguin_solicitud as a')
+            ->join('loguin_cargo as b', 'b.id', 'a.cargo_id')
+            ->where('a.id', $solicitudId)
+            ->where('a.cargo_id', $cargo_id)
+            ->first('b.name as cargo');
+    }
+
+    // Función para procesar las solicitudes y decidir qué tickets crear
+    private function processTickets(
+        array $aplicaciones, 
+        array $infraestructura, 
+        $identificacion, 
+        $appUserId, 
+        $nombre_especialidad,
+        $zonal_id, 
+        $sede_id,
+        $observaciones,
+        $cargo_id,
+    ) {
+        $ticketLoguin = null;
+        $ticketInfraestructura = null;
+
+        // Obtener datos de usuario al inicio, para que estén disponibles en ambos casos
+        $dataUsuario = $this->getUserData($appUserId);
+        $observacionesStr = Str::lower($observaciones);
+        //error_log(__LINE__ . __METHOD__ . ' ID usuario consultado --->' .var_export($appUserId, true));
+
+        // Verifica si se debe crear cada ticket
+        $createLoguinTicket = $this->shouldCreateLoguinTicket($aplicaciones);
+        $createInfrastructureTicket = $this->shouldCreateInfrastructureTicket($infraestructura);
+
+        // Crea tickets basados en las solicitudes recibidas
+        if ($createLoguinTicket) {
+            // Registrar solicitudes asociados al usuario SOLO si hay aplicaciones
+            $solicitudId = $this->registerUserRequest($appUserId, $cargo_id, $zonal_id, $sede_id, $observacionesStr);
+            
+            // Registrar aplicaciones y perfiles asociados al usuario
+            $this->registerUserApplications($aplicaciones, $solicitudId);
+            
+            // Registrar especialidad si es necesario
+            $nombreEspecialidad = $this->registerUserSpeciality($nombre_especialidad, $appUserId, $solicitudId);
+            
+            // Generar tabla codificada para el ticket
+            $dataAplicacioPerfil = $this->getUserApplicationsAndProfiles($appUserId, $solicitudId);
+            $cargoNombre = $this->getCargoName($solicitudId, $cargo_id);
+            $encodedTable = $this->generateEncodedTable($dataUsuario, $dataAplicacioPerfil, $nombreEspecialidad, $observacionesStr, $cargoNombre);
+            
+            // Crear el ticket de loguin
+            $ticketLoguin = $this->createLoguinTicket($identificacion, $encodedTable);
+
+            // Actualizar la solicitud con el ticket de loguin
+            $this->updateLoguinRequest($solicitudId, $ticketLoguin);
+        }
+
+        if ($createInfrastructureTicket) {
+            $infraTable = $this->generateInfrastructureEncodedTable($dataUsuario, $infraestructura, $observacionesStr);
+            $ticketInfraestructura = $this->createInfrastructureTicket($identificacion, $infraTable, $infraestructura, $appUserId, $zonal_id, $sede_id, $observacionesStr);
+        }
+
+        return [
+            'ticketLoguin' => $ticketLoguin,
+            'ticketInfraestructura' => $ticketInfraestructura
+        ];
+    }
     
     // Función para registrar solicitudes asociados al usuario
-    private function registerUserRequest($appUserId, $zonal_id, $sede_id)
+    private function registerUserRequest($appUserId, $cargo_id, $zonal_id, $sede_id, $observacionesStr)
     {
         $solicitudId = $this->glpi->table('loguin_solicitud')->insertGetId([
             'usuario_id' => $appUserId,
+            'cargo_id' => $cargo_id,
             'zonal_id' => $zonal_id,
             'sede_id' => $sede_id,
+            'observaciones' => $observacionesStr,
         ]);
 
         return $solicitudId;
@@ -182,22 +273,6 @@ class LoguinTicketStoreController extends Controller
         }
     }
     
-    // Función para obtener la información del usuario
-    private function getUserData($appUserId)
-    {
-        return $this->glpi->table('loguin_solicitud as a')
-            ->join('loguin_usuarios as b', 'b.id', 'a.usuario_id')
-            ->join('loguin_tipo_identificacion as c', 'c.id', 'b.tipoidentificacion_id')
-            ->where('a.usuario_id', $appUserId)
-            ->select([
-                'a.usuario_id',
-                'c.abreviatura as tipo_documento',
-                'b.identificacion',
-                DB::raw("CONCAT(b.nombres,' ',b.apellidos) as nombres_apellidos"),
-                'b.email',
-            ])->first();
-    }
-    
     // Función para obtener las aplicaciones y perfiles asociados al usuario
     private function getUserApplicationsAndProfiles($appUserId, $solicitudId)
     {
@@ -217,7 +292,7 @@ class LoguinTicketStoreController extends Controller
     }
     
     // Función para generar la tabla codificada para el ticket
-    private function generateEncodedTable($dataUsuario, $dataAplicacioPerfil, $nombreEspecialidad)
+    private function generateEncodedTable($dataUsuario, $dataAplicacioPerfil, $nombreEspecialidad, $observacionesStr, $cargoNombre)
     {
         $encodedTable = '
         <div tabindex="0">
@@ -239,11 +314,17 @@ class LoguinTicketStoreController extends Controller
                         <th>EMAIL:</th>
                         <td>' . $dataUsuario->email . '</td>
                     </tr>
+                    <tr>
+                        <th>CARGO:</th>
+                        <td>' . Str::upper($cargoNombre->cargo) . '</td>
+                    </tr>
                 </thead>
                 <tbody></tbody>
             </table>
         </div>
+
         <br>
+
         <div tabindex="0">
             <table style="border: 1px solid #87aa8a;">
                 <thead>
@@ -252,22 +333,47 @@ class LoguinTicketStoreController extends Controller
                         <th>APLICACIONES</th>
                         <th>PERFILES</th>
                     </tr>
-                </thead>';
-    
-        foreach ($dataAplicacioPerfil as $appPerfil) {
-            $encodedTable .= '
-                <tr>
-                    <td>' . $appPerfil->sede . '</td>
-                    <td>' . $appPerfil->aplicaciones . '</td>
-                    <td>' . strtoupper($appPerfil->perfiles) . '</td>
-                </tr>';
-        }
+                </thead>
+                <tbody>';
+
+                foreach ($dataAplicacioPerfil as $appPerfil) {
+                        $encodedTable .= '
+                            <tr>
+                                <td>' . $appPerfil->sede . '</td>
+                                <td>' . $appPerfil->aplicaciones . '</td>
+                                <td>' . strtoupper($appPerfil->perfiles) . '</td>
+                            </tr>';
+                    }
     
         $encodedTable .= '
-                <tbody></tbody>
+                </tbody>
             </table>
         </div>
+
         <br>';
+
+        if($observacionesStr){
+            $encodedTable .= '
+            <div tabindex="0">
+                <table style="border: 1px solid #87aa8a;">
+                    <thead>
+                        <tr>
+                            <th>OBSERVACIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="4">' . $observacionesStr . '</td>
+                        </tr>
+                        <tr></tr>
+                        <tr></tr>
+                        <tr></tr>
+                    </tbody>
+                </table>
+            </div>';
+        }
+
+        '<br>';
 
         if ($nombreEspecialidad) {
             $encodedTable .= '
@@ -354,20 +460,9 @@ class LoguinTicketStoreController extends Controller
     {
         $this->glpi->table('loguin_solicitud')->where('id', $solicitudId)->update(['ticket_id' => $ticketLoguin]);
     }
-    
-    // Función para verificar si se debe crear un ticket de infraestructura
-    private function shouldCreateInfrastructureTicket(array $infraestructura): bool
-    {
-        foreach ($infraestructura as $req) {
-            if (isset($req['radio_valor']) && $req['radio_valor'] == 1) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     // Función para generar la tabla codificada para el ticket de infraestructura
-    private function generateInfrastructureEncodedTable($dataUsuario, $infraestructura)
+    private function generateInfrastructureEncodedTable($dataUsuario, $infraestructura, $observacionesStr)
     {
         $encodedTable = '
         <div tabindex="0">
@@ -393,7 +488,9 @@ class LoguinTicketStoreController extends Controller
                 <tbody></tbody>
             </table>
         </div>
+
         <br>
+
         <div tabindex="0">
             <table style="border: 1px solid #87aa8a;">
                 <thead>';
@@ -413,16 +510,34 @@ class LoguinTicketStoreController extends Controller
                 </thead>
                 <tbody></tbody>
             </table>
+        </div>
+        
+        <br>
+        
+        <div tabindex="0">
+            <table style="border: 1px solid #87aa8a;">
+                <thead>
+                    <tr>
+                        <th>OBSERVACIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="4">' . $observacionesStr . '</td>
+                    </tr>
+                    <tr></tr>
+                    <tr></tr>
+                    <tr></tr>
+                </tbody>
+            </table>
         </div>';
 
         return $encodedTable;
     }
     
     // Función para crear el ticket de infraestructura
-    private function createInfrastructureTicket($identificacion, $dataUsuario, $infraestructura, $appUserId, $zonal_id, $sede_id)
+    private function createInfrastructureTicket($identificacion, $infraTable, $infraestructura, $appUserId, $zonal_id, $sede_id, $observacionesStr)
     {
-        $encodedTableInfra = $this->generateInfrastructureEncodedTable($dataUsuario, $infraestructura);
-
         // Insertar en la base de datos
         $solicitudes = [
             'usuario_id' => $appUserId,
@@ -431,6 +546,7 @@ class LoguinTicketStoreController extends Controller
             'solicito_correo' => isset($infraestructura[0]['radio_valor']) ? $infraestructura[0]['radio_valor'] : 0,
             'solicito_usuario_dominio' => isset($infraestructura[1]['radio_valor']) ? $infraestructura[1]['radio_valor'] : 0,
             'solicito_vpn' => isset($infraestructura[2]['radio_valor']) ? $infraestructura[2]['radio_valor'] : 0,
+            'observaciones' => $observacionesStr,
             'fecha_creacion' => now('America/Bogota'),
         ];
 
@@ -439,7 +555,7 @@ class LoguinTicketStoreController extends Controller
         $ticketInfra = $this->glpi->table('glpi_tickets')->insertGetId([
             'name' => '[PRUEBA] SOLICITUD USUARIO (CORREO, USUARIO DOMINIO, VPN)- ' . $identificacion,
             'date' => now('America/Bogota'),
-            'content' => $encodedTableInfra,
+            'content' => $infraTable,
             'users_id_recipient' => 102,
             'date_mod' => now('America/Bogota'),
             'users_id_lastupdater' => 102,

@@ -44,12 +44,12 @@
     <script src="{{ asset('/js/plugins/bootstrap3-typeahead.min.js') }}" async></script>
     <script src="{{ asset('/js/plugins/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
     <script type="module">
-        Codebase.helpersOnLoad(['jq-select2','jq-notify', 'jq-validation']);
+        Codebase.helpersOnLoad(['jq-select2', 'jq-notify', 'jq-validation']);
     </script>
 
     <script type="module">
         let route = "{{ url('fetchEspecialidades') }}";
-        
+
         $('#search-especialidad').typeahead({
             source: function(query, process) {
                 return $.get(route, {
@@ -77,7 +77,7 @@
                         <div class="block-header block-header-default">
                             <h3 class="block-title">Formulario de Solicitud Loguin</h3>
                             <div class="block-options">
-                                {{--<button type="button" class="btn-block-option" data-toggle="block-option"
+                                {{-- <button type="button" class="btn-block-option" data-toggle="block-option"
                                     data-action="content_toggle" hidden>
                                 </button>
                                 <button type="button" id="btn-refresh" class="btn-block-option" data-toggle="block-option"
@@ -111,6 +111,7 @@
                                             <div class="form-floating">
                                                 <input type="text" class="form-control" id="identity_number"
                                                     for="identity_number" name="identity_number"
+                                                    onkeypress="return /[0-9]/i.test(event.key);"
                                                     placeholder="identity_number" autocomplete="off">
                                                 <label class="form-label" for="identity_number">Número de documento</label>
                                             </div>
@@ -217,6 +218,11 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="form-floating mb-4">
+                                        <textarea class="form-control" id="observaciones" name="observaciones" style="height: 150px"
+                                            placeholder="Leave a comment here"></textarea>
+                                        <label class="form-label" for="observaciones">Observaciones</label>
                                     </div>
                                     {{-- <div class="row push">
                                         <div class="col-lg-4">

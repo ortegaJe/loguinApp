@@ -17,6 +17,7 @@ class ApplicationFormManager {
         this.checboxInfraRow = document.getElementById('checkbox-infra-row');
         this.cheboxInfraLabel = document.getElementById('checkbox-infra-label');
         this.checkboxInfraContainer = document.getElementById('checkbox-infra-container');
+        this.observaciones = document.getElementById('observaciones');
 
         this.appDropdown = document.getElementById('app-dropdown');
         this.perfilDropdown = document.getElementById('perfil-dropdown');
@@ -203,6 +204,7 @@ class ApplicationFormManager {
         this.resetCheckboxesButtons();
         this.rowEspecialidad.hidden = true;
         this.searchEspecialidad.value = '';
+        this.observaciones.value = '';
     }
 
     static async showToast(title, message, type) 
@@ -462,6 +464,7 @@ class ApplicationFormManager {
             //console.log('Error', error);
             this.showToast('Oops...', `${error.message}`, 'warning');
             this.cargoSedeDropdown.value = '';
+            this.blockSolicitud.hidden = true;
             this.resetPerfilDropdown();
         }
     }
@@ -623,7 +626,7 @@ class ApplicationFormManager {
             }
         });
 
-        console.log(appData);
+        //console.log(appData);
 
         const radioData = [];
         const radioContainers = this.checkboxInfraContainer.querySelectorAll('.form-check'); // Seleccionamos todos los contenedores de checkbox
@@ -638,7 +641,7 @@ class ApplicationFormManager {
             }
         });
 
-        console.log(radioData);
+        //console.log(radioData);
 
         const formData = {
             tipo_identificacion: document.getElementById('type_identity_number').value,
@@ -648,78 +651,88 @@ class ApplicationFormManager {
             email: document.getElementById('email').value,
             zonal_id: this.zonalDropdown.value,
             sede_id: this.sedeDropdown.value,
+            cargo_id: this.cargoSedeDropdown.value,
             aplicaciones: appData,
             infraestructura: radioData,
             especialidad: this.searchEspecialidad.value,
+            observaciones: this.observaciones.value,
         };
 
-        console.log(formData);
+        console.log('Request del Formulario');
+        console.group();
+        console.log('loguin usuario', formData);
         //this.showToast('Oops...', `Formulario loguin enviado correctamente`, 'success');
 
         this.toast.fire({
-            title: 'Esta seguro?',
-            text: 'Se enviaran los datos del formulario para la creacion del loguin!',
-            icon: 'warning',
-            showCancelButton: true,
-            customClass: {
-              confirmButton: 'btn btn-danger m-1',
-              cancelButton: 'btn btn-secondary m-1'
-            },
-            confirmButtonText: 'Si, enviar!',
-            cancelButtonText: 'Cancelar',
-            html: false,
-            preConfirm: e => {
-              return new Promise(resolve => {
-                setTimeout(() => {
-                  resolve();
-                }, 50);
-              });
-            }
-          }).then(async result => {
-              if (result.value) {                
-                try {
-                    const response = await fetch('/storeLoguinTicket', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                        },
-                        body: JSON.stringify(formData)
-                    });
+        title: 'Esta seguro?',
+        text: 'Se enviaran los datos del formulario para la creacion del loguin!',
+        icon: 'warning',
+        showCancelButton: true,
+        customClass: {
+            confirmButton: 'btn btn-danger m-1',
+            cancelButton: 'btn btn-secondary m-1'
+        },
+        confirmButtonText: 'Si, enviar!',
+        cancelButtonText: 'Cancelar',
+        html: false,
+        preConfirm: e => {
+            return new Promise(resolve => {
+            setTimeout(() => {
+                resolve();
+            }, 50);
+            });
+        }
+        }).then(async result => {
+            if (result.value) {                
+            try {
+                const response = await fetch('/storeLoguinTicket', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                    },
+                    body: JSON.stringify(formData)
+                });
 
-                    if (!response.ok) {
-                        this.showToast('Error...', `Error al enviar Formulario Loguin ${response.statusText}`, 'error');
-                        throw new Error(`Error en la respuesta del servidor: ${response.statusText} - ${response.status}`);
-                    }
-
-                    const result = await response.json();
-
-                    const ticketLoguinNumber = result.ticketLoguin !== null ? result.ticketLoguin : null;
-                    if (!ticketLoguinNumber) {
-                        throw new Error('ticketLoguin Error');
-                    }
-
-                    const URLTicketLoguin = `<a class"fw-semibold" href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${ticketLoguinNumber}" target="_blank">#${ticketLoguinNumber}</a>`;
-                    if (ticketLoguinNumber) {
-                        console.log('ID de ticketLoguin:', ticketLoguinNumber);
-                        this.showToast('Formulario Loguin Enviado!', `TICKET Loguin ${URLTicketLoguin}`, 'success');
-                    }
-
-                    const ticketInfraNumber = result.ticketInfraestructura !== null ? result.ticketInfraestructura : null 
-                    const URLticketInfraNumber = `<a class"fw-semibold" href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${ticketInfraNumber}" target="_blank">#${ticketInfraNumber}</a>`;
-                    if (ticketInfraNumber) {
-                        console.log('ID de ticketInfraestructura:', ticketInfraNumber);
-                        this.showToast('Formulario Loguin Enviado!', `TICKET Loguin ${URLTicketLoguin} <br> TICKET Infraestructura ${URLticketInfraNumber}`, 'success');
-                    }
-                    this.clearForm();
-                } catch (error) {
-                    console.error('Error al enviar el formulario:', error);
-                    this.showToast('Error...', `Error al enviar formulario loguin ${error}`, 'error');
+                if (!response.ok) {
+                    this.showToast('Error...', `Error al enviar Formulario Loguin ${response.statusText}`, 'error');
+                    throw new Error(`Error en la respuesta del servidor: ${response.statusText} - ${response.status}`);
                 }
-            } else if (result.dismiss === 'cancel') {
-              //toast.fire('Cancelled', 'Your imaginary file is safe :)', 'error');
+
+                const result = await response.json();
+
+                const ticketLoguinNumber = result.ticketLoguin !== null ? result.ticketLoguin : null;
+                const ticketInfraNumber = result.ticketInfraestructura !== null ? result.ticketInfraestructura : null;
+
+                if (ticketLoguinNumber) {
+                    const URLTicketLoguin = `<a class="fw-semibold" href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${ticketLoguinNumber}" target="_blank">#${ticketLoguinNumber}</a>`;
+                    console.log('ID de ticketLoguin:', ticketLoguinNumber);
+                    this.showToast('Formulario Loguin Enviado!', `TICKET Loguin ${URLTicketLoguin}`, 'success');
+                }
+                
+                if (ticketInfraNumber) {
+                    const URLticketInfraNumber = `<a class="fw-semibold" href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${ticketInfraNumber}" target="_blank">#${ticketInfraNumber}</a>`;
+                    console.log('ID de ticketInfraestructura:', ticketInfraNumber);
+                    this.showToast('Formulario Loguin Enviado!', `TICKET Infraestructura ${URLticketInfraNumber}`, 'success');
+                }
+
+                if (ticketLoguinNumber && ticketInfraNumber) {
+                    const URLTicketLoguin = `<a class="fw-semibold" href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${ticketLoguinNumber}" target="_blank">#${ticketLoguinNumber}</a>`;
+                    const URLticketInfraNumber = `<a class="fw-semibold" href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${ticketInfraNumber}" target="_blank">#${ticketInfraNumber}</a>`;
+                    console.log('ID de ticketInfraestructura:', ticketInfraNumber);
+                    console.log('ID de ticketLoguin:', ticketLoguinNumber);
+                    this.showToast('Formulario Loguin Enviado!', `TICKET Loguin ${URLTicketLoguin} <br> TICKET Infraestructura ${URLticketInfraNumber}`, 'success');
+                }
+
+                this.clearForm();
+            } catch (error) {
+                console.error('Error al enviar el formulario:', error);
+                this.showToast('Error...', `Error al enviar formulario loguin ${error}`, 'error');
             }
-          });
+        } else if (result.dismiss === 'cancel') {
+            //toast.fire('Cancelled', 'Your imaginary file is safe :)', 'error');
+        }
+        });
     }
 
     static init() 
