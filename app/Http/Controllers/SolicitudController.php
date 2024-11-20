@@ -25,6 +25,12 @@ class SolicitudController extends Controller
     
         return view('loguin-solicitud.index', compact('data'));
     }
+
+    public function getRequestLoguin()
+    {
+        $data = $this->getUsuariosConSolicitudes();
+        return view('loguin-credenciales.index', compact('data'));
+    }
     
     public function fetchSolicitudLoguin(Request $request)
     {

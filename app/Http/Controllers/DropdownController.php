@@ -98,6 +98,7 @@ class DropdownController extends Controller
         ->join('loguin_aplicaciones as e', 'e.id', 'd.aplicacion_id')
         ->where('a.cargo_id', $cargo_id)
         ->where('a.sede_id',  $sede_id)
+        ->orderBy('e.name')
         ->get([
             'd.id as perfil_id',
             'd.name as perfil',

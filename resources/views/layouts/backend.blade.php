@@ -9,7 +9,7 @@
     <title>Loguin</title>
 
     <!-- Icons -->
-{{--     <link rel="shortcut icon" href="{{ asset('media/favicons/favicon.png') }}">
+    {{--     <link rel="shortcut icon" href="{{ asset('media/favicons/favicon.png') }}">
     <link rel="icon" sizes="192x192" type="image/png" href="{{ asset('media/favicons/favicon-192x192.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('media/favicons/apple-touch-icon-180x180.png') }}"> --}}
 
@@ -124,7 +124,7 @@
                     <!-- Logo -->
                     <div>
                         <span class="smini-visible fw-bold tracking-wide fs-lg">
-                            L<span class="text-primary">g</span>
+                            L<span class="text-primary">l</span>
                         </span>
                         <a class="link-fx fw-bold tracking-wide mx-auto" href="/">
                             <span class="smini-hidden">
@@ -215,7 +215,8 @@
                             </li>
                             <li class="nav-main-heading">Aplicaciones</li>
                             <li class="nav-main-item">
-                                <a class="nav-main-link" href="javascript:void(0)">
+                                <a class="nav-main-link{{ request()->is('loguin/aplicaciones/credenciales') ? ' active' : '' }}"
+                                    href="{{ url('loguin/aplicaciones/credenciales') }}">
                                     <i class="nav-main-link-icon fa fa-database"></i>
                                     <i class="nav-main-link-icon fa fa-users"></i>
                                     <span class="nav-main-link-name">Credenciales Loguin</span>

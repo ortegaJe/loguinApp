@@ -400,7 +400,7 @@ class LoguinTicketStoreController extends Controller
     {
         // Insertar el ticket en la base de datos
         $ticketId = $this->glpi->table('glpi_tickets')->insertGetId([
-            'name' => '[PRUEBA] SOLICITUD USUARIO LOGIN DE PANA EVEREST - ' . $identificacion,
+            'name' => '[PRUEBA] SOLICITUD USUARIO LOGIN (PANA, EVEREST) - ' . $identificacion,
             'date' => now('America/Bogota'),
             'content' => $encodedTable,
             'users_id_recipient' => 102, // ID del usuario que envía la solicitud
@@ -553,7 +553,7 @@ class LoguinTicketStoreController extends Controller
         $solicitudInfra = $this->glpi->table('loguin_solicitud_infraestructura')->insertGetId($solicitudes);
     
         $ticketInfra = $this->glpi->table('glpi_tickets')->insertGetId([
-            'name' => '[PRUEBA] SOLICITUD USUARIO (CORREO, USUARIO DOMINIO, VPN)- ' . $identificacion,
+            'name' => '[PRUEBA] SOLICITUD USUARIO CREDENCIALES (CORREO, USUARIO DOMINIO, VPN)- ' . $identificacion,
             'date' => now('America/Bogota'),
             'content' => $infraTable,
             'users_id_recipient' => 102,

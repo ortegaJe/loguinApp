@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DropdownController;
+use App\Http\Controllers\LoguinCredentialController;
 use App\Http\Controllers\LoguinTicketStoreController;
 use App\Http\Controllers\SolicitudController;
 use Illuminate\Support\Facades\DB;
@@ -31,6 +32,12 @@ Route::post('fetchSolicitudLoguin', [SolicitudController::class, 'fetchSolicitud
 Route::post('fetchSolicitudInfra', [SolicitudController::class, 'fetchSolicitudInfra']);
 Route::post('buscarPorDocumento', [SolicitudController::class, 'buscarPorDocumento']);
 Route::get('getUsuariosConSolicitudes', [SolicitudController::class, 'getUsuariosConSolicitudes']);
+
+Route::get('loguin/aplicaciones/credenciales', [SolicitudController::class, 'getRequestLoguin']);
+Route::get('loguin/aplicaciones/credenciales/registrar/{id}', [LoguinCredentialController::class, 'registerCredential'])->name('register.loguin');
+Route::get('fetchDataLoguin/{id}', [LoguinCredentialController::class, 'fetchDataLoguin']);
+Route::post('storeLoguin', [LoguinCredentialController::class, 'storeLoguin']);
+Route::get('getLoguins/aplicaciones/{id}', [LoguinCredentialController::class, 'getLoguins']);
 
 Route::get('/get-mysecond-connection', function () {
     $glpi = DB::connection('glpi');

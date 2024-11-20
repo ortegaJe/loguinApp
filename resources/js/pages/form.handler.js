@@ -669,7 +669,7 @@ class ApplicationFormManager {
         icon: 'warning',
         showCancelButton: true,
         customClass: {
-            confirmButton: 'btn btn-danger m-1',
+            confirmButton: 'btn btn-success m-1',
             cancelButton: 'btn btn-secondary m-1'
         },
         confirmButtonText: 'Si, enviar!',

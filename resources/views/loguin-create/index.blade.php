@@ -21,7 +21,7 @@
 
         @media (max-width: 768px) {
             .checkbox-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(1, 1fr);
                 /* 2 columnas en pantallas más pequeñas */
             }
         }
@@ -208,7 +208,8 @@
                                             <div class="block-content">
                                                 <div class="mb-4" id="checkbox-row">
                                                     <label class="form-label" id="checkbox-label"></label>
-                                                    <div class="checkbox-grid animated fadeIn" id="checkbox-container">
+                                                    <div class="checkbox-grid animated fadeIn">
+                                                        <small id="checkbox-container"></small>
                                                     </div>
                                                 </div>
                                                 <div class="mb-4" id="checkbox-infra-row">
