@@ -74,6 +74,7 @@ class RenderDataSolicitudLoguin {
   
         // Mostrar el contenedor si tiene loguins
         container.hidden = false;
+        this.formLoguin.hidden = true;
         this.copyTableFeature();
       } else {
         // Ocultar el contenedor si no hay loguins
@@ -488,6 +489,7 @@ class RenderDataSolicitudLoguin {
               const result = await response.json();
               //console.log('datos desde la db',result);
               this.showToast('Loguin creado!', `${result.message}`,'success');
+              this.formLoguin.hidden = true;
               this.clearLoguinInputs();
               await this.fetchAndRenderLoguins(result.solicitud);
               this.copyTableFeature();
