@@ -287,6 +287,7 @@
                 </form>
             </div>
         </div>
+        <div id="modal-container"></div>
     </div>
     <!-- END Page Content -->
 @endsection

@@ -18,6 +18,7 @@ class ApplicationFormManager {
         this.cheboxInfraLabel = document.getElementById('checkbox-infra-label');
         this.checkboxInfraContainer = document.getElementById('checkbox-infra-container');
         this.observaciones = document.getElementById('observaciones');
+        this.modalContainer = document.getElementById('modal-container');
 
         this.appDropdown = document.getElementById('app-dropdown');
         this.perfilDropdown = document.getElementById('perfil-dropdown');
@@ -430,6 +431,21 @@ class ApplicationFormManager {
                 this.checkboxContainer.appendChild(checkboxDiv);
             });
 
+            const explicaciones = {
+                correo: {
+                    titulo: '¿Qué es un Correo Institucional?',
+                    descripcion: 'Es una cuenta de correo asignada por la institución, utilizada para comunicaciones oficiales y acceso a recursos internos.',
+                },
+                dominio: {
+                    titulo: '¿Qué es un Usuario de Dominio?',
+                    descripcion: 'Es una cuenta que permite a los usuarios autenticarse y acceder a recursos compartidos en la red de la institución.',
+                },
+                vpn: {
+                    titulo: '¿Qué es una VPN?',
+                    descripcion: 'Una VPN (Red Privada Virtual) permite a los usuarios conectarse de forma segura a los recursos internos de la institución desde ubicaciones remotas.',
+                },
+            };
+
             renderInfraCheckboxes.forEach((solicitud, index) => {
                 this.cheboxInfraLabel.textContent = 'Solicitudes de Infraestructura disponibles para el cargo seleccionado:';
 
@@ -438,26 +454,43 @@ class ApplicationFormManager {
                 checkboxCorreo.innerHTML = `
                     <input type="checkbox" class="form-check-input checkbox-group" name="sw_correo_${index}" value="1"
                         id="sw_correo_${solicitud.sw_correo}" ${solicitud.sw_correo === 0 ? 'disabled' : ''}>
-                    <label for="sw_correo_${solicitud.sw_correo}" class="form-check-label">Requiere Correo Institucional</label>`;
+                    <label for="sw_correo_${solicitud.sw_correo}" class="form-check-label">Requiere Correo Institucional</label>
+                    <a class="badge rounded-pill bg-primary ayuda-modal" href="javascript:void(0)" data-tipo="correo">
+                        <i class="fa fa-question"></i>
+                    </a>`;
                                     
                 const checkboxDominio = document.createElement('div');
                 checkboxDominio.className = 'form-check';
                 checkboxDominio.innerHTML = `
                     <input type="checkbox" class="form-check-input checkbox-group" name="sw_dominio_${index}" value="1"
                         id="sw_dominio_${solicitud.sw_dominio}" ${solicitud.sw_dominio === 0 ? 'disabled' : ''}>
-                    <label for="sw_dominio_${solicitud.sw_dominio}" class="form-check-label">Requiere Usuario Dominio</label>`;
+                    <label for="sw_dominio_${solicitud.sw_dominio}" class="form-check-label">Requiere Usuario Dominio</label>
+                    <a class="badge rounded-pill bg-primary ayuda-modal" href="javascript:void(0)" data-tipo="dominio">
+                        <i class="fa fa-question"></i>
+                    </a>`;
                 
                 const checkboxVPN = document.createElement('div');
                 checkboxVPN.className = 'form-check';
                 checkboxVPN.innerHTML = `
                     <input type="checkbox" class="form-check-input checkbox-group" name="sw_vpn_${index}" value="1"
                         id="sw_vpn_${solicitud.sw_vpn}" ${solicitud.sw_vpn === 0 ? 'disabled' : ''}>
-                    <label for="sw_vpn_${solicitud.sw_vpn}" class="form-check-label">Requiere VPN</label>`;
+                    <label for="sw_vpn_${solicitud.sw_vpn}" class="form-check-label">Requiere VPN</label>
+                    <a class="badge rounded-pill bg-primary ayuda-modal" href="javascript:void(0)" data-tipo="vpn">
+                        <i class="fa fa-question"></i>
+                    </a>`;
 
                 this.checkboxInfraContainer.appendChild(checkboxCorreo);
                 this.checkboxInfraContainer.appendChild(checkboxDominio);
                 this.checkboxInfraContainer.appendChild(checkboxVPN);
-            });  
+            });
+
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.ayuda-modal')) {
+                    e.preventDefault();
+                    const tipo = e.target.closest('.ayuda-modal').getAttribute('data-tipo');
+                    this.mostrarModal(explicaciones[tipo]);
+                }
+            });
         } catch (error) {
             // Remover la clase `block-mode-loading` si ocurre un error
             this.blockElement.classList.remove('block-mode-loading');
@@ -467,6 +500,32 @@ class ApplicationFormManager {
             this.blockSolicitud.hidden = true;
             this.resetPerfilDropdown();
         }
+    }
+
+    static mostrarModal({ titulo, descripcion }) {
+        const modalHtml = `
+            <div class="modal fade" id="ayudaModal" tabindex="-1" aria-labelledby="ayudaModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ayudaModalLabel">${titulo}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ${descripcion}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    
+        this.modalContainer.innerHTML = modalHtml;
+    
+        // Inicializar y mostrar el modal usando Bootstrap
+        const ayudaModal = new bootstrap.Modal(document.getElementById('ayudaModal'));
+        ayudaModal.show();
     }
     
     static async appChangeHandler() {
