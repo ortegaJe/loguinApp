@@ -219,7 +219,16 @@
                                     href="{{ url('loguin/aplicaciones/credenciales') }}">
                                     <i class="nav-main-link-icon fa fa-database"></i>
                                     <i class="nav-main-link-icon fa fa-users"></i>
-                                    <span class="nav-main-link-name">Credenciales Loguin</span>
+                                    <span class="nav-main-link-name">Loguin</span>
+                                </a>
+                            </li>
+                            <li class="nav-main-heading">Infraestructura</li>
+                            <li class="nav-main-item">
+                                <a class="nav-main-link{{ request()->is('loguin/infraestructura/credenciales') ? ' active' : '' }}"
+                                    href="{{ url('loguin/infraestructura/credenciales') }}">
+                                    <i class="nav-main-link-icon fa fa-database"></i>
+                                    <i class="nav-main-link-icon fa fa-users"></i>
+                                    <span class="nav-main-link-name">Loguin</span>
                                 </a>
                             </li>
                         </ul>

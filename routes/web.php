@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DropdownController;
+use App\Http\Controllers\InfraCredentialController;
 use App\Http\Controllers\LoguinCredentialController;
 use App\Http\Controllers\LoguinTicketStoreController;
 use App\Http\Controllers\SolicitudController;
@@ -39,13 +40,15 @@ Route::get('fetchDataLoguin/{id}', [LoguinCredentialController::class, 'fetchDat
 Route::post('storeLoguin', [LoguinCredentialController::class, 'storeLoguin']);
 Route::get('getLoguins/aplicaciones/{id}', [LoguinCredentialController::class, 'getLoguins']);
 
+Route::get('loguin/infraestructura/credenciales', [SolicitudController::class, 'getRequestLoguinInfra']);
+Route::get('loguin/infraestructura/credenciales/registrar/{id}', [InfraCredentialController::class, 'registerCredential'])->name('register.infra');
+Route::get('fetchDataLoguinInfra/{id}', [InfraCredentialController::class, 'fetchDataLoguinInfra']);
+Route::post('storeLoguinInfra', [InfraCredentialController::class, 'storeLoguinInfra']);
+Route::get('getLoguins/infraestructura/{id}', [InfraCredentialController::class, 'getLoguinInfra']);
+
 Route::get('/get-mysecond-connection', function () {
     $glpi = DB::connection('glpi');
     $products = $glpi->table('glpi_locations')->where('sw_regional', 1)->get();
     
     return response()->json($products);
 });
-//Route::view('creacion-usuarios', 'loguin-create.index');
-//Route::view('loguin', 'loguin-create.index');
-//Route::post('fetchApps', [DropdownController::class, 'fetchApps']);
-//Route::post('fetchAppsPerfiles', [DropdownController::class, 'fetchAppsPerfiles']);
