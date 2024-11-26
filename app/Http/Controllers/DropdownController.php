@@ -154,8 +154,9 @@ class DropdownController extends Controller
         $query = $request->input('query');
 
         $filterResult = $this->glpi->table('loguin_usuarios')
+            ->select(DB::raw("CONCAT(identificacion,' | ',nombres,' ',apellidos) as id_nombre"))
             ->where('identificacion', 'LIKE', '%' . $query . '%')
-            ->pluck('identificacion')
+            ->pluck('id_nombre')
             ->map(function ($item) {
                 return (string) $item; // Convertir cada identificacion a string
             })

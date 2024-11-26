@@ -73,8 +73,8 @@
         <div class="row">
             <div class="col-lg-12">
                 <form id="main-form">
-                    <div class="block block-rounded">
-                        <div class="block-header block-header-default">
+                    <div class="block block-themed block-rounded">
+                        <div class="block-header bg-primary-light">
                             <h3 class="block-title">Formulario de Solicitud Loguin</h3>
                             <div class="block-options">
                                 {{-- <button type="button" class="btn-block-option" data-toggle="block-option"

@@ -40,6 +40,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'glpi' => [
+            'driver' => 'session',
+            'provider' => 'glpi_users',
+        ],
     ],
 
     /*
@@ -62,7 +67,12 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => App\Models\User::class,
+        ],
+
+        'glpi_users' => [
+            'driver' => 'eloquent',
+            'model' => env('AUTH_MODEL', App\Models\GlpiUser::class), // Modelo para la tabla glpi_users
         ],
 
         // 'users' => [

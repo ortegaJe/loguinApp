@@ -15,10 +15,37 @@
 
     <!-- Modules -->
     @yield('css')
+    <link rel="stylesheet" href="{{ asset('/js/plugins/sweetalert2/sweetalert2.min.css') }}">
     @vite(['resources/sass/main.scss', 'resources/js/codebase/app.js'])
 
     <!-- Alternatively, you can also include a specific color theme after the main stylesheet to alter the default color theme of the template -->
     {{-- @vite(['resources/sass/main.scss', 'resources/sass/codebase/themes/corporate.scss', 'resources/js/codebase/app.js']) --}}
+    <script src="{{ asset('/js/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+    <script>
+        document.querySelectorAll('#logout-link').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: '¿Estás seguro de que quieres cerrar sesión?',
+                    //text: "¡Tus cambios no guardados se perderán!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    buttonsStyling: false,
+                    customClass: {
+                        confirmButton: "btn btn-alt-success m-5",
+                        cancelButton: "btn btn-alt-danger m-5",
+                        input: "form-control"
+                    },
+                    confirmButtonText: 'Sí, cerrar sesión',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.value) {
+                        document.getElementById('logout-form').submit();
+                    }
+                });
+            });
+        });
+    </script>
     @yield('js')
 </head>
 
@@ -165,10 +192,21 @@
                             <a class="img-link" href="javascript:void(0)">
                                 <img class="img-avatar" src="{{ asset('media/avatars/avatar15.jpg') }}" alt="">
                             </a>
+                            @php
+                                $user_id = Auth::guard('glpi')->id();
+
+                                $user = DB::connection('glpi')
+                                    ->table('glpi_users as a')
+                                    ->join('glpi_profiles_users as b', 'b.users_id', 'a.id')
+                                    ->where('a.id', $user_id)
+                                    ->first();
+
+                                //echo $user_id;
+                            @endphp
                             <ul class="list-inline mt-3 mb-0">
                                 <li class="list-inline-item">
                                     <a class="link-fx text-dual fs-sm fw-semibold text-uppercase"
-                                        href="javascript:void(0)">J. Smith</a>
+                                        href="javascript:void(0)">{{ $user->name }}</a>
                                 </li>
                                 <li class="list-inline-item">
                                     <!-- Layout API, functionality initialized in Template._uiApiLayout() -->
@@ -178,9 +216,12 @@
                                     </a>
                                 </li>
                                 <li class="list-inline-item">
-                                    <a class="link-fx text-dual" href="javascript:void(0)">
+                                    <a class="link-fx text-dual" href="{{ route('logout') }}" id="logout-link">
                                         <i class="fa fa-sign-out-alt"></i>
                                     </a>
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                        @csrf
+                                    </form>
                                 </li>
                             </ul>
                         </div>
@@ -200,8 +241,8 @@
                                 </a>
                                 <ul class="nav-main-submenu">
                                     <li class="nav-main-item">
-                                        <a class="nav-main-link{{ request()->is('loguin') ? ' active' : '' }}"
-                                            href="/loguin">
+                                        <a class="nav-main-link{{ request()->is('loguin/formulario') ? ' active' : '' }}"
+                                            href="/loguin/formulario">
                                             <span class="nav-main-link-name">Registrar Solicitud</span>
                                         </a>
                                     </li>
@@ -267,7 +308,7 @@
                 <!-- Right Section -->
                 <div class="space-x-1">
                     <!-- User Dropdown -->
-                    <div class="dropdown d-inline-block">
+                    {{--                     <div class="dropdown d-inline-block">
                         <button type="button" class="btn btn-sm btn-alt-secondary" id="page-header-user-dropdown"
                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-user d-sm-none"></i>
@@ -316,7 +357,7 @@
                                 </a>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                     <!-- END User Dropdown -->
 
                     <!-- Notifications -->

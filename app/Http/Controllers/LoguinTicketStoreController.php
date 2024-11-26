@@ -399,16 +399,16 @@ class LoguinTicketStoreController extends Controller
         // Insertar el ticket en la base de datos
         $ticketId = $this->glpi->table('glpi_tickets')->insertGetId([
             'name' => '[PRUEBA] SOLICITUD USUARIO LOGIN (PANA, EVEREST) - ' . $identificacion,
-            'date' => now('America/Bogota'),
             'content' => $encodedTable,
             'users_id_recipient' => 102, // ID del usuario que envía la solicitud
+            'date_creation' => now('America/Bogota'),
+            'date' => now('America/Bogota'),
+            'time_to_own' => now('America/Bogota')->addHour(),
+            'time_to_resolve' => now('America/Bogota')->addHour(72),
             'date_mod' => now('America/Bogota'),
             'users_id_lastupdater' => 102, // ID del usuario que envía la solicitud
             'itilcategories_id' => 8, // Categoría del ticket
-            'time_to_resolve' => now('America/Bogota'),
-            'time_to_own' => now('America/Bogota'),
             'locations_id' => 183, // ID de la sede
-            'date_creation' => now('America/Bogota'),
             'entities_id' => 0,
             'closedate' => null,
             'solvedate' => null,
@@ -557,16 +557,16 @@ class LoguinTicketStoreController extends Controller
     
         $ticketInfra = $this->glpi->table('glpi_tickets')->insertGetId([
             'name' => '[PRUEBA] SOLICITUD USUARIO LOGUIN (CORREO, USUARIO DOMINIO, VPN)- ' . $identificacion,
-            'date' => now('America/Bogota'),
             'content' => $infraTable,
             'users_id_recipient' => 102,
+            'date_creation' => now('America/Bogota'),
+            'date' => now('America/Bogota'),
+            'time_to_own' => now('America/Bogota')->addHour(),
+            'time_to_resolve' => now('America/Bogota')->addHour(72),
             'date_mod' => now('America/Bogota'),
             'users_id_lastupdater' => 102,
             'itilcategories_id' => 48,
-            'time_to_resolve' => now('America/Bogota'),
-            'time_to_own' => now('America/Bogota'),
             'locations_id' => 183,
-            'date_creation' => now('America/Bogota'),
             'entities_id' => 0, 
             'closedate' => null, 
             'solvedate' => null , 
