@@ -19,7 +19,7 @@ class SolicitudController extends Controller
     {
         $data = $this->getUsuariosConSolicitudes();
     
-/*         if ($data['loguin']->isEmpty()) {
+        /* if ($data['loguin']->isEmpty()) {
             return response()->json(['message' => 'No se encontró información'], 404);
         } */
     
@@ -89,26 +89,106 @@ class SolicitudController extends Controller
                 'a.email',
                 'b.ticket_id as loguin_ticket',
                 'b.fecha_creacion',
-            ])->get();
+                DB::raw("(
+                    SELECT 
+                        CASE 
+                            WHEN c.status = 2 AND d.items_id IS NULL THEN 'En curso'
+                            WHEN c.status = 2 AND c.id = d.items_id THEN 'Respuesta'
+                            WHEN c.status >= 5 THEN 'Cerrado'
+                            ELSE 0
+                        END
+                    FROM glpi_tickets c
+                    LEFT JOIN glpi_itilfollowups d ON d.items_id = c.id
+                    WHERE c.id = b.ticket_id
+                    LIMIT 1
+                ) AS status_title"),
+                DB::raw("(
+                    SELECT 
+                        CASE 
+                            WHEN c.status = 2 AND d.items_id IS NULL THEN 'success'
+                            WHEN c.status = 2 AND c.id = d.items_id THEN 'secondary'
+                            WHEN c.status >= 5 THEN 'info'
+                            ELSE 0
+                        END 
+                    FROM glpi_tickets c
+                    LEFT JOIN glpi_itilfollowups d ON d.items_id = c.id
+                    WHERE c.id = b.ticket_id
+                    LIMIT 1
+                ) AS status_color"),
+                DB::raw("(
+                    SELECT 
+                        CASE 
+                            WHEN c.status = 2 AND d.items_id IS NULL THEN 'far fa-circle'
+                            WHEN c.status = 2 AND c.id = d.items_id THEN 'far fa-comment'
+                            WHEN c.status >= 5 THEN 'fa fa-check'
+                            ELSE 0
+                        END 
+                    FROM glpi_tickets c
+                    LEFT JOIN glpi_itilfollowups d ON d.items_id = c.id
+                    WHERE c.id = b.ticket_id
+                    LIMIT 1
+                ) AS status_icon")
+            ])
+            ->get();
 
         $infra = $this->glpi->table('loguin_usuarios as a')
-        ->join('loguin_solicitud_infraestructura as b', 'b.usuario_id', 'a.id')
-        ->orderByDesc('b.fecha_creacion')
-        ->select([
-            'b.id as solicitud_infra_id',
-            'a.id as usuario_id', 
-            'a.identificacion',
-            DB::raw("CONCAT(a.nombres,' ', a.apellidos) as nombreCompleto"), 
-            'a.email',
-            'b.ticket_id as infra_ticket',
-            'b.fecha_creacion',
-        ])->get();
+            ->join('loguin_solicitud_infraestructura as b', 'b.usuario_id', 'a.id')
+            ->orderByDesc('b.fecha_creacion')
+            ->select([
+                'b.id as solicitud_infra_id',
+                'a.id as usuario_id', 
+                'a.identificacion',
+                DB::raw("CONCAT(a.nombres,' ', a.apellidos) as nombreCompleto"), 
+                'a.email',
+                'b.ticket_id as infra_ticket',
+                'b.fecha_creacion',
+                DB::raw("(
+                    SELECT 
+                        CASE 
+                            WHEN c.status = 2 AND d.items_id IS NULL THEN 'En curso'
+                            WHEN c.status = 2 AND c.id = d.items_id THEN 'Respuesta'
+                            WHEN c.status >= 5 THEN 'Cerrado'
+                            ELSE 0
+                        END 
+                    FROM glpi_tickets c
+                    LEFT JOIN glpi_itilfollowups d ON d.items_id = c.id
+                    WHERE c.id = b.ticket_id
+                    LIMIT 1
+                ) AS status_title"),
+                DB::raw("(
+                    SELECT 
+                        CASE 
+                            WHEN c.status = 2 AND d.items_id IS NULL THEN 'success'
+                            WHEN c.status = 2 AND c.id = d.items_id THEN 'secondary'
+                            WHEN c.status >= 5 THEN 'info'
+                            ELSE 0
+                        END 
+                    FROM glpi_tickets c
+                    LEFT JOIN glpi_itilfollowups d ON d.items_id = c.id
+                    WHERE c.id = b.ticket_id
+                    LIMIT 1
+                ) AS status_color"),
+                DB::raw("(
+                    SELECT 
+                        CASE 
+                            WHEN c.status = 2 AND d.items_id IS NULL THEN 'far fa-circle'
+                            WHEN c.status = 2 AND c.id = d.items_id THEN 'far fa-comment'
+                            WHEN c.status >= 5 THEN 'fa fa-check'
+                            ELSE 0
+                        END 
+                    FROM glpi_tickets c
+                    LEFT JOIN glpi_itilfollowups d ON d.items_id = c.id
+                    WHERE c.id = b.ticket_id
+                    LIMIT 1
+                ) AS status_icon")
+            ])
+            ->get();
 
-            $titleWords = ['En curso', 'Respuesta', 'Cerrado'];
-            $colors = ['success', 'info', 'secondary'];
+            //$titleWords = ['En curso', 'Respuesta', 'Cerrado'];
+            //$colors = ['success', 'info', 'secondary'];
 
             // Asignar estado y color aleatorio a cada solicitud
-            $loguin = $loguin->map(function ($item) use ($titleWords, $colors) {
+            /* $loguin = $loguin->map(function ($item) use ($titleWords, $colors) {
                 $randomKey = array_rand($titleWords);
                 $item->status_title = $titleWords[$randomKey];
                 $item->status_color = $colors[$randomKey];
@@ -120,7 +200,7 @@ class SolicitudController extends Controller
                 $item->status_title = $titleWords[$randomKey];
                 $item->status_color = $colors[$randomKey];
                 return $item;
-            });
+            }); */
 
             $data = [
                 'loguin' => $loguin,

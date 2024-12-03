@@ -132,7 +132,7 @@ class RenderDataSolicitudLoguin {
     blockDataUser.querySelector('#loguin-cargo').innerHTML = `<i class="fa fa-briefcase me-1"></i>${usuario.cargo}` || 'N/A';
     blockDataUser.querySelector('#loguin-ticket').href = `http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${usuario.ticket_id}` || 'N/A';
     blockDataUser.querySelector('#loguin-ticket').setAttribute('target', '_blank');
-    blockDataUser.querySelector('#modal-ticket-numero').innerHTML = `<span class="badge bg-primary"><i class="fa fa-ticket me-1"></i>${usuario.ticket_id}</span>` || 'N/A';
+    blockDataUser.querySelector('#modal-ticket-numero').innerHTML = `<span class="badge bg-${usuario.status_color}"></i><i class="${usuario.status_icon} me-1"></i>${usuario.ticket_id}</span>` || 'N/A';
     BlockObservation.querySelector('#observacion-loguin').innerHTML = `<i class="fa fa-circle-info me-1"></i>${usuario.observaciones === '' ? 'Sin observaciones' : usuario.observaciones}` || 'N/A';
     
     const hasEspecialidad = especialidadUsuario && especialidadUsuario.length > 0;

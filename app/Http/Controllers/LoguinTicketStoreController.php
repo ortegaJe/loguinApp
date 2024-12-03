@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -203,7 +204,7 @@ class LoguinTicketStoreController extends Controller
             $encodedTable = $this->generateEncodedTable($dataUsuario, $dataAplicacioPerfil, $nombreEspecialidad, $observacionesStr, $cargo->name);
             
             // Crear el ticket de loguin
-            $ticketLoguin = $this->createLoguinTicket($identificacion, $encodedTable);
+            $ticketLoguin = $this->createLoguinTicket($identificacion, $encodedTable, $sede_id);
 
             // Actualizar la solicitud con el ticket de loguin
             $this->updateLoguinRequest($solicitudId, $ticketLoguin);
@@ -394,21 +395,23 @@ class LoguinTicketStoreController extends Controller
     }
 
     // Función para crear un ticket de Loguin
-    private function createLoguinTicket($identificacion, $encodedTable)
+    private function createLoguinTicket($identificacion, $encodedTable, $sedeId)
     {
+        $currentUser = Auth::guard('glpi')->id();
+
         // Insertar el ticket en la base de datos
         $ticketId = $this->glpi->table('glpi_tickets')->insertGetId([
             'name' => '[PRUEBA] SOLICITUD USUARIO LOGIN (PANA, EVEREST) - ' . $identificacion,
             'content' => $encodedTable,
-            'users_id_recipient' => 102, // ID del usuario que envía la solicitud
+            'users_id_recipient' => $currentUser, // ID del usuario que envía la solicitud
             'date_creation' => now('America/Bogota'),
             'date' => now('America/Bogota'),
             'time_to_own' => now('America/Bogota')->addHour(),
             'time_to_resolve' => now('America/Bogota')->addHour(72),
             'date_mod' => now('America/Bogota'),
-            'users_id_lastupdater' => 102, // ID del usuario que envía la solicitud
+            'users_id_lastupdater' => $currentUser, // ID del usuario que envía la solicitud
             'itilcategories_id' => 8, // Categoría del ticket
-            'locations_id' => 183, // ID de la sede
+            'locations_id' => $sedeId, // ID de la sede
             'entities_id' => 0,
             'closedate' => null,
             'solvedate' => null,
@@ -538,14 +541,16 @@ class LoguinTicketStoreController extends Controller
     }
     
     // Función para crear el ticket de infraestructura
-    private function createInfrastructureTicket($identificacion, $infraTable, $infraestructura, $appUserId, $zonal_id, $sede_id, $observacionesStr, $cargoId)
+    private function createInfrastructureTicket($identificacion, $infraTable, $infraestructura, $appUserId, $zonalId, $sedeId, $observacionesStr, $cargoId)
     {
         // Insertar en la base de datos
+        $currentUser = Auth::guard('glpi')->id();
+        
         $solicitudes = [
             'usuario_id' => $appUserId,
             'cargo_id' => $cargoId,
-            'zonal_id' => $zonal_id,
-            'sede_id' => $sede_id,
+            'zonal_id' => $zonalId,
+            'sede_id' => $sedeId,
             'solicito_correo' => isset($infraestructura[0]['radio_valor']) ? $infraestructura[0]['radio_valor'] : 0,
             'solicito_usuario_dominio' => isset($infraestructura[1]['radio_valor']) ? $infraestructura[1]['radio_valor'] : 0,
             'solicito_vpn' => isset($infraestructura[2]['radio_valor']) ? $infraestructura[2]['radio_valor'] : 0,
@@ -558,15 +563,15 @@ class LoguinTicketStoreController extends Controller
         $ticketInfra = $this->glpi->table('glpi_tickets')->insertGetId([
             'name' => '[PRUEBA] SOLICITUD USUARIO LOGUIN (CORREO, USUARIO DOMINIO, VPN)- ' . $identificacion,
             'content' => $infraTable,
-            'users_id_recipient' => 102,
+            'users_id_recipient' => $currentUser,
             'date_creation' => now('America/Bogota'),
             'date' => now('America/Bogota'),
             'time_to_own' => now('America/Bogota')->addHour(),
             'time_to_resolve' => now('America/Bogota')->addHour(72),
             'date_mod' => now('America/Bogota'),
-            'users_id_lastupdater' => 102,
+            'users_id_lastupdater' => $currentUser,
             'itilcategories_id' => 48,
-            'locations_id' => 183,
+            'locations_id' => $sedeId,
             'entities_id' => 0, 
             'closedate' => null, 
             'solvedate' => null , 

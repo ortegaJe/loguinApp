@@ -57,8 +57,9 @@
                                         href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id={{ $loguin->infra_ticket }}"
                                         target="_blank">INF.{{ $loguin->infra_ticket }}</a></td>
                                 <td class="d-none d-sm-table-cell">
-                                    <span
-                                        class="badge bg-{{ $loguin->status_color }} w-100">{{ $loguin->status_title }}</span>
+                                    <span class="badge bg-{{ $loguin->status_color }} w-100">
+                                        <i class="{{ $loguin->status_icon }} me-1"></i>
+                                        {{ $loguin->status_title }}</span>
                                 </td>
                                 <td class="text-muted d-none d-md-table-cell">
                                     {{ Carbon\Carbon::parse($loguin->fecha_creacion)->format('d/m/Y') }}

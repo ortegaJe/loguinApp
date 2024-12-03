@@ -15,7 +15,7 @@ Route::get(
     }
 );
 
-Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN|ANALISTA_APP'])->group(function () {
+Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN|ANALISTA_APP|CONTRATACION'])->group(function () {
     Route::get('loguin/formulario', [DropdownController::class, 'index']);
     Route::post('fetchSedes', [DropdownController::class, 'fetchSedes']);
     Route::post('fetchTipoCargoSede', [DropdownController::class, 'fetchTipoCargoSede']);
@@ -52,12 +52,28 @@ Route::middleware(['auth:glpi', 'profile:ANALISTA_APP|INFRAESTRUCTURA'])->group(
 
 });
 
-Route::match (['get', 'post'], '/login',  [GlpiAuthController::class, 'login'])->name('login')->middleware('guest');
-Route::get('/logout', [GlpiAuthController::class, 'logout'])->name('logout')->middleware('auth');
+Route::match(['get', 'post'], '/login',  [GlpiAuthController::class, 'login'])->name('login');
+Route::match(['get', 'post'], '/logout', [GlpiAuthController::class, 'logout'])->name('logout');
 
 Route::get('/get-mysecond-connection', function () {
     $glpi = DB::connection('glpi');
     $products = $glpi->table('glpi_locations')->where('sw_regional', 1)->get();
     
     return response()->json($products);
+});
+
+Route::get('/query', function () {
+
+    return $estadoSubquery = DB::connection('glpi')->table('glpi_tickets as c')
+    ->leftJoin('glpi_itilfollowups as d', 'd.items_id', 'c.id')
+    ->select(DB::raw("
+        CASE 
+            WHEN c.status = 2 AND d.items_id IS NULL THEN 'En curso'
+            WHEN c.status = 2 AND c.id = d.items_id THEN 'Respuesta'
+            WHEN c.status >= 5 THEN 'Cerrado'
+            ELSE 0
+        END as status
+    "))
+    ->where('c.id', 40124)
+    ->first();
 });

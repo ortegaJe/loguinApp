@@ -14,14 +14,15 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('media/favicons/apple-touch-icon-180x180.png') }}"> --}}
 
     <!-- Modules -->
-    @yield('css')
     <link rel="stylesheet" href="{{ asset('/js/plugins/sweetalert2/sweetalert2.min.css') }}">
     @vite(['resources/sass/main.scss', 'resources/js/codebase/app.js'])
+    @yield('css')
 
     <!-- Alternatively, you can also include a specific color theme after the main stylesheet to alter the default color theme of the template -->
     {{-- @vite(['resources/sass/main.scss', 'resources/sass/codebase/themes/corporate.scss', 'resources/js/codebase/app.js']) --}}
+    <script src="{{ asset('/js/lib/jquery.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-    <script>
+    <script type="module">
         document.querySelectorAll('#logout-link').forEach(button => {
             button.addEventListener('click', function(event) {
                 event.preventDefault();
@@ -32,8 +33,8 @@
                     showCancelButton: true,
                     buttonsStyling: false,
                     customClass: {
-                        confirmButton: "btn btn-alt-success m-5",
-                        cancelButton: "btn btn-alt-danger m-5",
+                        confirmButton: "btn btn-alt-success m-1",
+                        cancelButton: "btn btn-alt-danger m-1",
                         input: "form-control"
                     },
                     confirmButtonText: 'Sí, cerrar sesión',
@@ -202,6 +203,7 @@
                                     ->first();
 
                                 //echo $user_id;
+
                             @endphp
                             <ul class="list-inline mt-3 mb-0">
                                 <li class="list-inline-item">
@@ -216,7 +218,7 @@
                                     </a>
                                 </li>
                                 <li class="list-inline-item">
-                                    <a class="link-fx text-dual" href="{{ route('logout') }}" id="logout-link">
+                                    <a class="link-fx text-dual" href="javascript:void(0)" id="logout-link">
                                         <i class="fa fa-sign-out-alt"></i>
                                     </a>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">

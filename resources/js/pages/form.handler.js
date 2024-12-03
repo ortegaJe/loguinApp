@@ -156,6 +156,10 @@ class ApplicationFormManager {
     jQuery('.js-select2').on('change', e => {
         jQuery(e.currentTarget).valid();
     });
+
+    tippy('#myButton', {
+        content: 'My tooltip!',
+    });
     }
 
     static async handleFetchResponse(response) {
@@ -455,8 +459,8 @@ class ApplicationFormManager {
                     <input type="checkbox" class="form-check-input checkbox-group" name="sw_correo_${index}" value="1"
                         id="sw_correo_${solicitud.sw_correo}" ${solicitud.sw_correo === 0 ? 'disabled' : ''}>
                     <label for="sw_correo_${solicitud.sw_correo}" class="form-check-label">Requiere Correo Institucional</label>
-                    <a class="badge rounded-pill bg-primary ayuda-modal" href="javascript:void(0)" data-tipo="correo">
-                        <i class="fa fa-question"></i>
+                    <a class="badge bg-primary rounded-pill btn-tooltip" href="javascript:void(0)" data-tippy-tipo="correo">
+                        <i class="fa fa-question"></i> 
                     </a>`;
                                     
                 const checkboxDominio = document.createElement('div');
@@ -465,8 +469,8 @@ class ApplicationFormManager {
                     <input type="checkbox" class="form-check-input checkbox-group" name="sw_dominio_${index}" value="1"
                         id="sw_dominio_${solicitud.sw_dominio}" ${solicitud.sw_dominio === 0 ? 'disabled' : ''}>
                     <label for="sw_dominio_${solicitud.sw_dominio}" class="form-check-label">Requiere Usuario Dominio</label>
-                    <a class="badge rounded-pill bg-primary ayuda-modal" href="javascript:void(0)" data-tipo="dominio">
-                        <i class="fa fa-question"></i>
+                    <a class="badge bg-primary rounded-pill btn-tooltip" href="javascript:void(0)" data-tippy-tipo="dominio">
+                        <i class="fa fa-question"></i> 
                     </a>`;
                 
                 const checkboxVPN = document.createElement('div');
@@ -475,8 +479,8 @@ class ApplicationFormManager {
                     <input type="checkbox" class="form-check-input checkbox-group" name="sw_vpn_${index}" value="1"
                         id="sw_vpn_${solicitud.sw_vpn}" ${solicitud.sw_vpn === 0 ? 'disabled' : ''}>
                     <label for="sw_vpn_${solicitud.sw_vpn}" class="form-check-label">Requiere VPN</label>
-                    <a class="badge rounded-pill bg-primary ayuda-modal" href="javascript:void(0)" data-tipo="vpn">
-                        <i class="fa fa-question"></i>
+                    <a class="badge bg-primary rounded-pill btn-tooltip" href="javascript:void(0)" data-tippy-tipo="vpn">
+                        <i class="fa fa-question"></i> 
                     </a>`;
 
                 this.checkboxInfraContainer.appendChild(checkboxCorreo);
@@ -484,13 +488,22 @@ class ApplicationFormManager {
                 this.checkboxInfraContainer.appendChild(checkboxVPN);
             });
 
-            document.addEventListener('click', (e) => {
-                if (e.target.closest('.ayuda-modal')) {
-                    e.preventDefault();
-                    const tipo = e.target.closest('.ayuda-modal').getAttribute('data-tipo');
-                    this.mostrarModal(explicaciones[tipo]);
-                }
+            tippy('.btn-tooltip', {
+                content(reference) {
+                    const tipo = reference.getAttribute('data-tippy-tipo');
+                    if (explicaciones[tipo]) {
+                        const { titulo, descripcion } = explicaciones[tipo];
+                        return `<strong>${titulo}</strong><br>${descripcion}`;
+                    }
+                    return 'Información no disponible';
+                },
+                allowHTML: true,
+                theme: 'material',
+                animation: 'fade',
+                placement: 'right',
+                arrow: true,
             });
+
         } catch (error) {
             // Remover la clase `block-mode-loading` si ocurre un error
             this.blockElement.classList.remove('block-mode-loading');

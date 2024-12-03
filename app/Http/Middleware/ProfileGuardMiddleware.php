@@ -44,4 +44,36 @@ class ProfileGuardMiddleware
         // Si el rol no coincide, denegar el acceso
         return response()->json(['message' => 'No tienes permiso para acceder a esta página.'], 403);
     }
+
+/*     public function handle(Request $request, Closure $next, $roles): Response
+    {
+        // Roles permitidos por la ruta (separados por '|')
+        $route_roles_array = explode('|', $roles);
+        
+        
+        // Validar si el usuario está autenticado
+        if (Auth::guard('glpi')->check()) {
+            $roleValue = UserProfiles::values(); // Usar Enum para obtener el valor correspondiente al nombre del rol
+            dd($roleValue);
+            
+            $currentUser = Auth::guard('glpi')->user();
+            //dd($currentUser);
+            // Consultar el rol del usuario desde la tabla glpi_profiles_users
+            $userProfile = DB::table('glpi_profiles_users')
+                ->where('users_id', $currentUser->id) // Relacionar el usuario autenticado con su ID
+                ->value('profiles_id'); // Obtener el ID del perfil del usuario
+            //dd($userProfile);
+            // Verificar si el perfil obtenido coincide con alguno de los roles permitidos
+            foreach ($route_roles_array as $key => $value) {
+                dd($roleValue[$value]);
+
+                if ($roleValue[$value] == $userProfile) {
+                    return $next($request); // Continuar si el rol coincide
+                }
+            }
+        }
+
+        // Si el rol no coincide, denegar el acceso
+        return response()->json(['message' => 'No tienes permiso para acceder a esta página.'], 403);
+    } */
 }

@@ -36,13 +36,14 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('/js/lib/jquery.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/select2/js/select2.full.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/jquery-validation/jquery.validate.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/jquery-validation/additional-methods.js') }}"></script>
-    <script src="{{ asset('/js/plugins/bootstrap3-typeahead.min.js') }}" async></script>
+    <script src="{{ asset('/js/plugins/bootstrap3-typeahead.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
     <script type="module">
         Codebase.helpersOnLoad(['jq-select2', 'jq-notify', 'jq-validation']);
     </script>
@@ -74,7 +75,7 @@
             <div class="col-lg-12">
                 <form id="main-form">
                     <div class="block block-themed block-rounded">
-                        <div class="block-header bg-primary-light">
+                        <div class="block-header">
                             <h3 class="block-title">Formulario de Solicitud Loguin</h3>
                             <div class="block-options">
                                 {{-- <button type="button" class="btn-block-option" data-toggle="block-option"

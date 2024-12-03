@@ -8,7 +8,6 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('/js/lib/jquery.min.js') }}"></script>
     <script src="{{ asset('js/plugins/datatables/dataTables.min.js') }}"></script>
     <script src="{{ asset('js/plugins/datatables-bs5/js/dataTables.bootstrap5.min.js') }}"></script>
     <script src="{{ asset('js/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
@@ -57,8 +56,9 @@
                                         href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id={{ $loguin->loguin_ticket }}"
                                         target="_blank">LOG.{{ $loguin->loguin_ticket }}</a></td>
                                 <td class="d-none d-sm-table-cell">
-                                    <span
-                                        class="badge bg-{{ $loguin->status_color }} w-100">{{ $loguin->status_title }}</span>
+                                    <span class="badge bg-{{ $loguin->status_color }} w-100">
+                                        <i class="{{ $loguin->status_icon }} me-1"></i>
+                                        {{ $loguin->status_title }}</span>
                                 </td>
                                 <td class="text-muted d-none d-md-table-cell">
                                     {{ Carbon\Carbon::parse($loguin->fecha_creacion)->format('d/m/Y') }}
@@ -74,8 +74,7 @@
                                         </button>
                                         <button type="button" class="btn btn-sm btn-secondary btn-register-loguin"
                                             data-toggle="click-ripple" data-bs-toggle="tooltip"
-                                            title="Registrar credenciales"
-                                            {{-- onclick="window.location='{{ route('register.loguin', $loguin->solicitud_id) }}'" --}}
+                                            title="Registrar credenciales" {{-- onclick="window.location='{{ route('register.loguin', $loguin->solicitud_id) }}'" --}}
                                             data-solicitud-id="{{ $loguin->solicitud_id }}" data-solicitud-tipo="loguin">
                                             <i class="fa fa-user-pen"></i>
                                         </button>

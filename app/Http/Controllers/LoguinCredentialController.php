@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class LoguinCredentialController extends Controller
@@ -67,7 +68,33 @@ class LoguinCredentialController extends Controller
                 DB::raw("UPPER(e.name) as cargo"),
                 'a.ticket_id',
                 'a.observaciones',
-                DB::raw("DATE_FORMAT(a.fecha_creacion, '%d/%m%/%Y') as fecha_creacion")
+                DB::raw("DATE_FORMAT(a.fecha_creacion, '%d/%m%/%Y') as fecha_creacion"),
+                DB::raw("(
+                    SELECT 
+                        CASE 
+                            WHEN c.status = 2 AND d.items_id IS NULL THEN 'success'
+                            WHEN c.status = 2 AND c.id = d.items_id THEN 'secondary'
+                            WHEN c.status >= 5 THEN 'info'
+                            ELSE 0
+                        END 
+                    FROM glpi_tickets c
+                    LEFT JOIN glpi_itilfollowups d ON d.items_id = c.id
+                    WHERE c.id = a.ticket_id
+                    LIMIT 1
+                ) AS status_color"),
+                DB::raw("(
+                    SELECT 
+                        CASE 
+                            WHEN c.status = 2 AND d.items_id IS NULL THEN 'far fa-circle'
+                            WHEN c.status = 2 AND c.id = d.items_id THEN 'far fa-comment'
+                            WHEN c.status >= 5 THEN 'fa fa-check'
+                            ELSE 0
+                        END 
+                    FROM glpi_tickets c
+                    LEFT JOIN glpi_itilfollowups d ON d.items_id = c.id
+                    WHERE c.id = a.ticket_id
+                    LIMIT 1
+                ) AS status_icon")
             ])->get();
     }
     
@@ -137,12 +164,15 @@ class LoguinCredentialController extends Controller
 
     private function registerLoguinApplications($aplicacionesLoguin, $solicitud)
     {
+        $currentUser = Auth::guard('glpi')->id();
+
         foreach ($aplicacionesLoguin as $loguin) {
             $this->glpi->table('loguin_solicitud_detalle')
             ->where('solicitud_id', $solicitud)
             ->where('aplicacion_id', $loguin['app_id'])
             ->where('perfil_id', $loguin['perfil_id'])
             ->update([
+                'users_id_recipient' => $currentUser,
                 'usuario_loguin' => $loguin['usuario_loguin'],
                 'password_loguin' => $loguin['password_loguin'],
                 'mipres' => $loguin['asociado'],
