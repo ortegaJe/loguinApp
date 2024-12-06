@@ -427,7 +427,17 @@ class ApplicationFormManager {
                 const checkboxLabel = document.createElement('label');
                 checkboxLabel.classList.add('form-check-label');
                 checkboxLabel.htmlFor = `perfil-${index}`;
-                checkboxLabel.textContent = `${perfil.aplicacion} - ${perfil.perfil.toUpperCase()}`;
+                const app = perfil.aplicacion
+                    .toLowerCase()
+                    .split(' ')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                const appPerfil = perfil.perfil
+                    .toLowerCase()
+                    .split(' ')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                checkboxLabel.textContent = `${app} ${appPerfil}`;
 
                 checkboxDiv.appendChild(checkboxInput);
                 checkboxDiv.appendChild(checkboxLabel);
