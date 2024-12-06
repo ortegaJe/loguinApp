@@ -19,7 +19,7 @@
     @yield('css')
 
     <!-- Alternatively, you can also include a specific color theme after the main stylesheet to alter the default color theme of the template -->
-    {{-- @vite(['resources/sass/main.scss', 'resources/sass/codebase/themes/corporate.scss', 'resources/js/codebase/app.js']) --}}
+   @vite(['resources/sass/main.scss', 'resources/sass/codebase/themes/corporate.scss', 'resources/js/codebase/app.js'])
     <script src="{{ asset('/js/lib/jquery.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
     <script type="module">
@@ -96,7 +96,8 @@
       'sidebar-dark page-header-dark dark-mode'   Enable dark mode (light sidebar/header is not supported with dark mode)
   -->
     <div id="page-container"
-        class="sidebar-o enable-page-overlay side-scroll page-header-modern main-content-boxed sidebar-dark page-header-dark dark-mode">
+        {{-- class="sidebar-o enable-page-overlay side-scroll page-header-modern main-content-boxed sidebar-dark page-header-dark dark-mode"> --}}
+        class="sidebar-o enable-page-overlay side-scroll page-header-modern main-content-boxed sidebar page-header">
         <!-- Side Overlay-->
         {{-- <aside id="side-overlay">
       <!-- Side Header -->

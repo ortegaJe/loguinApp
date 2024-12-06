@@ -34,7 +34,7 @@
         <!-- Partial Table -->
         <div class="block block-rounded">
             <div class="block-content block-content-full">
-                <table class="table table-borderless table-hover table-vcenter js-dataTable-full" id="solicitudesTable">
+                <table class="table table-borderless table-hover table-striped table-vcenter js-dataTable-full" id="solicitudesTable">
                     <thead class="text-end border-bottom">
                         <tr>
                             <th class="d-none d-md-table-cell">#</th>

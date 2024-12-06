@@ -159,7 +159,7 @@ class RenderDataSolicitudLoguinInfra {
         //console.log('Key:', key, 'Value:', value, 'Infra Element:', infraElements[key]);
 
         const infraBlockDiv = document.createElement('div');
-        infraBlockDiv.classList.add('block', 'block-rounded');
+        infraBlockDiv.classList.add('block', 'block-themed', 'block-rounded');
         infraBlockDiv.id = 'infraestructura';
         //infraBlockDiv.setAttribute('data-solicitud-id', `${loguinSolicitud.solicitud_id}`)
 

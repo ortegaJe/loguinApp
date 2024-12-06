@@ -119,7 +119,7 @@
         <div class="row">
             <!-- Billing Address -->
             <div class="col-md-12">
-                <div class="block block-rounded">
+                <div class="block block-themed block-rounded">
                     <div class="block-header block-header-default">
                         <h3 class="block-title">Información Loguin</i></h3>
                     </div>

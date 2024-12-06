@@ -156,7 +156,7 @@ class RenderDataSolicitudLoguin {
     // Crear un bloque unificado para las aplicaciones con is_coraza = 1
     if (corazaApps.length > 0) {
         const corazaBlockDiv = document.createElement('div');
-        corazaBlockDiv.classList.add('block', 'block-rounded');
+        corazaBlockDiv.classList.add('block', 'block-themed', 'block-rounded');
         corazaBlockDiv.id = 'aplicacion';
         corazaBlockDiv.setAttribute('data-solicitud-id', `${loguinSolicitud[0].solicitud_id}`)
 
@@ -234,7 +234,7 @@ class RenderDataSolicitudLoguin {
     // Crear bloques separados para las aplicaciones con is_coraza = 0
     otherApps.forEach(app => {
         const blockDiv = document.createElement('div');
-        blockDiv.classList.add('block', 'block-rounded');
+        blockDiv.classList.add('block', 'block-themed', 'block-rounded');
         blockDiv.id = 'aplicacion';
 
         const headerDiv = document.createElement('div');
@@ -306,7 +306,7 @@ class RenderDataSolicitudLoguin {
 
         // Crear el bloque mipres
         const mipresblockDiv = document.createElement('div');
-        mipresblockDiv.classList.add('block', 'block-rounded');
+        mipresblockDiv.classList.add('block', 'block-themed', 'block-rounded');
         mipresblockDiv.id = 'aplicacion-mipres';
         miprescolDiv.appendChild(mipresblockDiv);
 
