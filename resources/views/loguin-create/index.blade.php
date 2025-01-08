@@ -65,7 +65,6 @@
     {{-- <script type="module" src="{{ asset('js/form.handler.js') }}"></script> --}}
 
     @vite(['resources/js/pages/form.handler.js'])
-    @vite(['resources/js/pages/be_pages_generic_todo.js'])
 @endsection
 
 @section('content')

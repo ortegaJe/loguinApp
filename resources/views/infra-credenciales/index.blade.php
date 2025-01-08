@@ -22,7 +22,7 @@
     <script src="{{ asset('js/plugins/datatables-buttons/buttons.html5.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
 
-    @vite(['resources/js/pages/datatables.solicitudes.infra.credenciales.js'])
+    @vite(['resources/js/pages/datatables.solicitudes.credenciales.infra.js'])
 @endsection
 
 @section('content')
