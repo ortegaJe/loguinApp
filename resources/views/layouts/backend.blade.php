@@ -210,13 +210,13 @@
                                     <a class="link-fx text-dual fs-sm fw-semibold text-uppercase"
                                         href="javascript:void(0)">{{ $user->name }}</a>
                                 </li>
-                                <li class="list-inline-item">
+                                {{-- <li class="list-inline-item">
                                     <!-- Layout API, functionality initialized in Template._uiApiLayout() -->
                                     <a class="link-fx text-dual" data-toggle="layout" data-action="dark_mode_toggle"
                                         href="javascript:void(0)">
                                         <i class="fa fa-moon"></i>
                                     </a>
-                                </li>
+                                </li> --}}
                                 <li class="list-inline-item">
                                     <a class="link-fx text-dual" href="javascript:void(0)" id="logout-link">
                                         <i class="fa fa-sign-out-alt"></i>
