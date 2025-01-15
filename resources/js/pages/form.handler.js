@@ -469,9 +469,7 @@ class ApplicationFormManager {
                     <input type="checkbox" class="form-check-input checkbox-group" name="sw_correo_${index}" value="1"
                         id="sw_correo_${solicitud.sw_correo}" ${solicitud.sw_correo === 0 ? 'disabled' : ''}>
                     <label for="sw_correo_${solicitud.sw_correo}" class="form-check-label">Requiere Correo Institucional</label>
-                    <span class="badge bg-primary rounded-pill btn-tooltip" data-tippy-tipo="correo">
-                        <i class="fa fa-question"></i> 
-                    </span>`;
+                    <i class="fa fa-circle-question text-primary btn-tooltip" data-tippy-tipo="correo"></i>`;
                                     
                 const checkboxDominio = document.createElement('div');
                 checkboxDominio.className = 'form-check';
@@ -479,9 +477,7 @@ class ApplicationFormManager {
                     <input type="checkbox" class="form-check-input checkbox-group" name="sw_dominio_${index}" value="1"
                         id="sw_dominio_${solicitud.sw_dominio}" ${solicitud.sw_dominio === 0 ? 'disabled' : ''}>
                     <label for="sw_dominio_${solicitud.sw_dominio}" class="form-check-label">Requiere Usuario Dominio</label>
-                    <span class="badge bg-primary rounded-pill btn-tooltip" data-tippy-tipo="dominio">
-                        <i class="fa fa-question"></i> 
-                    </span>`;
+                    <i class="fa fa-circle-question text-primary btn-tooltip" data-tippy-tipo="dominio"></i>`;
                 
                 const checkboxVPN = document.createElement('div');
                 checkboxVPN.className = 'form-check';
@@ -489,9 +485,7 @@ class ApplicationFormManager {
                     <input type="checkbox" class="form-check-input checkbox-group" name="sw_vpn_${index}" value="1"
                         id="sw_vpn_${solicitud.sw_vpn}" ${solicitud.sw_vpn === 0 ? 'disabled' : ''}>
                     <label for="sw_vpn_${solicitud.sw_vpn}" class="form-check-label">Requiere VPN</label>
-                    <span class="badge bg-primary rounded-pill btn-tooltip" data-tippy-tipo="vpn">
-                        <i class="fa fa-question"></i> 
-                    </span>`;
+                    <i class="fa fa-circle-question text-primary btn-tooltip" data-tippy-tipo="vpn"></i>`;
 
                 this.checkboxInfraContainer.appendChild(checkboxCorreo);
                 this.checkboxInfraContainer.appendChild(checkboxDominio);
