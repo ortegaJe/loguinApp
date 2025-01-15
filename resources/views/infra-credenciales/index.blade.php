@@ -8,7 +8,6 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('/js/lib/jquery.min.js') }}"></script>
     <script src="{{ asset('js/plugins/datatables/dataTables.min.js') }}"></script>
     <script src="{{ asset('js/plugins/datatables-bs5/js/dataTables.bootstrap5.min.js') }}"></script>
     <script src="{{ asset('js/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>

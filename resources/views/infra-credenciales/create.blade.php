@@ -99,7 +99,6 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('/js/lib/jquery.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/jquery-validation/jquery.validate.min.js') }}"></script>
     <script src="{{ asset('/js/plugins/jquery-validation/additional-methods.js') }}"></script>
