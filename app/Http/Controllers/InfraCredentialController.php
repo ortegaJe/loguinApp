@@ -8,13 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class InfraCredentialController extends Controller
 {
-    protected $glpi;
-
-    public function __construct()
-    {
-        $this->glpi = DB::connection('glpi');
-    }
-
     public function index()
     {
         return view('loguin-credenciales.index');
@@ -22,7 +15,7 @@ class InfraCredentialController extends Controller
 
     public function registerCredential($id)
     {
-        $solicitud = $this->glpi->table('loguin_solicitud_infraestructura')
+        $solicitud = DB::table('loguin_solicitud_infraestructura')
                         ->where('id', $id)
                         ->first(['id as solicitud', 'ticket_id']);
 
@@ -52,7 +45,7 @@ class InfraCredentialController extends Controller
 
     private function getUsuario($solicitudId)
     {
-        return $this->glpi->table('loguin_solicitud_infraestructura as a')
+        return DB::table('loguin_solicitud_infraestructura as a')
             ->join('loguin_usuarios as b', 'b.id', 'a.usuario_id')
             ->join('glpi_locations as c', 'c.id', 'a.sede_id')
             ->join('loguin_tipo_identificacion as d', 'd.id', 'b.tipoidentificacion_id')
@@ -100,7 +93,7 @@ class InfraCredentialController extends Controller
     
     private function getLoguinInfraSolicitud($solicitudId)
     {
-        return $this->glpi->table('loguin_solicitud_infraestructura as a')
+        return DB::table('loguin_solicitud_infraestructura as a')
             ->where('a.id', $solicitudId)
             ->select([
                 'a.id as solicitud_id',
@@ -112,7 +105,7 @@ class InfraCredentialController extends Controller
 
     private function getEspecialidadUsuario($solicitudId)
     {
-        return $this->glpi->table('loguin_especialidad_usuario as a')
+        return DB::table('loguin_especialidad_usuario as a')
             ->join('loguin_especialidades as b', 'b.id', 'a.especialidad_id')
             ->join('loguin_solicitud as c', 'c.id', 'a.solicitud_id')
             //->where('a.usuario_id', $userId)
@@ -162,7 +155,7 @@ class InfraCredentialController extends Controller
         $currentUser = Auth::guard('glpi')->id();
 
         foreach ($infraLoguin as $loguin) {
-            $this->glpi->table('loguin_solicitud_infraestructura_detalle')
+            DB::table('loguin_solicitud_infraestructura_detalle')
             ->where('solicitud_id', $solicitud)
             ->insert([
                 'solicitud_id' => $solicitud,
@@ -177,7 +170,7 @@ class InfraCredentialController extends Controller
  
     private function hasLoguins($solicitudId)
     {
-        return $this->glpi->table('loguin_solicitud_infraestructura as a')
+        return DB::table('loguin_solicitud_infraestructura as a')
         ->join('loguin_solicitud_infraestructura_detalle as b', 'b.solicitud_id', 'a.id')
         ->join('loguin_solicitudes_infraestructura as c', 'c.id', 'b.solicitud_infra_id')
         ->where('b.solicitud_id', $solicitudId)
@@ -192,7 +185,7 @@ class InfraCredentialController extends Controller
 
     public function getLoguinInfra($solicitudId)
     {
-        return $this->glpi->table('loguin_solicitud_infraestructura as a')
+        return DB::table('loguin_solicitud_infraestructura as a')
         ->join('loguin_solicitud_infraestructura_detalle as b', 'b.solicitud_id', 'a.id')
         ->join('loguin_solicitudes_infraestructura as c', 'c.id', 'b.solicitud_infra_id')
         ->where('b.solicitud_id', $solicitudId)

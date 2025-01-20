@@ -8,13 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class SolicitudController extends Controller
 {
-    protected $glpi;
-
-    public function __construct()
-    {
-        $this->glpi = DB::connection('glpi');
-    }
-    
     public function index()
     {
         $data = $this->getUsuariosConSolicitudes();
@@ -78,7 +71,7 @@ class SolicitudController extends Controller
     {
         $data = [];
 
-        $loguin = $this->glpi->table('loguin_usuarios as a')
+        $loguin = DB::table('loguin_usuarios as a')
             ->join('loguin_solicitud as b', 'b.usuario_id', 'a.id')
             ->orderByDesc('b.fecha_creacion')
             ->select([
@@ -131,7 +124,7 @@ class SolicitudController extends Controller
             ])
             ->get();
 
-        $infra = $this->glpi->table('loguin_usuarios as a')
+        $infra = DB::table('loguin_usuarios as a')
             ->join('loguin_solicitud_infraestructura as b', 'b.usuario_id', 'a.id')
             ->orderByDesc('b.fecha_creacion')
             ->select([
@@ -212,7 +205,7 @@ class SolicitudController extends Controller
     
     private function getUsuario($solicitudId)
     {
-        return $this->glpi->table('loguin_solicitud as a')
+        return DB::table('loguin_solicitud as a')
             ->join('loguin_usuarios as b', 'b.id', 'a.usuario_id')
             ->join('glpi_locations as c', 'c.id', 'a.sede_id')
             ->where('a.id', $solicitudId)
@@ -230,7 +223,7 @@ class SolicitudController extends Controller
     
     private function getLoguinSolicitud($solicitudId)
     {
-        return $this->glpi->table('loguin_solicitud as a')
+        return DB::table('loguin_solicitud as a')
             ->join('loguin_solicitud_detalle as b', 'b.solicitud_id', 'a.id')
             ->join('loguin_aplicaciones as c', 'c.id', 'b.aplicacion_id')
             ->join('loguin_perfil as d', 'd.id', 'b.perfil_id')
@@ -244,7 +237,7 @@ class SolicitudController extends Controller
 
     private function getInfraSolicitud($solicitudId, $userId)
     {
-        return $this->glpi->table('loguin_solicitud_infraestructura as a')
+        return DB::table('loguin_solicitud_infraestructura as a')
             ->join('glpi_locations as b', 'b.id', 'a.sede_id')
             ->join('loguin_usuarios as c', 'c.id', 'a.usuario_id')
             ->where('a.id', $solicitudId)
@@ -267,7 +260,7 @@ class SolicitudController extends Controller
     
     private function getEspecialidadUsuario($userId, $solicitudId)
     {
-        return $this->glpi->table('loguin_especialidad_usuario as a')
+        return DB::table('loguin_especialidad_usuario as a')
             ->leftJoin('loguin_especialidades as b', 'b.id', 'a.especialidad_id')
             ->leftJoin('loguin_solicitud as c', 'c.id', 'a.solicitud_id')
             ->where('a.usuario_id', $userId)

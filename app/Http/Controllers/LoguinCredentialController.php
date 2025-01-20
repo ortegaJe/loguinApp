@@ -8,13 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class LoguinCredentialController extends Controller
 {
-    protected $glpi;
-
-    public function __construct()
-    {
-        $this->glpi = DB::connection('glpi');
-    }
-
     public function index()
     {
         return view('loguin-credenciales.index');
@@ -22,7 +15,7 @@ class LoguinCredentialController extends Controller
 
     public function registerCredential($id)
     {
-        $solicitud = $this->glpi->table('loguin_solicitud')
+        $solicitud = DB::table('loguin_solicitud')
                         ->where('id', $id)
                         ->first(['id as solicitud', 'ticket_id']);
 
@@ -52,7 +45,7 @@ class LoguinCredentialController extends Controller
 
     private function getUsuario($solicitudId)
     {
-        return $this->glpi->table('loguin_solicitud as a')
+        return DB::table('loguin_solicitud as a')
             ->join('loguin_usuarios as b', 'b.id', 'a.usuario_id')
             ->join('glpi_locations as c', 'c.id', 'a.sede_id')
             ->join('loguin_tipo_identificacion as d', 'd.id', 'b.tipoidentificacion_id')
@@ -100,7 +93,7 @@ class LoguinCredentialController extends Controller
     
     private function getLoguinSolicitud($solicitudId)
     {
-        return $this->glpi->table('loguin_solicitud as a')
+        return DB::table('loguin_solicitud as a')
             ->join('loguin_solicitud_detalle as b', 'b.solicitud_id', 'a.id')
             ->join('loguin_aplicaciones as c', 'c.id', 'b.aplicacion_id')
             ->join('loguin_perfil as d', 'd.id', 'b.perfil_id')
@@ -117,7 +110,7 @@ class LoguinCredentialController extends Controller
 
     private function getEspecialidadUsuario($solicitudId)
     {
-        return $this->glpi->table('loguin_especialidad_usuario as a')
+        return DB::table('loguin_especialidad_usuario as a')
             ->join('loguin_especialidades as b', 'b.id', 'a.especialidad_id')
             ->join('loguin_solicitud as c', 'c.id', 'a.solicitud_id')
             //->where('a.usuario_id', $userId)
@@ -167,7 +160,7 @@ class LoguinCredentialController extends Controller
         $currentUser = Auth::guard('glpi')->id();
 
         foreach ($aplicacionesLoguin as $loguin) {
-            $this->glpi->table('loguin_solicitud_detalle')
+            DB::table('loguin_solicitud_detalle')
             ->where('solicitud_id', $solicitud)
             ->where('aplicacion_id', $loguin['app_id'])
             ->where('perfil_id', $loguin['perfil_id'])
@@ -184,7 +177,7 @@ class LoguinCredentialController extends Controller
 
     private function hasLoguins($solicitudId)
     {
-        return $this->glpi->table('loguin_solicitud as a')
+        return DB::table('loguin_solicitud as a')
         ->join('loguin_solicitud_detalle as b', 'b.solicitud_id', 'a.id')
         ->join('loguin_aplicaciones as c', 'c.id', 'b.aplicacion_id')
         ->join('loguin_perfil as d', 'd.id', 'b.perfil_id')
@@ -202,7 +195,7 @@ class LoguinCredentialController extends Controller
 
     public function getLoguins($solicitudId)
     {
-        return $this->glpi->table('loguin_solicitud as a')
+        return DB::table('loguin_solicitud as a')
         ->join('loguin_solicitud_detalle as b', 'b.solicitud_id', 'a.id')
         ->join('loguin_aplicaciones as c', 'c.id', 'b.aplicacion_id')
         ->join('loguin_perfil as d', 'd.id', 'b.perfil_id')

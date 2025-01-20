@@ -9,13 +9,6 @@ use Illuminate\Support\Str;
 
 class LoguinTicketStoreController extends Controller
 {
-    protected $glpi;
-
-    public function __construct()
-    {
-        $this->glpi = DB::connection('glpi');
-    }
-    
     public function storeLoguinTicket(Request $request)
     {
         // Iniciar una transacción para asegurar la consistencia de los datos
@@ -88,14 +81,14 @@ class LoguinTicketStoreController extends Controller
         $emailStr = Str::lower($email);
         
         // Intentar encontrar el usuario existente
-        $user = $this->glpi->table('loguin_usuarios')
+        $user = DB::table('loguin_usuarios')
             ->where('tipoidentificacion_id', $tipo_identificacion_id)
             ->where('identificacion', $identificacion)
             ->first();
 
         if ($user) {
             // Si el usuario ya existe, actualizar sus datos
-            $this->glpi->table('loguin_usuarios')
+            DB::table('loguin_usuarios')
                 ->where('id', $user->id)
                 ->update([
                     'nombres' => $nombreStr,
@@ -107,7 +100,7 @@ class LoguinTicketStoreController extends Controller
             $appUserId = $user->id;
         } else {
             // Si no existe, insertarlo y obtener el ID
-            $appUserId = $this->glpi->table('loguin_usuarios')->insertGetId([
+            $appUserId = DB::table('loguin_usuarios')->insertGetId([
                 'tipoidentificacion_id' => $tipo_identificacion_id,
                 'identificacion' => $identificacion,
                 'nombres' => $nombreStr,
@@ -123,7 +116,7 @@ class LoguinTicketStoreController extends Controller
     // Función para obtener la información del usuario
     private function getUserData($appUserId)
     {
-        return $this->glpi->table('loguin_usuarios as a')
+        return DB::table('loguin_usuarios as a')
             ->join('loguin_tipo_identificacion as b', 'b.id', 'a.tipoidentificacion_id')
             ->where('a.id', $appUserId)
             ->select([
@@ -159,7 +152,7 @@ class LoguinTicketStoreController extends Controller
 
     private function getCargoName($cargoId)
     {
-        return $this->glpi->table('loguin_cargo')
+        return DB::table('loguin_cargo')
             ->where('id', $cargoId)
             ->first(['id','name']);
     }
@@ -224,7 +217,7 @@ class LoguinTicketStoreController extends Controller
     // Función para registrar solicitudes asociados al usuario
     private function registerUserRequest($appUserId, $cargoId, $zonal_id, $sede_id, $observacionesStr)
     {
-        $solicitudId = $this->glpi->table('loguin_solicitud')->insertGetId([
+        $solicitudId = DB::table('loguin_solicitud')->insertGetId([
             'usuario_id' => $appUserId,
             'cargo_id' => $cargoId,
             'zonal_id' => $zonal_id,
@@ -239,7 +232,7 @@ class LoguinTicketStoreController extends Controller
     private function registerUserApplications($aplicaciones, $solicitudId)
     {
         foreach ($aplicaciones as $aplicacion) {
-            $this->glpi->table('loguin_solicitud_detalle')->insert([
+            DB::table('loguin_solicitud_detalle')->insert([
                 'solicitud_id' => $solicitudId,
                 'aplicacion_id' => $aplicacion['app_id'],
                 'perfil_id' => $aplicacion['perfil_id'],
@@ -252,13 +245,13 @@ class LoguinTicketStoreController extends Controller
     private function registerUserSpeciality($nombre_especialidad, $appUserId, $solicitudId)
     {
         if (!empty($nombre_especialidad)) {
-            $especialidadId = $this->glpi->table('loguin_especialidades')
+            $especialidadId = DB::table('loguin_especialidades')
                 ->whereIn('name', [$nombre_especialidad])
                 ->where('estado', 1)
                 ->first(['id', 'name']);
     
             if ($especialidadId) {
-                 $this->glpi->table('loguin_especialidad_usuario')->insert([
+                 DB::table('loguin_especialidad_usuario')->insert([
                     'especialidad_id' => $especialidadId->id,
                     'usuario_id' => $appUserId,
                     'solicitud_id' => $solicitudId,
@@ -275,7 +268,7 @@ class LoguinTicketStoreController extends Controller
     // Función para obtener las aplicaciones y perfiles asociados al usuario
     private function getUserApplicationsAndProfiles($appUserId, $solicitudId)
     {
-        return $this->glpi->table('loguin_solicitud as a')
+        return DB::table('loguin_solicitud as a')
             ->join('loguin_solicitud_detalle as b', 'b.solicitud_id', 'a.id')
             ->join('glpi_locations as c', 'c.id', 'a.sede_id')
             ->join('loguin_aplicaciones as d', 'd.id', 'b.aplicacion_id')
@@ -400,7 +393,7 @@ class LoguinTicketStoreController extends Controller
         $currentUser = Auth::guard('glpi')->id();
 
         // Insertar el ticket en la base de datos
-        $ticketId = $this->glpi->table('glpi_tickets')->insertGetId([
+        $ticketId = DB::table('glpi_tickets')->insertGetId([
             'name' => '[PRUEBA] SOLICITUD USUARIO LOGIN (PANA, EVEREST) - ' . $identificacion,
             'content' => $encodedTable,
             'users_id_recipient' => $currentUser, // ID del usuario que envía la solicitud
@@ -446,7 +439,7 @@ class LoguinTicketStoreController extends Controller
         ]);
 
         // Asignar el ticket al grupo "Loguin"
-        $this->glpi->table('glpi_groups_tickets')->insert([
+        DB::table('glpi_groups_tickets')->insert([
             'tickets_id' => $ticketId,
             'groups_id' => 6, // ID del grupo "Loguin"
             'type' => 2
@@ -459,7 +452,7 @@ class LoguinTicketStoreController extends Controller
     // Función para actualizar un ticket de Loguin con la solicitud
     private function updateLoguinRequest($solicitudId, $ticketLoguin)
     {
-        $this->glpi->table('loguin_solicitud')->where('id', $solicitudId)->update(['ticket_id' => $ticketLoguin]);
+        DB::table('loguin_solicitud')->where('id', $solicitudId)->update(['ticket_id' => $ticketLoguin]);
     }
 
     // Función para generar la tabla codificada para el ticket de infraestructura
@@ -561,9 +554,9 @@ class LoguinTicketStoreController extends Controller
             'fecha_creacion' => now('America/Bogota'),
         ];
 
-        $solicitudInfra = $this->glpi->table('loguin_solicitud_infraestructura')->insertGetId($solicitudes);
+        $solicitudInfra = DB::table('loguin_solicitud_infraestructura')->insertGetId($solicitudes);
     
-        $ticketInfra = $this->glpi->table('glpi_tickets')->insertGetId([
+        $ticketInfra = DB::table('glpi_tickets')->insertGetId([
             'name' => '[PRUEBA] SOLICITUD USUARIO LOGUIN (CORREO, USUARIO DOMINIO, VPN)- ' . $identificacion,
             'content' => $infraTable,
             'users_id_recipient' => $currentUser,
@@ -609,13 +602,13 @@ class LoguinTicketStoreController extends Controller
         ]);
     
         // Asociar ticket con el grupo
-        $this->glpi->table('glpi_groups_tickets')->insert([
+        DB::table('glpi_groups_tickets')->insert([
             'tickets_id' => $ticketInfra,
             'groups_id' => 38,
         ]);
         
         // Update de la solicitud creada con el ticket
-        $this->glpi->table('loguin_solicitud_infraestructura')->where('id', $solicitudInfra)->update(['ticket_id' => $ticketInfra]);
+        DB::table('loguin_solicitud_infraestructura')->where('id', $solicitudInfra)->update(['ticket_id' => $ticketInfra]);
 
         return $ticketInfra;
     }

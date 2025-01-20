@@ -12,19 +12,18 @@ class GlpiAuthController extends Controller
 
     public function login(Request $request)
     {
-        //    handel GET /login
+        // handel GET /login
         if ($request->isMethod('get')) {
             return view('auth.loguin');
         }
 
-        //    handel POST /login
+        // handel POST /login
         // Valida solo el campo name
         $credentials = $request->validate([
             'name' => 'required|string',
         ]);
 
-        $user = DB::connection('glpi')
-            ->table('glpi_users as a')
+        $user = DB::table('glpi_users as a')
             ->where('a.name', $credentials['name'])
             ->where('a.is_active', 1)
             ->first('a.id');
