@@ -53,33 +53,45 @@ class RenderDataSolicitudLoguin {
   }
 
   // Verificar si hay loguins registrados
-  static async hasLoguin(loguins)
-  {
+  static async hasLoguin(loguins) {
     const container = document.getElementById('loguin-container');
     const loguinContent = document.querySelector('.loguin-content');
 
-    const validLoguins = loguins.filter(loguin => loguin.usuario_loguin !== null && loguin.password_loguin !== null && loguin.aplicacion_id != 7);
-    const validLoguinFilterMipres = loguins.filter(loguin => loguin.aplicacion_id === 7);
-  
-      if (validLoguins.length > 0) {
-        loguinContent.innerHTML = '';
-        validLoguins.forEach((loguin) => {
-          const table = this.createLoguinTable(loguin.aplicacion_perfil, loguin.usuario_loguin, loguin.password_loguin);
-          loguinContent.appendChild(table);
-        });
-        validLoguinFilterMipres.forEach((loguin) => {
-          const table = this.createLoguinMipresTable(loguin.aplicacion_perfil, loguin.mipres);
-          loguinContent.appendChild(table);
-        });
-  
-        // Mostrar el contenedor si tiene loguins
-        container.hidden = false;
-        this.formLoguin.hidden = true;
-        this.copyTableFeature();
-      } else {
-        // Ocultar el contenedor si no hay loguins
-        container.hidden = true;
-      }
+    // Filtros independientes
+    const validLoguins = loguins.filter(loguin => loguin.usuario_loguin !== null && loguin.password_loguin !== null && loguin.aplicacion_id !== 7 && loguin.aplicacion_id !== 8);
+    const validLoguinFilterMipres = loguins.filter(loguin => loguin.aplicacion_id === 7 && loguin.mipres !== null);
+    const validLoguinFilterRuaf = loguins.filter(loguin => loguin.aplicacion_id === 8 && loguin.ruaf !== null);
+
+    // Verificar si hay loguins válidos en cualquier categoría
+    if (validLoguins.length > 0 || validLoguinFilterMipres.length > 0 || validLoguinFilterRuaf.length > 0) {
+      loguinContent.innerHTML = '';
+
+      // Agregar tablas para loguins generales
+      validLoguins.forEach((loguin) => {
+        const table = this.createLoguinTable(loguin.aplicacion_perfil, loguin.usuario_loguin, loguin.password_loguin);
+        loguinContent.appendChild(table);
+      });
+
+      // Agregar tabla para loguins de Mipres
+      validLoguinFilterMipres.forEach((loguin) => {
+        const table = this.createLoguinMipresTable(loguin.aplicacion_perfil, loguin.mipres);
+        loguinContent.appendChild(table);
+      });
+
+      // Agregar tabla para loguins de Ruaf
+      validLoguinFilterRuaf.forEach((loguin) => {
+        const table = this.createLoguinRuafTable(loguin.aplicacion_perfil, loguin.ruaf);
+        loguinContent.appendChild(table);
+      });
+
+      // Mostrar el contenedor si hay loguins
+      container.hidden = false;
+      this.formLoguin.hidden = true;
+      this.copyTableFeature();
+    } else {
+      // Ocultar el contenedor si no hay loguins válidos
+      container.hidden = true;
+    }
   }
 
   static async fetchSolicitudLoguinData(solicitudId) {
@@ -150,241 +162,331 @@ class RenderDataSolicitudLoguin {
     
     // Filtrar las aplicaciones para obtener las de coraza y las demás
     const corazaApps = loguinSolicitud.filter(app => app.is_coraza === 1);
-    const otherApps = loguinSolicitud.filter(app => app.is_coraza === 0 && app.aplicacion_id != 7);
+    const otherApps = loguinSolicitud.filter(app => app.is_coraza === 0 && app.aplicacion_id != 7 && app.aplicacion_id != 8);
     const mipres = loguinSolicitud.filter(app => app.aplicacion_id === 7);
+    const ruaf = loguinSolicitud.filter(app => app.aplicacion_id === 8);
     
     // Crear un bloque unificado para las aplicaciones con is_coraza = 1
     if (corazaApps.length > 0) {
-        const corazaBlockDiv = document.createElement('div');
-        corazaBlockDiv.classList.add('block', 'block-themed', 'block-rounded');
-        corazaBlockDiv.id = 'aplicacion';
-        corazaBlockDiv.setAttribute('data-solicitud-id', `${loguinSolicitud[0].solicitud_id}`)
+      const corazaBlockDiv = document.createElement('div');
+      corazaBlockDiv.classList.add('block', 'block-themed', 'block-rounded');
+      corazaBlockDiv.id = 'aplicacion';
+      corazaBlockDiv.setAttribute('data-solicitud-id', `${loguinSolicitud[0].solicitud_id}`)
 
-        const corazaHeaderDiv = document.createElement('div');
-        corazaHeaderDiv.classList.add('block-header', 'block-header-default');
-        const corazaTitleH3 = document.createElement('h3');
-        corazaTitleH3.classList.add('block-title');
-        corazaTitleH3.textContent = 'CORAZA';
-        corazaHeaderDiv.appendChild(corazaTitleH3);
+      const corazaHeaderDiv = document.createElement('div');
+      corazaHeaderDiv.classList.add('block-header', 'block-header-default');
+      const corazaTitleH3 = document.createElement('h3');
+      corazaTitleH3.classList.add('block-title');
+      corazaTitleH3.textContent = 'CORAZA';
+      corazaHeaderDiv.appendChild(corazaTitleH3);
 
-        const corazaContentDiv = document.createElement('div');
-        corazaContentDiv.classList.add('block-content', 'block-content-full');
+      const corazaContentDiv = document.createElement('div');
+      corazaContentDiv.classList.add('block-content', 'block-content-full');
 
-        const corazaRowDiv = document.createElement('div');
-        corazaRowDiv.classList.add('row');
+      const corazaRowDiv = document.createElement('div');
+      corazaRowDiv.classList.add('row');
 
-        const corazaColLeftDiv = document.createElement('div');
-        corazaColLeftDiv.classList.add('col-lg-4');
+      const corazaColLeftDiv = document.createElement('div');
+      corazaColLeftDiv.classList.add('col-lg-4');
+      
+      // Mostrar las aplicaciones y perfiles de coraza en una lista
+      const corazaTextP = document.createElement('p');
+      corazaTextP.classList.add('text-muted');
+
+      corazaApps.forEach(app => {
+        const appProfileSpan = document.createElement('span');
+        //appProfileSpan.classList.add('badge', 'bg-gray');
+        appProfileSpan.classList.add('badge', 'bg-primary-lighter', 'app');
+        appProfileSpan.setAttribute('data-app-id', `${app.aplicacion_id}`);
+        appProfileSpan.setAttribute('data-perfil-id', `${app.perfil_id}`);
+        appProfileSpan.textContent = `${app.aplicacion} ${app.perfil}`;
         
-        // Mostrar las aplicaciones y perfiles de coraza en una lista
-        const corazaTextP = document.createElement('p');
-        corazaTextP.classList.add('text-muted');
-
-        corazaApps.forEach(app => {
-          const appProfileSpan = document.createElement('span');
-          //appProfileSpan.classList.add('badge', 'bg-gray');
-          appProfileSpan.classList.add('badge', 'bg-primary-lighter', 'app');
-          appProfileSpan.setAttribute('data-app-id', `${app.aplicacion_id}`);
-          appProfileSpan.setAttribute('data-perfil-id', `${app.perfil_id}`);
-          appProfileSpan.textContent = `${app.aplicacion} ${app.perfil}`;
-          
-          corazaTextP.appendChild(appProfileSpan);
-          corazaTextP.appendChild(document.createTextNode(' ')); // Espacio entre badges
+        corazaTextP.appendChild(appProfileSpan);
+        corazaTextP.appendChild(document.createTextNode(' ')); // Espacio entre badges
       });
 
-        corazaColLeftDiv.appendChild(corazaTextP);
+      corazaColLeftDiv.appendChild(corazaTextP);
 
-        const corazaColRightDiv = document.createElement('div');
-        corazaColRightDiv.classList.add('col-lg-8', 'space-y-2');
+      const corazaColRightDiv = document.createElement('div');
+      corazaColRightDiv.classList.add('col-lg-8', 'space-y-2');
 
-        const corazaFormRowDiv = document.createElement('div');
-        corazaFormRowDiv.classList.add('row', 'row-cols-lg-auto', 'g-3', 'align-items-center');
+      const corazaFormRowDiv = document.createElement('div');
+      corazaFormRowDiv.classList.add('row', 'row-cols-lg-auto', 'g-3', 'align-items-center');
 
-        const userColDiv = document.createElement('div');
-        userColDiv.classList.add('col-12');
-        const userInput = document.createElement('input');
-        userInput.type = 'text';
-        userInput.classList.add('form-control', 'usuario-loguin');
-        userInput.placeholder = 'Usuario';
-        userInput.setAttribute('onkeypress', "return /[0-9a-zA-Z]/i.test(event.key);");
-        userColDiv.appendChild(userInput);
+      const userColDiv = document.createElement('div');
+      userColDiv.classList.add('col-12');
+      const userInput = document.createElement('input');
+      userInput.type = 'text';
+      userInput.classList.add('form-control', 'usuario-loguin');
+      userInput.placeholder = 'Usuario';
+      userInput.setAttribute('onkeypress', "return /[0-9a-zA-Z]/i.test(event.key);");
+      userColDiv.appendChild(userInput);
 
-        const passColDiv = document.createElement('div');
-        passColDiv.classList.add('col-12');
-        const passInput = document.createElement('input');
-        passInput.type = 'text';
-        passInput.classList.add('form-control', 'password-loguin');
-        passInput.placeholder = 'Contraseña';
-        passInput.setAttribute('onkeypress', "return /[0-9a-zA-Z]/i.test(event.key);");
-        passColDiv.appendChild(passInput);
+      const passColDiv = document.createElement('div');
+      passColDiv.classList.add('col-12');
+      const passInput = document.createElement('input');
+      passInput.type = 'text';
+      passInput.classList.add('form-control', 'password-loguin');
+      passInput.placeholder = 'Contraseña';
+      passInput.setAttribute('onkeypress', "return /[0-9a-zA-Z]/i.test(event.key);");
+      passColDiv.appendChild(passInput);
 
-        corazaFormRowDiv.appendChild(userColDiv);
-        corazaFormRowDiv.appendChild(passColDiv);
+      corazaFormRowDiv.appendChild(userColDiv);
+      corazaFormRowDiv.appendChild(passColDiv);
 
-        corazaColRightDiv.appendChild(corazaFormRowDiv);
-        corazaRowDiv.appendChild(corazaColLeftDiv);
-        corazaRowDiv.appendChild(corazaColRightDiv);
-        corazaContentDiv.appendChild(corazaRowDiv);
+      corazaColRightDiv.appendChild(corazaFormRowDiv);
+      corazaRowDiv.appendChild(corazaColLeftDiv);
+      corazaRowDiv.appendChild(corazaColRightDiv);
+      corazaContentDiv.appendChild(corazaRowDiv);
 
-        corazaBlockDiv.appendChild(corazaHeaderDiv);
-        corazaBlockDiv.appendChild(corazaContentDiv);
-        formLoguin.appendChild(corazaBlockDiv);
+      corazaBlockDiv.appendChild(corazaHeaderDiv);
+      corazaBlockDiv.appendChild(corazaContentDiv);
+      formLoguin.appendChild(corazaBlockDiv);
     }
 
     // Crear bloques separados para las aplicaciones con is_coraza = 0
     otherApps.forEach(app => {
-        const blockDiv = document.createElement('div');
-        blockDiv.classList.add('block', 'block-themed', 'block-rounded');
-        blockDiv.id = 'aplicacion';
+      const blockDiv = document.createElement('div');
+      blockDiv.classList.add('block', 'block-themed', 'block-rounded');
+      blockDiv.id = 'aplicacion';
 
-        const headerDiv = document.createElement('div');
-        headerDiv.classList.add('block-header', 'block-header-default');
-        const titleH3 = document.createElement('h3');
-        titleH3.classList.add('block-title');
-        titleH3.textContent = app.aplicacion;
-        headerDiv.appendChild(titleH3);
+      const headerDiv = document.createElement('div');
+      headerDiv.classList.add('block-header', 'block-header-default');
+      const titleH3 = document.createElement('h3');
+      titleH3.classList.add('block-title');
+      titleH3.textContent = app.aplicacion;
+      headerDiv.appendChild(titleH3);
 
-        const contentDiv = document.createElement('div');
-        contentDiv.classList.add('block-content', 'block-content-full');
+      const contentDiv = document.createElement('div');
+      contentDiv.classList.add('block-content', 'block-content-full');
 
-        const rowDiv = document.createElement('div');
-        rowDiv.classList.add('row');
+      const rowDiv = document.createElement('div');
+      rowDiv.classList.add('row');
 
-        const colLeftDiv = document.createElement('div');
-        colLeftDiv.classList.add('col-lg-4');
-        const textP = document.createElement('p');
-        textP.classList.add('text-muted');
-        const appProfileSpan = document.createElement('span');
-        appProfileSpan.classList.add('badge', 'bg-primary-lighter', 'app');
-        appProfileSpan.setAttribute('data-app-id', `${app.aplicacion_id}`);
-        appProfileSpan.setAttribute('data-perfil-id', `${app.perfil_id}`);
-        appProfileSpan.textContent = `${app.perfil}`;
-        textP.appendChild(appProfileSpan);
-        colLeftDiv.appendChild(textP);
+      const colLeftDiv = document.createElement('div');
+      colLeftDiv.classList.add('col-lg-4');
+      const textP = document.createElement('p');
+      textP.classList.add('text-muted');
+      const appProfileSpan = document.createElement('span');
+      appProfileSpan.classList.add('badge', 'bg-primary-lighter', 'app');
+      appProfileSpan.setAttribute('data-app-id', `${app.aplicacion_id}`);
+      appProfileSpan.setAttribute('data-perfil-id', `${app.perfil_id}`);
+      appProfileSpan.textContent = `${app.perfil}`;
+      textP.appendChild(appProfileSpan);
+      colLeftDiv.appendChild(textP);
 
-        const colRightDiv = document.createElement('div');
-        colRightDiv.classList.add('col-lg-8', 'space-y-2');
+      const colRightDiv = document.createElement('div');
+      colRightDiv.classList.add('col-lg-8', 'space-y-2');
 
-        const formRowDiv = document.createElement('div');
-        formRowDiv.classList.add('row', 'row-cols-lg-auto', 'g-3', 'align-items-center');
-        formRowDiv.id = 'container-loguin';
+      const formRowDiv = document.createElement('div');
+      formRowDiv.classList.add('row', 'row-cols-lg-auto', 'g-3', 'align-items-center');
+      formRowDiv.id = 'container-loguin';
 
-        const userColDiv = document.createElement('div');
-        userColDiv.classList.add('col-12');
-        const userInput = document.createElement('input');
-        userInput.type = 'text';
-        userInput.classList.add('form-control', 'usuario-loguin');
-        userInput.placeholder = 'Usuario';
-        userInput.setAttribute('onkeypress', "return /[0-9a-zA-Z]/i.test(event.key);");
-        userColDiv.appendChild(userInput);
+      const userColDiv = document.createElement('div');
+      userColDiv.classList.add('col-12');
+      const userInput = document.createElement('input');
+      userInput.type = 'text';
+      userInput.classList.add('form-control', 'usuario-loguin');
+      userInput.placeholder = 'Usuario';
+      userInput.setAttribute('onkeypress', "return /[0-9a-zA-Z]/i.test(event.key);");
+      userColDiv.appendChild(userInput);
 
-        const passColDiv = document.createElement('div');
-        passColDiv.classList.add('col-12');
-        const passInput = document.createElement('input');
-        passInput.type = 'text';
-        passInput.classList.add('form-control', 'password-loguin');
-        passInput.placeholder = 'Contraseña';
-        passInput.setAttribute('onkeypress', "return /[0-9a-zA-Z]/i.test(event.key);");
-        passColDiv.appendChild(passInput);
+      const passColDiv = document.createElement('div');
+      passColDiv.classList.add('col-12');
+      const passInput = document.createElement('input');
+      passInput.type = 'text';
+      passInput.classList.add('form-control', 'password-loguin');
+      passInput.placeholder = 'Contraseña';
+      passInput.setAttribute('onkeypress', "return /[0-9a-zA-Z]/i.test(event.key);");
+      passColDiv.appendChild(passInput);
 
-        formRowDiv.appendChild(userColDiv);
-        formRowDiv.appendChild(passColDiv);
+      formRowDiv.appendChild(userColDiv);
+      formRowDiv.appendChild(passColDiv);
 
-        colRightDiv.appendChild(formRowDiv);
-        rowDiv.appendChild(colLeftDiv);
-        rowDiv.appendChild(colRightDiv);
-        contentDiv.appendChild(rowDiv);
+      colRightDiv.appendChild(formRowDiv);
+      rowDiv.appendChild(colLeftDiv);
+      rowDiv.appendChild(colRightDiv);
+      contentDiv.appendChild(rowDiv);
 
-        blockDiv.appendChild(headerDiv);
-        blockDiv.appendChild(contentDiv);
-        formLoguin.appendChild(blockDiv);
+      blockDiv.appendChild(headerDiv);
+      blockDiv.appendChild(contentDiv);
+      formLoguin.appendChild(blockDiv);
     });
 
+    // Crear bloque MIPRES
     mipres.forEach(mipres => {
-        const miprescolDiv = document.createElement('div');
-        miprescolDiv.classList.add('col-md-5');
+      const miprescolDiv = document.createElement('div');
+      miprescolDiv.classList.add('col-md-6');
 
-        // Crear el bloque mipres
-        const mipresblockDiv = document.createElement('div');
-        mipresblockDiv.classList.add('block', 'block-themed', 'block-rounded');
-        mipresblockDiv.id = 'aplicacion-mipres';
-        miprescolDiv.appendChild(mipresblockDiv);
+      // Crear el bloque mipres
+      const mipresblockDiv = document.createElement('div');
+      mipresblockDiv.classList.add('block', 'block-themed', 'block-rounded');
+      mipresblockDiv.id = 'aplicacion-mipres';
+      miprescolDiv.appendChild(mipresblockDiv);
 
-        // Crear el encabezado del bloque
-        const blockHeader = document.createElement('div');
-        blockHeader.classList.add('block-header', 'block-header-default');
-        mipresblockDiv.appendChild(blockHeader);
+      // Crear el encabezado del bloque
+      const blockHeader = document.createElement('div');
+      blockHeader.classList.add('block-header', 'block-header-default');
+      mipresblockDiv.appendChild(blockHeader);
 
-        const blockTitle = document.createElement('h3');
-        blockTitle.classList.add('block-title');
-        blockTitle.textContent = mipres.aplicacion;
-        blockHeader.appendChild(blockTitle);
+      const blockTitle = document.createElement('h3');
+      blockTitle.classList.add('block-title');
+      blockTitle.textContent = mipres.aplicacion;
+      blockHeader.appendChild(blockTitle);
 
-        // Crear el contenido del bloque
-        const blockContent = document.createElement('div');
-        blockContent.classList.add('block-content', 'block-content-full');
-        mipresblockDiv.appendChild(blockContent);
+      // Crear el contenido del bloque
+      const blockContent = document.createElement('div');
+      blockContent.classList.add('block-content', 'block-content-full');
+      mipresblockDiv.appendChild(blockContent);
 
-        // Crear fila principal
-        const mipresrowDiv = document.createElement('div');
-        mipresrowDiv.classList.add('row');
-        blockContent.appendChild(mipresrowDiv);
+      // Crear fila principal
+      const mipresrowDiv = document.createElement('div');
+      mipresrowDiv.classList.add('row');
+      blockContent.appendChild(mipresrowDiv);
 
-        // Columna izquierda
-        const miprescolLeftDiv = document.createElement('div');
-        miprescolLeftDiv.classList.add('col-lg-4');
-        mipresrowDiv.appendChild(miprescolLeftDiv);
+      // Columna izquierda
+      const miprescolLeftDiv = document.createElement('div');
+      miprescolLeftDiv.classList.add('col-lg-4');
+      mipresrowDiv.appendChild(miprescolLeftDiv);
 
-        const leftText = document.createElement('p');
-        leftText.classList.add('text-muted');
-        const appProfileSpanMipres = document.createElement('span');
-        appProfileSpanMipres.classList.add('badge', 'bg-primary-lighter', 'app');
-        appProfileSpanMipres.setAttribute('data-app-id', `${mipres.aplicacion_id}`);
-        appProfileSpanMipres.setAttribute('data-perfil-id', `${mipres.perfil_id}`);
-        appProfileSpanMipres.textContent = `${mipres.perfil}`;
-        leftText.appendChild(appProfileSpanMipres);
-        miprescolLeftDiv.appendChild(leftText);
+      const leftText = document.createElement('p');
+      leftText.classList.add('text-muted');
+      const appProfileSpanMipres = document.createElement('span');
+      appProfileSpanMipres.classList.add('badge', 'bg-primary-lighter', 'app');
+      appProfileSpanMipres.setAttribute('data-app-id', `${mipres.aplicacion_id}`);
+      appProfileSpanMipres.setAttribute('data-perfil-id', `${mipres.perfil_id}`);
+      appProfileSpanMipres.textContent = `${mipres.perfil}`;
+      leftText.appendChild(appProfileSpanMipres);
+      miprescolLeftDiv.appendChild(leftText);
 
-        // Columna derecha
-        const miprescolRightDiv = document.createElement('div');
-        miprescolRightDiv.classList.add('col-lg-8', 'space-y-2');
-        mipresrowDiv.appendChild(miprescolRightDiv);
+      // Columna derecha
+      const miprescolRightDiv = document.createElement('div');
+      miprescolRightDiv.classList.add('col-lg-8', 'space-y-2');
+      mipresrowDiv.appendChild(miprescolRightDiv);
 
-        const rowInnerDiv = document.createElement('div');
-        rowInnerDiv.classList.add('row', 'row-cols-lg-auto', 'g-3', 'align-items-center');
-        miprescolRightDiv.appendChild(rowInnerDiv);
+      const rowInnerDiv = document.createElement('div');
+      rowInnerDiv.classList.add('row', 'row-cols-lg-auto', 'g-3', 'align-items-center');
+      miprescolRightDiv.appendChild(rowInnerDiv);
 
-        const mb4Div = document.createElement('div');
-        mb4Div.classList.add('mb-4');
-        rowInnerDiv.appendChild(mb4Div);
+      const mb4Div = document.createElement('div');
+      mb4Div.classList.add('mb-4');
+      rowInnerDiv.appendChild(mb4Div);
 
-        const formLabel = document.createElement('label');
-        formLabel.classList.add('form-label');
-        formLabel.textContent = 'Asociado';
-        mb4Div.appendChild(formLabel);
+      const formLabel = document.createElement('label');
+      formLabel.classList.add('form-label');
+      formLabel.textContent = 'Asociado';
+      mb4Div.appendChild(formLabel);
 
-        const spaceDiv = document.createElement('div');
-        spaceDiv.classList.add('space-x-2');
-        mb4Div.appendChild(spaceDiv);
+      const spaceDiv = document.createElement('div');
+      spaceDiv.classList.add('space-x-2');
+      mb4Div.appendChild(spaceDiv);
 
-        const formCheckDiv = document.createElement('div');
-        formCheckDiv.classList.add('form-check', 'form-switch', 'form-check-inline', 'form-switch-lg');
-        spaceDiv.appendChild(formCheckDiv);
+      const formCheckDiv = document.createElement('div');
+      formCheckDiv.classList.add('form-check', 'form-switch', 'form-check-inline', 'form-switch-lg');
+      spaceDiv.appendChild(formCheckDiv);
 
-        const formInput = document.createElement('input');
-        formInput.classList.add('form-check-input');
-        formInput.type = 'checkbox';
-        formInput.value = '1';
-        formInput.id = 'mipres';
-        formInput.name = 'mipres';
-        formCheckDiv.appendChild(formInput);
+      const formInput = document.createElement('input');
+      formInput.classList.add('form-check-input');
+      formInput.type = 'checkbox';
+      formInput.value = '1';
+      formInput.id = 'mipres';
+      formInput.name = 'mipres';
+      formCheckDiv.appendChild(formInput);
 
-        const formLabelFor = document.createElement('label');
-        formLabelFor.classList.add('form-check-label');
-        formLabelFor.htmlFor = 'mipres';
-        formCheckDiv.appendChild(formLabelFor);
+      const formLabelFor = document.createElement('label');
+      formLabelFor.classList.add('form-check-label');
+      formLabelFor.htmlFor = 'mipres';
+      formCheckDiv.appendChild(formLabelFor);
 
-        formLoguin.appendChild(miprescolDiv);
+      formLoguin.appendChild(miprescolDiv);
+    });
+
+    // Crear bloque RUAF
+    ruaf.forEach(ruaf => {
+      const ruafcolDiv = document.createElement('div');
+      ruafcolDiv.classList.add('col-md-6');
+
+      // Crear el bloque ruaf
+      const ruafblockDiv = document.createElement('div');
+      ruafblockDiv.classList.add('block', 'block-themed', 'block-rounded');
+      ruafblockDiv.id = 'aplicacion-ruaf';
+      ruafcolDiv.appendChild(ruafblockDiv);
+
+      // Crear el encabezado del bloque
+      const blockHeader = document.createElement('div');
+      blockHeader.classList.add('block-header', 'block-header-default');
+      ruafblockDiv.appendChild(blockHeader);
+
+      const blockTitle = document.createElement('h3');
+      blockTitle.classList.add('block-title');
+      blockTitle.textContent = ruaf.aplicacion;
+      blockHeader.appendChild(blockTitle);
+
+      // Crear el contenido del bloque
+      const blockContent = document.createElement('div');
+      blockContent.classList.add('block-content', 'block-content-full');
+      ruafblockDiv.appendChild(blockContent);
+
+      // Crear fila principal
+      const ruafrowDiv = document.createElement('div');
+      ruafrowDiv.classList.add('row');
+      blockContent.appendChild(ruafrowDiv);
+
+      // Columna izquierda
+      const ruafcolLeftDiv = document.createElement('div');
+      ruafcolLeftDiv.classList.add('col-lg-4');
+      ruafrowDiv.appendChild(ruafcolLeftDiv);
+
+      const leftText = document.createElement('p');
+      leftText.classList.add('text-muted');
+      const appProfileSpanRuaf = document.createElement('span');
+      appProfileSpanRuaf.classList.add('badge', 'bg-primary-lighter', 'app');
+      appProfileSpanRuaf.setAttribute('data-app-id', `${ruaf.aplicacion_id}`);
+      appProfileSpanRuaf.setAttribute('data-perfil-id', `${ruaf.perfil_id}`);
+      appProfileSpanRuaf.textContent = `${ruaf.perfil}`;
+      leftText.appendChild(appProfileSpanRuaf);
+      ruafcolLeftDiv.appendChild(leftText);
+
+      // Columna derecha
+      const ruafcolRightDiv = document.createElement('div');
+      ruafcolRightDiv.classList.add('col-lg-8', 'space-y-2');
+      ruafrowDiv.appendChild(ruafcolRightDiv);
+
+      const rowInnerDiv = document.createElement('div');
+      rowInnerDiv.classList.add('row', 'row-cols-lg-auto', 'g-3', 'align-items-center');
+      ruafcolRightDiv.appendChild(rowInnerDiv);
+
+      const mb4Div = document.createElement('div');
+      mb4Div.classList.add('mb-4');
+      rowInnerDiv.appendChild(mb4Div);
+
+      const formLabel = document.createElement('label');
+      formLabel.classList.add('form-label');
+      formLabel.textContent = 'Asociado';
+      mb4Div.appendChild(formLabel);
+
+      const spaceDiv = document.createElement('div');
+      spaceDiv.classList.add('space-x-2');
+      mb4Div.appendChild(spaceDiv);
+
+      const formCheckDiv = document.createElement('div');
+      formCheckDiv.classList.add('form-check', 'form-switch', 'form-check-inline', 'form-switch-lg');
+      spaceDiv.appendChild(formCheckDiv);
+
+      const formInput = document.createElement('input');
+      formInput.classList.add('form-check-input');
+      formInput.type = 'checkbox';
+      formInput.value = '1';
+      formInput.id = 'ruaf';
+      formInput.name = 'ruaf';
+      formCheckDiv.appendChild(formInput);
+
+      const formLabelFor = document.createElement('label');
+      formLabelFor.classList.add('form-check-label');
+      formLabelFor.htmlFor = 'ruaf';
+      formCheckDiv.appendChild(formLabelFor);
+
+      formLoguin.appendChild(ruafcolDiv);
     });
   }
 
@@ -415,16 +517,19 @@ class RenderDataSolicitudLoguin {
 
       const AppLoguin = [];
 
-      // Capturar datos de los bloques y MIPRES
-      const appsContainers = document.querySelectorAll('#aplicacion, #aplicacion-mipres');
+      // Capturar datos de los bloques de aplicaciones, MIPRES, RUAF y observaciones
+      const appsContainers = document.querySelectorAll('#aplicacion, #aplicacion-mipres, #aplicacion-ruaf');
 
       appsContainers.forEach((container) => {
         const appBadges = container.querySelectorAll('.app');
         const loguinUser = container.querySelector('.usuario-loguin')?.value || null;
         const loguinPassword = container.querySelector('.password-loguin')?.value || null;
 
-        const asociadoCheckbox = container.querySelector('input[type="checkbox"]');
-        const asociado = asociadoCheckbox ? (asociadoCheckbox.checked ? 1 : 0) : null;
+        const mipresCheckbox = container.querySelector('input[type="checkbox"][id="mipres"]');
+        const mipres = mipresCheckbox ? (mipresCheckbox.checked ? 1 : 0) : null;
+
+        const ruafCheckbox = container.querySelector('input[type="checkbox"][id="ruaf"]');
+        const ruaf = ruafCheckbox ? (ruafCheckbox.checked ? 1 : 0) : null;
 
         appBadges.forEach((badge) => {
           const appId = badge.getAttribute('data-app-id');
@@ -436,7 +541,8 @@ class RenderDataSolicitudLoguin {
               perfil_id: perfilId,
               usuario_loguin: loguinUser,
               password_loguin: loguinPassword,
-              asociado: asociado,
+              mipres: mipres,
+              ruaf: ruaf,
             });
           }
         });
@@ -445,7 +551,7 @@ class RenderDataSolicitudLoguin {
       // Crear el objeto final
       const formData = {
         solicitud: numberSolicitud,
-        aplicaciones_loguin: AppLoguin,
+        aplicaciones_loguin: AppLoguin
       };
 
       //console.log(formData);
@@ -524,8 +630,10 @@ class RenderDataSolicitudLoguin {
       const loguinContent = document.querySelector('.loguin-content');
   
       // Verificar si hay loguins registrados
-      const loguinFilter = loguins.filter(app => app.aplicacion_id != 7); // Si la aplicacion es diferente a 7 que es mipres id en db
+      const loguinFilter = loguins.filter(app => app.aplicacion_id != 7 && app.aplicacion_id != 8); // Si la aplicacion es diferente a 7 que es mipres id en db
       const loguinFilterMipres = loguins.filter(app => app.aplicacion_id === 7);
+      const loguinFilterRuaf = loguins.filter(app => app.aplicacion_id === 8);
+
       if (loguins.length > 0) {
         loguinContent.innerHTML = ''; // Limpiar el contenedor antes de renderizar
         loguinFilter.forEach((loguin) => {
@@ -536,7 +644,10 @@ class RenderDataSolicitudLoguin {
           const table = this.createLoguinMipresTable(loguin.aplicacion_perfil, loguin.mipres);
           loguinContent.appendChild(table);
         });
-  
+        loguinFilterRuaf.forEach((loguin) => {
+          const table = this.createLoguinRuafTable(loguin.aplicacion_perfil, loguin.ruaf);
+          loguinContent.appendChild(table);
+        });
         // Mostrar el contenedor si tiene loguins
         container.hidden = false;
       } else {
@@ -596,7 +707,7 @@ class RenderDataSolicitudLoguin {
     return table;
   }
 
-  static createLoguinMipresTable(appName, isAsociado) {
+  static createLoguinMipresTable(appName, mipres) {
     // Crear el elemento tabla
     const table = document.createElement('table');
     table.classList.add('table', 'table-bordered');
@@ -607,7 +718,31 @@ class RenderDataSolicitudLoguin {
     const thHead = document.createElement('th');
     thHead.textContent = appName;
     const tdHead = document.createElement('td');
-    tdHead.textContent = `${isAsociado === 1 ? 'SI' : 'NO'}`
+    tdHead.textContent = `${mipres === 1 ? 'SI' : 'NO'}`
+    trHead.appendChild(thHead);
+    trHead.appendChild(tdHead);
+    thead.appendChild(trHead);
+
+    // Agregar encabezado y cuerpo a la tabla
+    table.appendChild(thead);
+    //table.appendChild(tbody);
+
+    // Retornar la tabla generada
+    return table;
+  }
+
+  static createLoguinRuafTable(appName, ruaf) {
+    // Crear el elemento tabla
+    const table = document.createElement('table');
+    table.classList.add('table', 'table-bordered');
+
+    // Crear el encabezado de la tabla
+    const thead = document.createElement('thead');
+    const trHead = document.createElement('tr');
+    const thHead = document.createElement('th');
+    thHead.textContent = appName;
+    const tdHead = document.createElement('td');
+    tdHead.textContent = `${ruaf === 1 ? 'SI' : 'NO'}`
     trHead.appendChild(thHead);
     trHead.appendChild(tdHead);
     thead.appendChild(trHead);

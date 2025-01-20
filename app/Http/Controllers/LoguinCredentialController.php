@@ -175,7 +175,8 @@ class LoguinCredentialController extends Controller
                 'users_id_recipient' => $currentUser,
                 'usuario_loguin' => $loguin['usuario_loguin'],
                 'password_loguin' => $loguin['password_loguin'],
-                'mipres' => $loguin['asociado'],
+                'mipres' => $loguin['mipres'],
+                'ruaf' => $loguin['ruaf'],
                 'fecha_creacion_loguin' => now('America/Bogota'),
             ]);
         }
@@ -194,7 +195,8 @@ class LoguinCredentialController extends Controller
             DB::raw("UPPER(CONCAT(c.name,' ',d.name)) as aplicacion_perfil"),
             'b.usuario_loguin',
             'b.password_loguin',
-            'b.mipres'
+            'b.mipres',
+            'b.ruaf'
         ])->get();
     }
 
@@ -211,7 +213,8 @@ class LoguinCredentialController extends Controller
             DB::raw("UPPER(CONCAT(c.name,' ',d.name)) as aplicacion_perfil"),
             'b.usuario_loguin',
             'b.password_loguin',
-            'b.mipres'
+            'b.mipres',
+            'b.ruaf'
         ])->get();
     }
 }

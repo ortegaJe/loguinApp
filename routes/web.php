@@ -9,8 +9,7 @@ use App\Http\Controllers\SolicitudController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
-Route::get(
-    '/', function () {
+Route::get('/', function () {
         return view('auth.loguin');
     }
 );
@@ -60,20 +59,4 @@ Route::get('/get-mysecond-connection', function () {
     $products = $glpi->table('glpi_locations')->where('sw_regional', 1)->get();
     
     return response()->json($products);
-});
-
-Route::get('/query', function () {
-
-    return $estadoSubquery = DB::connection('glpi')->table('glpi_tickets as c')
-    ->leftJoin('glpi_itilfollowups as d', 'd.items_id', 'c.id')
-    ->select(DB::raw("
-        CASE 
-            WHEN c.status = 2 AND d.items_id IS NULL THEN 'En curso'
-            WHEN c.status = 2 AND c.id = d.items_id THEN 'Respuesta'
-            WHEN c.status >= 5 THEN 'Cerrado'
-            ELSE 0
-        END as status
-    "))
-    ->where('c.id', 40124)
-    ->first();
 });
