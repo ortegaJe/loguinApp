@@ -196,8 +196,7 @@
                             @php
                                 $user_id = Auth::guard('glpi')->id();
 
-                                $user = DB::connection('glpi')
-                                    ->table('glpi_users as a')
+                                $user = DB::table('glpi_users as a')
                                     ->join('glpi_profiles_users as b', 'b.users_id', 'a.id')
                                     ->where('a.id', $user_id)
                                     ->first();
