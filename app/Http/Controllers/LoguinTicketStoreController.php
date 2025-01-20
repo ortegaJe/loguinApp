@@ -357,7 +357,7 @@ class LoguinTicketStoreController extends Controller
                 <table style="border: 1px solid #87aa8a;">
                     <thead>
                         <tr>
-                            <th>OBSERVACIONES</th>
+                            <th>OBSERVACIÓN</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -517,25 +517,28 @@ class LoguinTicketStoreController extends Controller
             </table>
         </div>
         
-        <br>
+        <br>';
         
-        <div tabindex="0">
-            <table style="border: 1px solid #87aa8a;">
-                <thead>
-                    <tr>
-                        <th>OBSERVACIONES</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td rowspan="4">' . $observacionesStr . '</td>
-                    </tr>
-                    <tr></tr>
-                    <tr></tr>
-                    <tr></tr>
-                </tbody>
-            </table>
-        </div>';
+        if($observacionesStr){
+            $encodedTable .= '
+            <div tabindex="0">
+                <table style="border: 1px solid #87aa8a;">
+                    <thead>
+                        <tr>
+                            <th>OBSERVACIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="4">' . $observacionesStr . '</td>
+                        </tr>
+                        <tr></tr>
+                        <tr></tr>
+                        <tr></tr>
+                    </tbody>
+                </table>
+            </div>';
+        }
 
         return $encodedTable;
     }
