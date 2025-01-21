@@ -268,20 +268,4 @@ class SolicitudController extends Controller
             ->select('b.name as especialidad')
             ->get();
     }
-
-    public function buscarPorDocumento(Request $request)
-    {
-        $documento = $request->input('documento');
-        
-        $solicitudes = $this->getUsuariosConSolicitudes();
-
-        $solicitudesFiltradas = $solicitudes->where('identificacion', $documento);
-
-        if ($solicitudesFiltradas->isEmpty()) {
-            return response()->json(['message' => 'No se encontraron solicitudes para este documento'], 404);
-        }
-
-        return response()->json($solicitudesFiltradas->values());
-    }
-    
 }

@@ -223,7 +223,7 @@
                                     <div class="form-floating mb-4">
                                         <textarea class="form-control" id="observaciones" name="observaciones" style="height: 150px"
                                             placeholder="Leave a comment here"></textarea>
-                                        <label class="form-label" for="observaciones">Observaciones</label>
+                                        <label class="form-label" for="observaciones">Observación..</label>
                                     </div>
                                     {{-- <div class="row push">
                                         <div class="col-lg-4">

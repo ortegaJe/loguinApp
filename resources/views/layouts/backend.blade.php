@@ -233,6 +233,22 @@
                     <!-- Side Navigation -->
                     <div class="content-side content-side-full">
                         <ul class="nav-main">
+                            @php
+                                $currentUser = Auth::guard('glpi')->user();
+
+                                $userProfile = DB::table('glpi_profiles_users')
+                                    ->where('users_id', $currentUser->id)
+                                    ->value('profiles_id');
+
+                                // Convertir $userProfile a una instancia de UserProfiles
+                                $userProfileEnum = \App\Enums\UserProfiles::tryFrom($userProfile);
+
+                                // Validar si el perfil es SUPER_ADMIN
+                                //$profileRol = \App\Enums\UserProfiles::isSuperAdmin($userProfileEnum);
+
+                                //echo $profileRol ? 'Es Super Admin' : 'No es Super Admin';
+                            @endphp
+                            @if (\App\Enums\UserProfiles::isSuperAdmin($userProfileEnum) || \App\Enums\UserProfiles::isContratacion($userProfileEnum))
                             <li class="nav-main-heading">Contratación</li>
                             <li class="nav-main-item{{ request()->is('*') ? ' open' : '' }}">
                                 <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu"
@@ -255,6 +271,8 @@
                                     </li>
                                 </ul>
                             </li>
+                            @endif
+                            @if (\App\Enums\UserProfiles::isSuperAdmin($userProfileEnum) || \App\Enums\UserProfiles::isAnalistaApp($userProfileEnum))
                             <li class="nav-main-heading">Aplicaciones</li>
                             <li class="nav-main-item">
                                 <a class="nav-main-link{{ request()->is('loguin/aplicaciones/credenciales') ? ' active' : '' }}"
@@ -264,6 +282,8 @@
                                     <span class="nav-main-link-name">Loguin</span>
                                 </a>
                             </li>
+                            @endif
+                            @if (\App\Enums\UserProfiles::isSuperAdmin($userProfileEnum) || \App\Enums\UserProfiles::isInfraestructura($userProfileEnum))
                             <li class="nav-main-heading">Infraestructura</li>
                             <li class="nav-main-item">
                                 <a class="nav-main-link{{ request()->is('loguin/infraestructura/credenciales') ? ' active' : '' }}"
@@ -273,6 +293,7 @@
                                     <span class="nav-main-link-name">Loguin</span>
                                 </a>
                             </li>
+                            @endif
                         </ul>
                     </div>
                     <!-- END Side Navigation -->

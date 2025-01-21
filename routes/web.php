@@ -14,7 +14,7 @@ Route::get('/', function () {
     }
 );
 
-Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN|ANALISTA_APP|CONTRATACION'])->group(function () {
+Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN|CONTRATACION'])->group(function () {
     Route::get('loguin/formulario', [DropdownController::class, 'index']);
     Route::post('fetchSedes', [DropdownController::class, 'fetchSedes']);
     Route::post('fetchTipoCargoSede', [DropdownController::class, 'fetchTipoCargoSede']);
@@ -27,10 +27,12 @@ Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN|ANALISTA_APP|CONTRATACION']
     Route::post('storeLoguinTicket', [LoguinTicketStoreController::class, 'storeLoguinTicket']);
 
     Route::get('loguin/solicitudes', [SolicitudController::class, 'index']);
+    Route::get('getUsuariosConSolicitudes', [SolicitudController::class, 'getUsuariosConSolicitudes']);
+});
+
+Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN|CONTRATACION|ANALISTA_APP|INFRAESTRUCTURA'])->group(function () {
     Route::post('fetchSolicitudLoguin', [SolicitudController::class, 'fetchSolicitudLoguin']);
     Route::post('fetchSolicitudInfra', [SolicitudController::class, 'fetchSolicitudInfra']);
-    Route::post('buscarPorDocumento', [SolicitudController::class, 'buscarPorDocumento']);
-    Route::get('getUsuariosConSolicitudes', [SolicitudController::class, 'getUsuariosConSolicitudes']);
 });
 
 Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN|ANALISTA_APP'])->group(function () {
@@ -42,7 +44,7 @@ Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN|ANALISTA_APP'])->group(func
 
 });
 
-Route::middleware(['auth:glpi', 'profile:ANALISTA_APP|INFRAESTRUCTURA'])->group(function () {
+Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN||INFRAESTRUCTURA'])->group(function () {
     Route::get('loguin/infraestructura/credenciales', [SolicitudController::class, 'getRequestLoguinInfra']);
     Route::get('loguin/infraestructura/credenciales/registrar/{id}', [InfraCredentialController::class, 'registerCredential'])->name('register.infra');
     Route::get('fetchDataLoguinInfra/{id}', [InfraCredentialController::class, 'fetchDataLoguinInfra']);
@@ -54,9 +56,7 @@ Route::middleware(['auth:glpi', 'profile:ANALISTA_APP|INFRAESTRUCTURA'])->group(
 Route::match(['get', 'post'], '/login',  [GlpiAuthController::class, 'login'])->name('login');
 Route::match(['get', 'post'], '/logout', [GlpiAuthController::class, 'logout'])->name('logout');
 
-Route::get('/get-mysecond-connection', function () {
-    $glpi = DB::connection('glpi');
-    $products = $glpi->table('glpi_locations')->where('sw_regional', 1)->get();
-    
-    return response()->json($products);
+Route::get('query', function () {
+    $glpi = DB::table('glpi_locations')->where('sw_regional', 1)->get();
+    return response()->json($glpi);
 });

@@ -398,9 +398,9 @@ class LoguinTicketStoreController extends Controller
             'content' => $encodedTable,
             'users_id_recipient' => $currentUser, // ID del usuario que envía la solicitud
             'date_creation' => now('America/Bogota'),
-            'date' => now('America/Bogota'),
-            'time_to_own' => now('America/Bogota')->addHour(),
-            'time_to_resolve' => now('America/Bogota')->addHour(72),
+            'date' => now('America/Bogota'), // Fecha de creación del ticket
+            'time_to_own' => now('America/Bogota')->addHour(), // Tiempo para asignar el ticket
+            'time_to_resolve' => now('America/Bogota')->addHour(72), // Tiempo para resolver el ticket
             'date_mod' => now('America/Bogota'),
             'users_id_lastupdater' => $currentUser, // ID del usuario que envía la solicitud
             'itilcategories_id' => 8, // Categoría del ticket
