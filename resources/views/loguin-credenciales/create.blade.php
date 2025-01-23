@@ -1,5 +1,7 @@
 @extends('layouts.backend')
 
+@section('title', 'LOG.'.$solicitud->ticket_id)
+
 @section('css')
     <link rel="stylesheet" href="{{ asset('/js/plugins/sweetalert2/sweetalert2.min.css') }}">
     <style>

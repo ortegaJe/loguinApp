@@ -1,5 +1,7 @@
 @extends('layouts.backend')
 
+@section('title', 'Formulario de Solicitud')
+
 @section('css')
     <link rel="stylesheet" href="{{ asset('/js/plugins/select2/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/js/plugins/sweetalert2/sweetalert2.min.css') }}">
