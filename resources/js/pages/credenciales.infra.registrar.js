@@ -430,52 +430,90 @@ class RenderDataSolicitudLoguinInfra {
     return table;
   }
 
-  // Función para inicializar la funcionalidad de copia
+  // Función para copiar tablas al portapapeles
   static async copyTableFeature() {
-    const copyButton = document.querySelector('.block-options .btn-block-option');
+    const copyButton = document.querySelector(
+      ".block-options .btn-block-option"
+    );
 
     if (copyButton) {
-        copyButton.addEventListener('click', () => {
-            const tables = document.querySelectorAll('.block-content table');
+      copyButton.addEventListener("click", () => {
+        const tables = document.querySelectorAll(".block-content table");
 
-            if (tables.length > 0) {
-                const contentText = Array.from(tables)
-                    .map(table => {
-                        return Array.from(table.querySelectorAll('tr'))
-                            .map(row => {
-                                const cells = Array.from(row.querySelectorAll('th, td'));
-                                return cells.map(cell => cell.textContent.trim()).join(': ');
-                            })
-                            .join('\n');
-                    })
-                    .join('\n\n');
+        if (tables.length > 0) {
+          const contentText = Array.from(tables)
+            .map((table) => {
+              return Array.from(table.querySelectorAll("tr"))
+                .map((row) => {
+                  const cells = Array.from(row.querySelectorAll("th, td"));
+                  return cells
+                    .map((cell) => cell.textContent.trim())
+                    .join(": ");
+                })
+                .join("\n");
+            })
+            .join("\n\n");
 
-                // Copiar el texto al portapapeles
-                navigator.clipboard.writeText(contentText)
-                    .then(() => {
-                        Codebase.helpers('jq-notify', {
-                            type: 'success',
-                            icon: 'fa fa-check',
-                            message: 'Loguin copiado al portapapeles',
-                        });
-                    })
-                    .catch((err) => {
-                        console.error('Error al copiar el loguin:', err);
-                        Codebase.helpers('jq-notify', {
-                            type: 'danger',
-                            icon: 'fa fa-times',
-                            message: 'Error al copiar el loguin',
-                        });
-                    });
-            } else {
-                Codebase.helpers('jq-notify', {
-                    type: 'warning',
-                    icon: 'fa fa-exclamation-triangle',
-                    message: 'No se encontraron tablas para copiar',
+          // Intenta copiar usando navigator.clipboard
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard
+              .writeText(contentText)
+              .then(() => {
+                Codebase.helpers("jq-notify", {
+                  type: "success",
+                  icon: "fa fa-check",
+                  message: "Loguin copiado al portapapeles",
                 });
-            }
-        });
+              })
+              .catch((err) => {
+                console.error("Error al copiar usando Clipboard API:", err);
+                // Fallback si Clipboard API falla
+                this.copyToClipboardFallback(contentText);
+              });
+          } else {
+            // Usa el método de fallback si Clipboard API no está disponible
+            this.copyToClipboardFallback(contentText);
+          }
+        } else {
+          Codebase.helpers("jq-notify", {
+            type: "warning",
+            icon: "fa fa-exclamation-triangle",
+            message: "No se encontraron tablas para copiar",
+          });
+        }
+      });
     }
+  }
+
+  // Función para copiar texto al portapapeles sin `navigator.clipboard`
+  static copyToClipboardFallback(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed"; // Evita que el textarea aparezca en pantalla
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const successful = document.execCommand("copy");
+      const msg = successful
+        ? "Loguin copiado al portapapeles"
+        : "No se pudo copiar el loguin";
+      Codebase.helpers("jq-notify", {
+        type: successful ? "success" : "danger",
+        icon: successful ? "fa fa-check" : "fa fa-times",
+        message: msg,
+      });
+    } catch (err) {
+      console.error("Fallback: Error al copiar el loguin", err);
+      Codebase.helpers("jq-notify", {
+        type: "danger",
+        icon: "fa fa-times",
+        message: "Error al copiar el loguin",
+      });
+    }
+
+    document.body.removeChild(textArea);
   }
 
   /*

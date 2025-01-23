@@ -901,6 +901,7 @@ class RenderDataSolicitudLoguin {
     return table;
   }
 
+  // Función para copiar tablas al portapapeles
   static async copyTableFeature() {
     const copyButton = document.querySelector(
       ".block-options .btn-block-option"
