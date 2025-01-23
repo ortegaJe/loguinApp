@@ -393,7 +393,7 @@ class RenderDataSolicitudLoguinInfra {
     const trHead = document.createElement('tr');
     const thHead = document.createElement('th');
     thHead.colSpan = 2;
-    thHead.textContent = appName;
+    thHead.textContent = appName.toUpperCase();
     trHead.appendChild(thHead);
     thead.appendChild(trHead);
 
