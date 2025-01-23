@@ -755,7 +755,6 @@ class RenderDataSolicitudLoguin {
     return table;
   }
 
-  // Función para inicializar la funcionalidad de copia
   static async copyTableFeature() {
     const copyButton = document.querySelector('.block-options .btn-block-option');
 
@@ -775,23 +774,25 @@ class RenderDataSolicitudLoguin {
                     })
                     .join('\n\n');
 
-                // Copiar el texto al portapapeles
-                navigator.clipboard.writeText(contentText)
-                    .then(() => {
-                        Codebase.helpers('jq-notify', {
-                            type: 'success',
-                            icon: 'fa fa-check',
-                            message: 'Loguin copiado al portapapeles',
+                // Intenta copiar usando navigator.clipboard
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(contentText)
+                        .then(() => {
+                            Codebase.helpers('jq-notify', {
+                                type: 'success',
+                                icon: 'fa fa-check',
+                                message: 'Loguin copiado al portapapeles',
+                            });
+                        })
+                        .catch((err) => {
+                            console.error('Error al copiar usando Clipboard API:', err);
+                            // Fallback si Clipboard API falla
+                            copyToClipboardFallback(contentText);
                         });
-                    })
-                    .catch((err) => {
-                        console.error('Error al copiar el loguin:', err);
-                        Codebase.helpers('jq-notify', {
-                            type: 'danger',
-                            icon: 'fa fa-times',
-                            message: 'Error al copiar el loguin',
-                        });
-                    });
+                } else {
+                    // Usa el método de fallback si Clipboard API no está disponible
+                    copyToClipboardFallback(contentText);
+                }
             } else {
                 Codebase.helpers('jq-notify', {
                     type: 'warning',
@@ -801,6 +802,35 @@ class RenderDataSolicitudLoguin {
             }
         });
     }
+  }
+
+  // Función para copiar texto al portapapeles sin `navigator.clipboard`
+  static copyToClipboardFallback(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed'; // Evita que el textarea aparezca en pantalla
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+        const successful = document.execCommand('copy');
+        const msg = successful ? 'Loguin copiado al portapapeles' : 'No se pudo copiar el loguin';
+        Codebase.helpers('jq-notify', {
+            type: successful ? 'success' : 'danger',
+            icon: successful ? 'fa fa-check' : 'fa fa-times',
+            message: msg,
+        });
+    } catch (err) {
+        console.error('Fallback: Error al copiar el loguin', err);
+        Codebase.helpers('jq-notify', {
+            type: 'danger',
+            icon: 'fa fa-times',
+            message: 'Error al copiar el loguin',
+        });
+    }
+
+    document.body.removeChild(textArea);
   }
 
   /*
