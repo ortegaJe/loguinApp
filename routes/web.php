@@ -36,8 +36,8 @@ Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN|CONTRATACION|ANALISTA_APP|I
 });
 
 Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN|ANALISTA_APP'])->group(function () {
-    Route::get('loguin/aplicaciones/credenciales', [SolicitudController::class, 'getRequestLoguin'])->name('loguin.credential');
-    Route::get('loguin/aplicaciones/credenciales/registrar/{id}', [LoguinCredentialController::class, 'registerCredential'])->name('register.loguin');
+    Route::get('loguin/aplicaciones/solicitudes', [SolicitudController::class, 'getRequestLoguin'])->name('loguin.app');
+    Route::get('loguin/aplicaciones/solicitud/registrar/{id}', [LoguinCredentialController::class, 'registerCredential'])->name('register.loguin.app');
     Route::get('fetchDataLoguin/{id}', [LoguinCredentialController::class, 'fetchDataLoguin']);
     Route::post('storeLoguin', [LoguinCredentialController::class, 'storeLoguin']);
     Route::get('getLoguins/aplicaciones/{id}', [LoguinCredentialController::class, 'getLoguins']);
@@ -45,8 +45,8 @@ Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN|ANALISTA_APP'])->group(func
 });
 
 Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN||INFRAESTRUCTURA'])->group(function () {
-    Route::get('loguin/infraestructura/credenciales', [SolicitudController::class, 'getRequestLoguinInfra'])->name('loguin.infra.credential');
-    Route::get('loguin/infraestructura/credenciales/registrar/{id}', [InfraCredentialController::class, 'registerCredential'])->name('register.infra');
+    Route::get('loguin/infraestructura/solicitudes', [SolicitudController::class, 'getRequestLoguinInfra'])->name('loguin.infra');
+    Route::get('loguin/infraestructura/solicitud/registrar/{id}', [InfraCredentialController::class, 'registerCredential'])->name('register.loguin.infra');
     Route::get('fetchDataLoguinInfra/{id}', [InfraCredentialController::class, 'fetchDataLoguinInfra']);
     Route::post('storeLoguinInfra', [InfraCredentialController::class, 'storeLoguinInfra']);
     Route::get('getLoguins/infraestructura/{id}', [InfraCredentialController::class, 'getLoguinInfra']);

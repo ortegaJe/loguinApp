@@ -40,8 +40,8 @@ class GlpiAuthController extends Controller
             $routes = [
                 UserProfiles::SUPER_ADMIN->value     => 'loguin/formulario',
                 UserProfiles::CONTRATACION->value    => 'loguin/formulario',
-                UserProfiles::ANALISTA_APP->value    => 'loguin/aplicaciones/credenciales',
-                UserProfiles::INFRAESTRUCTURA->value => 'loguin/infraestructura/credenciales',
+                UserProfiles::ANALISTA_APP->value    => 'loguin/aplicaciones/solicitudes',
+                UserProfiles::INFRAESTRUCTURA->value => 'loguin/infraestructura/solicitudes',
             ];
         
             // Verificar si el perfil tiene una ruta asociada

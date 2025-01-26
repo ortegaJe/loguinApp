@@ -116,7 +116,7 @@
     <div id="page-loader" class="show bg-gd-sea"></div>
     <div class="content">
         <nav class="breadcrumb push bg-body-extra-light rounded-pill px-4 py-2">
-            <a class="breadcrumb-item" href="{{ route('loguin.infra.credential') }}" id="solicitud"
+            <a class="breadcrumb-item" href="{{ route('loguin.infra') }}" id="solicitud"
                 data-solicitud-id="{{ $solicitud->solicitud }}">
                 Solicitudes
             </a>

@@ -275,8 +275,8 @@
                             @if (\App\Enums\UserProfiles::isSuperAdmin($userProfileEnum) || \App\Enums\UserProfiles::isAnalistaApp($userProfileEnum))
                             <li class="nav-main-heading">Aplicaciones</li>
                             <li class="nav-main-item">
-                                <a class="nav-main-link{{ request()->is('loguin/aplicaciones/credenciales') ? ' active' : '' }}"
-                                    href="{{ url('loguin/aplicaciones/credenciales') }}">
+                                <a class="nav-main-link{{ request()->is('loguin/aplicaciones/solicitudes') ? ' active' : '' }}"
+                                    href="{{ route('loguin.app') }}">
                                     <i class="nav-main-link-icon fa fa-database"></i>
                                     <i class="nav-main-link-icon fa fa-users"></i>
                                     <span class="nav-main-link-name">Loguin</span>
@@ -286,8 +286,8 @@
                             @if (\App\Enums\UserProfiles::isSuperAdmin($userProfileEnum) || \App\Enums\UserProfiles::isInfraestructura($userProfileEnum))
                             <li class="nav-main-heading">Infraestructura</li>
                             <li class="nav-main-item">
-                                <a class="nav-main-link{{ request()->is('loguin/infraestructura/credenciales') ? ' active' : '' }}"
-                                    href="{{ url('loguin/infraestructura/credenciales') }}">
+                                <a class="nav-main-link{{ request()->is('loguin/infraestructura/solicitudes') ? ' active' : '' }}"
+                                    href="{{ route('loguin.infra') }}">
                                     <i class="nav-main-link-icon fa fa-database"></i>
                                     <i class="nav-main-link-icon fa fa-users"></i>
                                     <span class="nav-main-link-name">Loguin</span>
