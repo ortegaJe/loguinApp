@@ -30,7 +30,7 @@
     <div class="content">
         <div class="content-heading d-flex justify-content-between align-items-center">
             <span>
-                Credenciales <small class="d-none d-sm-inline">Loguin</small>
+                Solicitudes <small class="d-none d-sm-inline">Aplicaciones</small>
             </span>
         </div>
         <!-- Partial Table -->

@@ -1,6 +1,6 @@
 @extends('layouts.backend')
 
-@section('title', 'INFRA.'.$solicitud->ticket_id)
+@section('title', 'INFRA.' . $solicitud->ticket_id)
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('/js/plugins/sweetalert2/sweetalert2.min.css') }}">
@@ -115,9 +115,13 @@
 @section('content')
     <div id="page-loader" class="show bg-gd-sea"></div>
     <div class="content">
-        <h2 class="content-heading" id="solicitud" data-solicitud-id="{{ $solicitud->solicitud }}">
-            Solicitud <small class="d-none d-sm-inline">Ticket #INF.{{ $solicitud->ticket_id }}</small>
-        </h2>
+        <nav class="breadcrumb push bg-body-extra-light rounded-pill px-4 py-2">
+            <a class="breadcrumb-item" href="{{ route('loguin.infra.credential') }}" id="solicitud"
+                data-solicitud-id="{{ $solicitud->solicitud }}">
+                Solicitudes
+            </a>
+            <span class="breadcrumb-item active">Ticket #INF.{{ $solicitud->ticket_id }}</span>
+        </nav>
         <div class="row">
             <!-- Billing Address -->
             <div class="col-md-12">
@@ -176,65 +180,6 @@
                 <div class="block-content block-content-full loguin-content"></div>
             </div>
         </div>
-{{--         <div class="col-md-5">
-            <div class="block block-rounded">
-                <div class="block-header block-header-default">
-                    <h3 class="block-title">ASOCIACIÓN A MIPRES</h3>
-                </div>
-                <div class="block-content block-content-full">
-                    <div class="row">
-                        <div class="col-lg-4">
-                            <p class="text-muted">MIPRES</p>
-                        </div>
-                        <div class="col-lg-8 space-y-2">
-                            <div class="row row-cols-lg-auto g-3 align-items-center">
-                                <div class="mb-4">
-                                    <label class="form-label">Asociado</label>
-                                    <div class="space-x-2">
-                                        <div class="form-check form-switch form-check-inline form-switch-lg">
-                                            <input class="form-check-input" type="checkbox" value="1" id="mipres"
-                                                name="mipres">
-                                            <label class="form-check-label" for="mipres"></label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
-        {{--         <div class="block block-rounded" id="coraza-loguin">
-            <div class="block-header block-header-default">
-                <h3 class="block-title">Coraza</h3>
-            </div>
-            <div class="block-content block-content-full">
-                <div class="row">
-                    <div class="col-lg-4">
-                        <p class="text-muted" id="solicitudes-coraza"></p>
-                    </div>
-                    <div class="col-lg-8 space-y-2">
-                        <!-- Form Inline - Default Style -->
-                        <div class="row row-cols-lg-auto g-3 align-items-center">
-                            <div class="col-12">
-                                <label class="visually-hidden" for="usuario-loguin">Usuario</label>
-                                <input type="text" class="form-control" id="usuario-loguin" name="usuario-loguin"
-                                    placeholder="Usuario">
-                            </div>
-                            <div class="col-12">
-                                <label class="visually-hidden" for="password-loguin">Contraseña</label>
-                                <input type="password" class="form-control" id="password-loguin" name="password-loguin"
-                                    placeholder="Contraseña">
-                            </div>
-                            <div>
-                                <button type="submit" class="btn btn-primary">Login</button>
-                            </div>
-                            <!-- END Form Inline - Default Style -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
     </div>
     <div class="mb-4"></div>
     <div class="mb-4"></div>

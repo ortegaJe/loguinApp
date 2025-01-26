@@ -115,9 +115,13 @@
 @section('content')
     <div id="page-loader" class="show bg-gd-sea"></div>
     <div class="content">
-        <h2 class="content-heading" id="solicitud" data-solicitud-id="{{ $solicitud->solicitud }}">
-            Solicitud <small class="d-none d-sm-inline">Ticket #LOG.{{ $solicitud->ticket_id }}</small>
-        </h2>
+        <nav class="breadcrumb push bg-body-extra-light rounded-pill px-4 py-2">
+            <a class="breadcrumb-item" href="{{ route('loguin.credential') }}" id="solicitud"
+                data-solicitud-id="{{ $solicitud->solicitud }}">
+                Solicitudes
+            </a>
+            <span class="breadcrumb-item active">Ticket #LOG.{{ $solicitud->ticket_id }}</span>
+        </nav>
         <div class="row">
             <!-- Billing Address -->
             <div class="col-md-12">

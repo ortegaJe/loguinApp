@@ -106,7 +106,7 @@
                             <div class="row g-sm mb-4">
                                 <div class="col-12 mb-2">
                                     <button type="submit" class="btn btn-lg btn-alt-primary w-100 py-3 fw-semibold">
-                                        Sign In
+                                        Iniciar Sesión
                                     </button>
                                 </div>
                             </div>

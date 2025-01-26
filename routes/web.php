@@ -36,7 +36,7 @@ Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN|CONTRATACION|ANALISTA_APP|I
 });
 
 Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN|ANALISTA_APP'])->group(function () {
-    Route::get('loguin/aplicaciones/credenciales', [SolicitudController::class, 'getRequestLoguin']);
+    Route::get('loguin/aplicaciones/credenciales', [SolicitudController::class, 'getRequestLoguin'])->name('loguin.credential');
     Route::get('loguin/aplicaciones/credenciales/registrar/{id}', [LoguinCredentialController::class, 'registerCredential'])->name('register.loguin');
     Route::get('fetchDataLoguin/{id}', [LoguinCredentialController::class, 'fetchDataLoguin']);
     Route::post('storeLoguin', [LoguinCredentialController::class, 'storeLoguin']);
@@ -45,7 +45,7 @@ Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN|ANALISTA_APP'])->group(func
 });
 
 Route::middleware(['auth:glpi', 'profile:SUPER_ADMIN||INFRAESTRUCTURA'])->group(function () {
-    Route::get('loguin/infraestructura/credenciales', [SolicitudController::class, 'getRequestLoguinInfra']);
+    Route::get('loguin/infraestructura/credenciales', [SolicitudController::class, 'getRequestLoguinInfra'])->name('loguin.infra.credential');
     Route::get('loguin/infraestructura/credenciales/registrar/{id}', [InfraCredentialController::class, 'registerCredential'])->name('register.infra');
     Route::get('fetchDataLoguinInfra/{id}', [InfraCredentialController::class, 'fetchDataLoguinInfra']);
     Route::post('storeLoguinInfra', [InfraCredentialController::class, 'storeLoguinInfra']);
