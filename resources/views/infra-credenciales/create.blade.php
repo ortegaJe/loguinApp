@@ -97,6 +97,11 @@
             background-color: #0079fac9;
             ;
         }
+
+        #data-usuario div {
+            margin-bottom: 6px;
+            /* Espacio uniforme entre líneas */
+        }
     </style>
 @endsection
 
@@ -130,16 +135,42 @@
                         <h3 class="block-title">Información Loguin</i></h3>
                     </div>
                     <div class="block-content" id="data-identificacion">
-                        <div class="fw-bold mb-1" id="loguin-identificacion"></div>
+                        <div class="d-flex align-items-center fw-bold">
+                            <div id="loguin-tipo-identificacion" class="me-2"></div>
+                            <div id="loguin-identificacion"></div>
+                            <button type="button" class="btn-block-option ms-2 copy-btn" data-bs-toggle="tooltip"
+                                data-bs-placement="right" title="Copiar" data-copy-target="loguin-identificacion">
+                                <i class="far fa-fw fa-copy text-muted"></i>
+                            </button>
+                        </div>
                         <div class="row">
                             <div class="col-sm-6">
                                 <address id="data-usuario">
-                                    <span id="loguin-nombre"></span><br>
-                                    <span id="loguin-email"></span><br>
-                                    <span id="loguin-sede"></span><br>
-                                    <span id="loguin-cargo"></span><br>
-                                    <span id="loguin-especialidad" hidden></span>
-                                    <br>
+                                    <div class="d-flex align-items-center">
+                                        <span id="loguin-nombre"></span>
+                                        <button type="button" class="btn-block-option ms-2 copy-btn"
+                                            data-bs-toggle="tooltip" data-bs-placement="right" title="Copiar"
+                                            data-copy-target="loguin-nombre">
+                                            <i class="far fa-fw fa-copy text-muted"></i>
+                                        </button>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <span id="loguin-email"></span>
+                                        <button type="button" class="btn-block-option ms-2 copy-btn"
+                                            data-bs-toggle="tooltip" data-bs-placement="right" title="Copiar"
+                                            data-copy-target="loguin-email">
+                                            <i class="far fa-fw fa-copy text-muted"></i>
+                                        </button>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <span id="loguin-sede"></span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <span id="loguin-cargo"></span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <span id="loguin-especialidad" hidden></span>
+                                    </div>
                                     <a type="button" class="fw-bold mb-2" id="loguin-ticket" href="javascript:void(0)"
                                         data-bs-toggle="tooltip" data-bs-placement="right" title="Ticket Mesa de Servicio">
                                         <span id="modal-ticket-numero"></span></a>

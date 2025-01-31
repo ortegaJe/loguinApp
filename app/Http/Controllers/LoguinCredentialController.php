@@ -54,7 +54,8 @@ class LoguinCredentialController extends Controller
             ->select([
                 'a.id as solicitud_id',
                 'b.id as usuario_id',
-                DB::raw("CONCAT(d.abreviatura,' ',b.identificacion) as identificacion"),
+                DB::raw("CONCAT(d.abreviatura) as tipo_identificacion"),
+                DB::raw("CONCAT(b.identificacion) as identificacion"),
                 DB::raw("UPPER(CONCAT(b.nombres, ' ', b.apellidos)) as nombreCompleto"), 
                 'b.email',
                 'c.name as sede',

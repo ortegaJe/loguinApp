@@ -172,9 +172,12 @@ class RenderDataSolicitudLoguin {
     const blockIDUser = document.getElementById("data-identificacion");
     const blockDataUser = document.getElementById("data-usuario");
     const BlockObservation = document.getElementById("loguin-observacion");
-    blockIDUser.querySelector("#loguin-identificacion").innerHTML =
-      `<i class="fa fa-address-card me-1"></i>${usuario.identificacion}` ||
+    blockIDUser.querySelector("#loguin-tipo-identificacion").innerHTML =
+      `<i class="fa fa-address-card me-1"></i>${usuario.tipo_identificacion}` ||
       "N/A";
+    blockIDUser.querySelector("#loguin-identificacion").innerHTML =
+    `${usuario.identificacion}` ||
+    "N/A";
     blockDataUser.querySelector("#loguin-nombre").innerHTML =
       `<i class="fa fa-user me-1"></i>${usuario.nombreCompleto}` || "N/A";
     blockDataUser.querySelector("#loguin-email").innerHTML =
@@ -210,6 +213,7 @@ class RenderDataSolicitudLoguin {
     } else {
       blockDataUser.querySelector("#loguin-especialidad").hidden = true;
     }
+    this.copyInfoCardLoguin(); // Función para copiar la información del usuario loguin
   }
 
   static async renderApplicationBlocks(loguinSolicitud) {
@@ -949,10 +953,50 @@ class RenderDataSolicitudLoguin {
           Codebase.helpers("jq-notify", {
             type: "warning",
             icon: "fa fa-exclamation-triangle",
-            message: "No se encontraron tablas para copiar",
+            message: "Error al copiar el loguin",
           });
         }
       });
+    }
+  }
+
+  // Función para copiar texto al portapapeles de card de información loguin
+  static copyInfoCardLoguin() {
+    const copyButton = document.querySelectorAll(
+      ".copy-btn"
+    );
+
+    copyButton.forEach((button) => {
+        button.addEventListener("click", () => {
+          const targetIds = button.getAttribute("data-copy-target").split(" ");
+            let contentToCopy = targetIds
+                .map(id => document.getElementById(id)?.textContent.trim())
+                .filter(text => text)
+                .join(" ");
+
+            if (contentToCopy) {
+                this.copyToClipboard(contentToCopy);
+            }
+        });
+    });
+  }
+
+  // Función para copiar texto al portapapeles con `navigator.clipboard` desde copyInfoCardLoguin
+  static async copyToClipboard(text) {
+    try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+            Codebase.helpers("jq-notify", {
+                type: "success",
+                icon: "fa fa-check",
+                message: "Texto copiado al portapapeles",
+            });
+        } else {
+            this.copyToClipboardFallback(text);
+        }
+    } catch (err) {
+        console.error("Error al copiar usando Clipboard API:", err);
+        this.copyToClipboardFallback(text);
     }
   }
 
@@ -968,7 +1012,7 @@ class RenderDataSolicitudLoguin {
     try {
       const successful = document.execCommand("copy");
       const msg = successful
-        ? "Loguin copiado al portapapeles"
+        ? "Texto copiado al portapapeles"
         : "No se pudo copiar el loguin";
       Codebase.helpers("jq-notify", {
         type: successful ? "success" : "danger",
