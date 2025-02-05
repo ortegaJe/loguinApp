@@ -62,6 +62,7 @@ class DropdownController extends Controller
         ->where('c.id', $sede_id)
         ->where('a.tipocargo_id', $tipo_cargo_id)
         ->where('d.estado', 1)
+        ->orderBy('d.name')
         //->get(['b.name as tipo_cargo','d.name as cargo']);
         ->get(['d.name','d.id']);
 

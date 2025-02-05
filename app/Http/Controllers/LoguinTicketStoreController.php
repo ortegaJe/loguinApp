@@ -394,7 +394,7 @@ class LoguinTicketStoreController extends Controller
 
         // Insertar el ticket en la base de datos
         $ticketId = DB::table('glpi_tickets')->insertGetId([
-            'name' => '[PRUEBA] SOLICITUD USUARIO LOGIN (PANA, EVEREST) - ' . $identificacion,
+            'name' => 'SOLICITUD USUARIO LOGIN (PANA, EVEREST) - ' . $identificacion,
             'content' => $encodedTable,
             'users_id_recipient' => $currentUser, // ID del usuario que envía la solicitud
             'date_creation' => now('America/Bogota'),
@@ -557,7 +557,7 @@ class LoguinTicketStoreController extends Controller
         $solicitudInfra = DB::table('loguin_solicitud_infraestructura')->insertGetId($solicitudes);
     
         $ticketInfra = DB::table('glpi_tickets')->insertGetId([
-            'name' => '[PRUEBA] SOLICITUD USUARIO LOGUIN (CORREO, USUARIO DOMINIO, VPN)- ' . $identificacion,
+            'name' => 'SOLICITUD USUARIO LOGUIN (CORREO, USUARIO DOMINIO, VPN)- ' . $identificacion,
             'content' => $infraTable,
             'users_id_recipient' => $currentUser,
             'date_creation' => now('America/Bogota'),
