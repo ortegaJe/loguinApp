@@ -936,7 +936,7 @@ class RenderDataSolicitudLoguin {
               .then(() => {
                 Codebase.helpers("jq-notify", {
                   type: "success",
-                  icon: "fa fa-check",
+                  icon: "far fa-paste",
                   message: "Loguin copiado al portapapeles",
                 });
               })
@@ -988,7 +988,7 @@ class RenderDataSolicitudLoguin {
             await navigator.clipboard.writeText(text);
             Codebase.helpers("jq-notify", {
                 type: "success",
-                icon: "fa fa-check",
+                icon: "far fa-paste",
                 message: "Texto copiado al portapapeles",
             });
         } else {
@@ -1016,7 +1016,7 @@ class RenderDataSolicitudLoguin {
         : "No se pudo copiar el loguin";
       Codebase.helpers("jq-notify", {
         type: successful ? "success" : "danger",
-        icon: successful ? "fa fa-check" : "fa fa-times",
+        icon: successful ? "far fa-paste" : "fa fa-times",
         message: msg,
       });
     } catch (err) {
