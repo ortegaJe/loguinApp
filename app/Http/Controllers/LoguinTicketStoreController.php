@@ -405,7 +405,7 @@ class LoguinTicketStoreController extends Controller
             'users_id_lastupdater' => $currentUser, // ID del usuario que envía la solicitud
             'itilcategories_id' => 8, // Categoría del ticket
             'locations_id' => $sedeId, // ID de la sede
-            'entities_id' => 0,
+            'entities_id' => 1, // ID de la entidad raiz de la organización VIVA COLOMBIA
             'closedate' => null,
             'solvedate' => null,
             'takeintoaccountdate' => null,
@@ -568,13 +568,13 @@ class LoguinTicketStoreController extends Controller
             'users_id_lastupdater' => $currentUser,
             'itilcategories_id' => 48,
             'locations_id' => $sedeId,
-            'entities_id' => 0, 
+            'entities_id' => 1, // ID de la entidad raiz de la organización VIVA COLOMBIA
             'closedate' => null, 
             'solvedate' => null , 
             'takeintoaccountdate' => null, 
             'status' => 2, 
             'requesttypes_id' => 1, 
-            'urgency' => 3, 
+            'urgency' => 3,
             'impact' => 3, 
             'priority' => 3, 
             'type' => 2, 

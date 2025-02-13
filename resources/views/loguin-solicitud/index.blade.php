@@ -51,12 +51,12 @@
                     </thead>
                     <tbody>
                         @php $contador = 1; @endphp
-                        @foreach ($data['loguin'] as $loguin)
+                        @foreach ($data as $loguin)
                             <tr data-usuario-id="{{ $loguin->usuario_id }}">
                                 <td class="text-center d-none d-md-table-cell">{{ $contador++ }}</td>
                                 <td class="text-center"><a class="fw-semibold"
-                                        href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id={{ $loguin->loguin_ticket }}"
-                                        target="_blank">LOG.{{ $loguin->loguin_ticket }}</a></td>
+                                        href="http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id={{ $loguin->ticket_id }}"
+                                        target="_blank">{{ $loguin->ticket }}</a></td>
                                 <td class="d-none d-sm-table-cell">
                                     <span class="badge bg-{{ $loguin->status_color }} w-100">
                                         <i class="{{ $loguin->status_icon }} me-1"></i>
@@ -71,14 +71,14 @@
                                     <div class="btn-group">
                                         <button type="button" class="btn btn-sm btn-secondary btn-show"
                                             data-toggle="click-ripple" data-bs-toggle="tooltip" title="Ver detalle"
-                                            data-solicitud-id="{{ $loguin->solicitud_id }}" data-solicitud-tipo="loguin">
+                                            data-solicitud-id="{{ $loguin->solicitud_id }}" data-solicitud-tipo="{{ $loguin->tipo }}">
                                             <i class="fa fa-eye"></i>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
                         @endforeach
-                        @foreach ($data['infra'] as $infra_ticket)
+{{--                         @foreach ($data['infra'] as $infra_ticket)
                             <tr data-usuario-id="{{ $infra_ticket->usuario_id }}">
                                 <td class="text-center d-none d-md-table-cell">{{ $contador++ }}</td>
                                 <td class="text-center"><a class="fw-semibold"
@@ -105,7 +105,7 @@
                                     </div>
                                 </td>
                             </tr>
-                        @endforeach
+                        @endforeach --}}
                     </tbody>
                 </table>
             </div>
