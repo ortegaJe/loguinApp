@@ -36,7 +36,8 @@
         <!-- Partial Table -->
         <div class="block block-rounded">
             <div class="block-content block-content-full">
-                <table class="table table-borderless table-hover table-striped table-vcenter js-dataTable-full" id="solicitudesTable">
+                <table class="table table-borderless table-hover table-striped table-vcenter js-dataTable-full"
+                    id="solicitudesTable">
                     <thead class="text-end border-bottom">
                         <tr>
                             <th class="d-none d-md-table-cell">#</th>
@@ -77,8 +78,7 @@
                                         </button>
                                         <button type="button" class="btn btn-sm btn-secondary btn-register-infra"
                                             data-toggle="click-ripple" data-bs-toggle="tooltip"
-                                            title="Registrar credenciales"
-                                            data-solicitud-id="{{ $loguin->solicitud_id }}"
+                                            title="Registrar credenciales" data-solicitud-id="{{ $loguin->solicitud_id }}"
                                             data-solicitud-tipo="{{ $loguin->tipo }}">
                                             <i class="fa fa-user-pen"></i>
                                         </button>
@@ -182,21 +182,19 @@
                                         </div>
                                     </div>
                                 </div>
-                                {{--                                 <div class="col-sm-12">
+                                <div class="col-sm-12">
                                     <div class="block block-rounded block-bordered">
                                         <div class="block-header">
-                                            <h3 class="block-title"><i class="fa fa-cogs fa-2x me-1 text-muted"></i>
-                                                Aplicaciones y Perfiles Solicitados
+                                            <h3 class="block-title"><i class="fa fa-circle-info fa-2x text-muted"></i>
                                             </h3>
                                         </div>
                                         <div class="block-content">
-                                            <ul class="list-group push" id="modal-aplicaciones-perfiles"></ul>
-                                            <h6 id="title-especialidad" hidden><i
-                                                    class="fa fa-book-medical fa-2x me-2 text-muted"></i>Especialidad</h6>
-                                            <ul class="list-group push" id="modal-especialidad-usuario" hidden></ul>
+                                            <p>
+                                                <strong>Observación:</strong> <span id="modal-infra-observacion"></span>
+                                            </p>
                                         </div>
                                     </div>
-                                </div> --}}
+                                </div>
                             </div>
                         </div>
                         <div class="block-content block-content-full block-content-sm text-end border-top">

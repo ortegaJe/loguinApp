@@ -85,6 +85,7 @@ class pageTablesDatatables {
     modal.querySelector('#modal-ticket').setAttribute('target', '_blank');
     modal.querySelector('#modal-ticket-numero').textContent = `#${usuario.ticket_id}` || 'N/A';
     modal.querySelector('#modal-fecha').textContent = usuario.fecha_creacion || 'N/A';
+    modal.querySelector('#modal-observacion').textContent = usuario.observaciones;
 
     const aplicacionesPerfilesContainer = modal.querySelector('#modal-aplicaciones-perfiles');
     aplicacionesPerfilesContainer.innerHTML = '';
@@ -96,7 +97,8 @@ class pageTablesDatatables {
       aplicacionesPerfilesContainer.appendChild(listItem);
     });
 
-    const hasMedicoEspecialista = loguinSolicitud.some(item => item.perfil === 'medico especialista');
+    const perfilesEspecialistaId = [5,6]; // ID desde la base de datos medicos especilistas de everest y pana
+    const hasMedicoEspecialista = loguinSolicitud.some(item => perfilesEspecialistaId.includes(item.perfil_id));
     const hasEspecialidad = especialidadUsuario && especialidadUsuario.length > 0;
 
     if (hasMedicoEspecialista || hasEspecialidad) {
@@ -166,6 +168,7 @@ class pageTablesDatatables {
     modalInfra.querySelector('#modal-infra-ticket').setAttribute('target', '_blank');
     modalInfra.querySelector('#modal-infra-ticket-numero').textContent = `#${InfraSolicitud.ticket_id}` || 'N/A';
     modalInfra.querySelector('#modal-infra-fecha').textContent = InfraSolicitud.fecha_creacion || 'N/A';
+    modalInfra.querySelector('#modal-infra-observacion').textContent = InfraSolicitud.observaciones;
     //console.log(InfraSolicitud.solicito_correo,InfraSolicitud.solicito_usuario_dominio,InfraSolicitud.solicito_vpn);
     const infraElements = {
       solicito_correo: '#correo',

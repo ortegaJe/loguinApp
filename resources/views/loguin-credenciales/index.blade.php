@@ -166,6 +166,19 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-sm-12">
+                                    <div class="block block-rounded block-bordered">
+                                        <div class="block-header">
+                                            <h3 class="block-title"><i class="fa fa-circle-info fa-2x text-muted"></i>
+                                            </h3>
+                                        </div>
+                                        <div class="block-content">
+                                            <p>
+                                                <strong>Observación:</strong> <span id="modal-observacion"></span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="block-content block-content-full block-content-sm text-end border-top">

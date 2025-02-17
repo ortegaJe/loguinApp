@@ -93,6 +93,7 @@ class pageTablesDatatables {
     modal.querySelector('#modal-ticket').setAttribute('target', '_blank');
     modal.querySelector('#modal-ticket-numero').textContent = `#${usuario.ticket_id}` || 'N/A';
     modal.querySelector('#modal-fecha').textContent = usuario.fecha_creacion || 'N/A';
+    modal.querySelector('#modal-observacion').textContent = usuario.observaciones;
 
     const aplicacionesPerfilesContainer = modal.querySelector('#modal-aplicaciones-perfiles');
     aplicacionesPerfilesContainer.innerHTML = '';
@@ -104,7 +105,8 @@ class pageTablesDatatables {
       aplicacionesPerfilesContainer.appendChild(listItem);
     });
 
-    const hasMedicoEspecialista = loguinSolicitud.some(item => item.perfil === 'medico especialista');
+    const perfilesEspecialistaId = [5,6]; // ID desde la base de datos medicos especilistas de everest y pana
+    const hasMedicoEspecialista = loguinSolicitud.some(item => perfilesEspecialistaId.includes(item.perfil_id));
     const hasEspecialidad = especialidadUsuario && especialidadUsuario.length > 0;
 
     if (hasMedicoEspecialista || hasEspecialidad) {
@@ -129,80 +131,6 @@ class pageTablesDatatables {
 
     const modalInstance = new bootstrap.Modal(modal);
     modalInstance.show();
-  }
-
-  static async fetchSolicitudInfraData(solicitudId, usuarioId) {
-    if (!solicitudId) {
-      this.showToast('Error', 'No se pudo cargar los datos de la solicitud', 'error');
-      return;
-    }
-
-    try {
-      const response = await fetch("/fetchSolicitudInfra", {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-        },
-        body: JSON.stringify({ solicitud_id: solicitudId, usuario_id: usuarioId })
-      });
-
-      if (!response.ok) throw new Error('Error al obtener los datos de la solicitud');
-
-      const data = await response.json();
-      //console.log(data);
-      if (!data.infra_solicitud || !data.infra_solicitud[0]) {
-        throw new Error('Datos incompletos recibidos del servidor');
-      }
-
-      this.showSolicitudInfraModal(data.infra_solicitud[0]);
-
-    } catch (error) {
-      this.showToast('Error', `${error}`, 'error');
-      console.error('Fetch error:', error);
-    }
-  }
-
-  static async showSolicitudInfraModal(InfraSolicitud) {
-    //console.log(InfraSolicitud);
-    const modalInfra = document.getElementById('solicitudModalInfra');
-    modalInfra.querySelector('#modal-infra-documento').textContent = InfraSolicitud.identificacion || 'N/A';
-    modalInfra.querySelector('#modal-infra-nombre').textContent = InfraSolicitud.nombreCompleto || 'N/A';
-    modalInfra.querySelector('#modal-infra-email').textContent = InfraSolicitud.email || 'N/A';
-    modalInfra.querySelector('#modal-infra-sede').textContent = InfraSolicitud.sede || 'N/A';
-    modalInfra.querySelector('#modal-infra-ticket').href = `http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${InfraSolicitud.ticket_id}` || 'N/A';
-    modalInfra.querySelector('#modal-infra-ticket').setAttribute('target', '_blank');
-    modalInfra.querySelector('#modal-infra-ticket-numero').textContent = `#${InfraSolicitud.ticket_id}` || 'N/A';
-    modalInfra.querySelector('#modal-infra-fecha').textContent = InfraSolicitud.fecha_creacion || 'N/A';
-    //console.log(InfraSolicitud.solicito_correo,InfraSolicitud.solicito_usuario_dominio,InfraSolicitud.solicito_vpn);
-    const infraElements = {
-      solicito_correo: '#correo',
-      solicito_usuario_dominio: '#dominio',
-      solicito_vpn: '#vpn'
-    };
-
-    Object.values(infraElements).forEach(selector => {
-      modalInfra.querySelector(selector).hidden = true;
-    });
-
-    Object.keys(infraElements).forEach(key => {
-      if (InfraSolicitud[key] === 1) {
-        modalInfra.querySelector(infraElements[key]).hidden = false;
-      }
-    });
-
-   /*  if (InfraSolicitud.solicito_correo) {
-      modalInfra.querySelector('#correo').hidden = false;
-    }
-    if (InfraSolicitud.solicito_usuario_dominio) {
-      modalInfra.querySelector('#dominio').hidden = false;
-    }
-    if (InfraSolicitud.solicito_vpn) {
-      modalInfra.querySelector('#vpn').hidden = false;
-    } */
-
-    const modalInfraInstance = new bootstrap.Modal(modalInfra);
-    modalInfraInstance.show();
   }
 
   /*

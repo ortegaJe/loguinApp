@@ -42,87 +42,6 @@ class pageTablesDatatables {
     toast.fire(title, message, type);
   }
 
-  static async fetchSolicitudLoguinData(solicitudId, usuarioId) {
-    if (!solicitudId) {
-      this.showToast('Error', 'No se pudo cargar los datos de la solicitud', 'error');
-      return;
-    }
-
-    try {
-      const response = await fetch("/fetchSolicitudLoguin", {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-        },
-        body: JSON.stringify({ solicitud_id: solicitudId, usuario_id: usuarioId })
-      });
-
-      if (!response.ok) throw new Error('Error al obtener los datos de la solicitud');
-
-      const data = await response.json();
-      //console.log(data);
-      if (!data.usuario || !data.usuario[0] || !data.loguin_solicitud || !data.especialidad_usuario) {
-        throw new Error('Datos incompletos recibidos del servidor');
-      }
-
-      this.showSolicitudModal(data.usuario[0], data.loguin_solicitud, data.especialidad_usuario);
-
-    } catch (error) {
-      this.showToast('Error', `${error}`, 'error');
-      console.error('Fetch error:', error);
-    }
-  }
-
-  static async showSolicitudModal(usuario, loguinSolicitud, especialidadUsuario) {
-    //console.log(loguinSolicitud);
-    const modal = document.getElementById('solicitudModal');
-    modal.querySelector('#modal-documento').textContent = usuario.identificacion || 'N/A';
-    modal.querySelector('#modal-nombre').textContent = usuario.nombreCompleto || 'N/A';
-    modal.querySelector('#modal-email').textContent = usuario.email || 'N/A';
-    modal.querySelector('#modal-sede').textContent = usuario.sede || 'N/A';
-    modal.querySelector('#modal-ticket').href = `http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${usuario.ticket_id}` || 'N/A';
-    modal.querySelector('#modal-ticket').setAttribute('target', '_blank');
-    modal.querySelector('#modal-ticket-numero').textContent = `#${usuario.ticket_id}` || 'N/A';
-    modal.querySelector('#modal-fecha').textContent = usuario.fecha_creacion || 'N/A';
-
-    const aplicacionesPerfilesContainer = modal.querySelector('#modal-aplicaciones-perfiles');
-    aplicacionesPerfilesContainer.innerHTML = '';
-
-    loguinSolicitud.map((item) => {
-      const listItem = document.createElement('li');
-      listItem.classList.add('list-group-item');
-      listItem.textContent = `${item.aplicacion} ${item.perfil.toUpperCase()}`;
-      aplicacionesPerfilesContainer.appendChild(listItem);
-    });
-
-    const hasMedicoEspecialista = loguinSolicitud.some(item => item.perfil === 'medico especialista');
-    const hasEspecialidad = especialidadUsuario && especialidadUsuario.length > 0;
-
-    if (hasMedicoEspecialista || hasEspecialidad) {
-      const titleEspecialidadUsuario = modal.querySelector('#title-especialidad');
-      const especialidadUsuarioContainer = modal.querySelector('#modal-especialidad-usuario');
-      titleEspecialidadUsuario.hidden = false;
-      especialidadUsuarioContainer.hidden = false;
-      especialidadUsuarioContainer.innerHTML = '';
-
-      if (hasEspecialidad) {
-        especialidadUsuario.forEach((item) => {
-          const listItem = document.createElement('li');
-          listItem.classList.add('list-group-item');
-          listItem.textContent = `${item.especialidad}`;
-          especialidadUsuarioContainer.appendChild(listItem);
-        });
-      }
-    } else {
-      modal.querySelector('#title-especialidad').hidden = true;
-      modal.querySelector('#modal-especialidad-usuario').hidden = true;
-    }
-
-    const modalInstance = new bootstrap.Modal(modal);
-    modalInstance.show();
-  }
-
   static async fetchSolicitudInfraData(solicitudId, usuarioId) {
     if (!solicitudId) {
       this.showToast('Error', 'No se pudo cargar los datos de la solicitud', 'error');
@@ -166,6 +85,7 @@ class pageTablesDatatables {
     modalInfra.querySelector('#modal-infra-ticket').setAttribute('target', '_blank');
     modalInfra.querySelector('#modal-infra-ticket-numero').textContent = `#${InfraSolicitud.ticket_id}` || 'N/A';
     modalInfra.querySelector('#modal-infra-fecha').textContent = InfraSolicitud.fecha_creacion || 'N/A';
+    modalInfra.querySelector('#modal-infra-observacion').textContent = InfraSolicitud.observaciones;
     //console.log(InfraSolicitud.solicito_correo,InfraSolicitud.solicito_usuario_dominio,InfraSolicitud.solicito_vpn);
     const infraElements = {
       solicito_correo: '#correo',

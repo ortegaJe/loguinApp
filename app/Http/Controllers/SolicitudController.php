@@ -163,6 +163,7 @@ class SolicitudController extends Controller
                 'b.email',
                 'c.name as sede',
                 'a.ticket_id',
+                'a.observaciones',
                 DB::raw("DATE_FORMAT(a.fecha_creacion, '%d/%m%/%Y') as fecha_creacion")
             ])->get();
     }
@@ -177,6 +178,7 @@ class SolicitudController extends Controller
             ->select([
                 'a.id as solicitud_id',
                 'c.name as aplicacion',
+                'd.id as perfil_id',
                 'd.name as perfil',
             ])->get();
     }
@@ -199,6 +201,7 @@ class SolicitudController extends Controller
                 'a.solicito_correo',
                 'a.solicito_usuario_dominio',
                 'a.solicito_vpn',
+                'a.observaciones',
                 'a.ticket_id',
                 DB::raw("DATE_FORMAT(a.fecha_creacion, '%d/%m%/%Y') as fecha_creacion")
             ])->get();
