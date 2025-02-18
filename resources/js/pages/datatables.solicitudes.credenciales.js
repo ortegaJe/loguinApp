@@ -88,6 +88,7 @@ class pageTablesDatatables {
     modal.querySelector('#modal-documento').textContent = usuario.identificacion || 'N/A';
     modal.querySelector('#modal-nombre').textContent = usuario.nombreCompleto || 'N/A';
     modal.querySelector('#modal-email').textContent = usuario.email || 'N/A';
+    modal.querySelector('#modal-zonal').textContent = usuario.zonal || 'N/A';
     modal.querySelector('#modal-sede').textContent = usuario.sede || 'N/A';
     modal.querySelector('#modal-ticket').href = `http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${usuario.ticket_id}` || 'N/A';
     modal.querySelector('#modal-ticket').setAttribute('target', '_blank');

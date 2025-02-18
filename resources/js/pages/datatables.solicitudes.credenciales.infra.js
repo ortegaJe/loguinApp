@@ -80,6 +80,7 @@ class pageTablesDatatables {
     modalInfra.querySelector('#modal-infra-documento').textContent = InfraSolicitud.identificacion || 'N/A';
     modalInfra.querySelector('#modal-infra-nombre').textContent = InfraSolicitud.nombreCompleto || 'N/A';
     modalInfra.querySelector('#modal-infra-email').textContent = InfraSolicitud.email || 'N/A';
+    modalInfra.querySelector('#modal-infra-zonal').textContent = InfraSolicitud.zonal || 'N/A';
     modalInfra.querySelector('#modal-infra-sede').textContent = InfraSolicitud.sede || 'N/A';
     modalInfra.querySelector('#modal-infra-ticket').href = `http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${InfraSolicitud.ticket_id}` || 'N/A';
     modalInfra.querySelector('#modal-infra-ticket').setAttribute('target', '_blank');

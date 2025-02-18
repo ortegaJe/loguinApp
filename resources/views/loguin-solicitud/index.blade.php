@@ -167,10 +167,10 @@
                                         </div>
                                         <div class="block-content">
                                             <p class="mb-1">
-                                                <strong>Sede:</strong> <span id="modal-sede"></span>
+                                                <strong>Zonal:</strong> <span id="modal-zonal"></span>
                                             </p>
                                             <p>
-                                                <strong>Zonal:</strong> <span id="modal-zonal"></span>
+                                                <strong>Sede:</strong> <span id="modal-sede"></span>
                                             </p>
                                         </div>
                                     </div>
@@ -271,10 +271,10 @@
                                         </div>
                                         <div class="block-content">
                                             <p class="mb-1">
-                                                <strong>Sede:</strong> <span id="modal-infra-sede"></span>
+                                                <strong>Zonal:</strong> <span id="modal-infra-zonal"></span>
                                             </p>
                                             <p>
-                                                <strong>Zonal:</strong> <span id="modal-infra-zonal"></span>
+                                                <strong>Sede:</strong> <span id="modal-infra-sede"></span>
                                             </p>
                                         </div>
                                     </div>

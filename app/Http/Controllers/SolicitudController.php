@@ -154,6 +154,7 @@ class SolicitudController extends Controller
         return DB::table('loguin_solicitud as a')
             ->join('loguin_usuarios as b', 'b.id', 'a.usuario_id')
             ->join('glpi_locations as c', 'c.id', 'a.sede_id')
+            ->join('glpi_locations as d', 'd.id', 'c.locations_id')
             ->where('a.id', $solicitudId)
             ->select([
                 'a.id as solicitud_id',
@@ -162,6 +163,7 @@ class SolicitudController extends Controller
                 DB::raw("CONCAT(b.nombres, ' ', b.apellidos) as nombreCompleto"), 
                 'b.email',
                 'c.name as sede',
+                'd.name as zonal',
                 'a.ticket_id',
                 'a.observaciones',
                 DB::raw("DATE_FORMAT(a.fecha_creacion, '%d/%m%/%Y') as fecha_creacion")
@@ -188,6 +190,7 @@ class SolicitudController extends Controller
         return DB::table('loguin_solicitud_infraestructura as a')
             ->join('glpi_locations as b', 'b.id', 'a.sede_id')
             ->join('loguin_usuarios as c', 'c.id', 'a.usuario_id')
+            ->join('glpi_locations as d', 'd.id', 'b.locations_id')
             ->where('a.id', $solicitudId)
             ->where('a.usuario_id', $userId)
             ->orderByDesc('a.fecha_creacion')
@@ -198,6 +201,7 @@ class SolicitudController extends Controller
                 'c.email',
                 //'a.zonal_id',
                 'b.name as sede',
+                'd.name as zonal',
                 'a.solicito_correo',
                 'a.solicito_usuario_dominio',
                 'a.solicito_vpn',

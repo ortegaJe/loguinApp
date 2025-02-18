@@ -81,6 +81,7 @@ class pageTablesDatatables {
     modal.querySelector('#modal-nombre').textContent = usuario.nombreCompleto || 'N/A';
     modal.querySelector('#modal-email').textContent = usuario.email || 'N/A';
     modal.querySelector('#modal-sede').textContent = usuario.sede || 'N/A';
+    modal.querySelector('#modal-zonal').textContent = usuario.zonal || 'N/A';
     modal.querySelector('#modal-ticket').href = `http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${usuario.ticket_id}` || 'N/A';
     modal.querySelector('#modal-ticket').setAttribute('target', '_blank');
     modal.querySelector('#modal-ticket-numero').textContent = `#${usuario.ticket_id}` || 'N/A';
@@ -163,6 +164,7 @@ class pageTablesDatatables {
     modalInfra.querySelector('#modal-infra-documento').textContent = InfraSolicitud.identificacion || 'N/A';
     modalInfra.querySelector('#modal-infra-nombre').textContent = InfraSolicitud.nombreCompleto || 'N/A';
     modalInfra.querySelector('#modal-infra-email').textContent = InfraSolicitud.email || 'N/A';
+    modalInfra.querySelector('#modal-infra-zonal').textContent = InfraSolicitud.zonal || 'N/A';
     modalInfra.querySelector('#modal-infra-sede').textContent = InfraSolicitud.sede || 'N/A';
     modalInfra.querySelector('#modal-infra-ticket').href = `http://mesadeservicios.viva1a.com.co/glpi/front/ticket.form.php?id=${InfraSolicitud.ticket_id}` || 'N/A';
     modalInfra.querySelector('#modal-infra-ticket').setAttribute('target', '_blank');
