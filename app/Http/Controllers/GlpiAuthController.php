@@ -32,9 +32,16 @@ class GlpiAuthController extends Controller
             // Autentica manualmente al usuario
             $currentUser = Auth::guard('glpi')->loginUsingId($user->id);
 
-            $userProfile = DB::table('glpi_profiles_users')
-            ->where('users_id', $currentUser->id)
-            ->value('profiles_id');
+            $userProfileId = DB::table('glpi_profiles_users')
+            ->where('users_id', $currentUser->id) // Relacionar el usuario autenticado con su ID
+            ->whereIn('profiles_id', UserProfiles::values()) // Obtener el ID del perfil del usuario
+            ->value('profiles_id'); // Obtener el ID del perfil del usuario
+
+            $userProfile = $userProfileId ? UserProfiles::tryFrom($userProfileId) : null;
+
+            if ($userProfile === null) {
+                return redirect()->route('login')->withErrors(['message' => 'Perfil no encontrado.']);
+            }
 
             // Definir un array de perfiles y sus rutas
             $routes = [
@@ -45,13 +52,13 @@ class GlpiAuthController extends Controller
             ];
         
             // Verificar si el perfil tiene una ruta asociada
-            if (array_key_exists($userProfile, $routes)) {
-                return redirect()->intended($routes[$userProfile]); // Redirige a la ruta correspondiente
+            if (array_key_exists($userProfile->value, $routes)) {
+                return redirect()->intended($routes[$userProfile->value]); // Redirige a la ruta correspondiente
             }
         }
 
         // Si el usuario no existe, redirige con un mensaje de error
-        return redirect()->route('login')->withErrors(['name' => 'Usuario no encontrado.']);
+        return redirect()->route('login')->withErrors(['message' => 'Usuario no encontrado.']);
     }
 
     public function logout(Request $request)

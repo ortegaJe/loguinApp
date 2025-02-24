@@ -27,15 +27,16 @@ class ProfileGuardMiddleware
             $currentUser = Auth::guard('glpi')->user();
 
             // Consultar el rol del usuario desde la tabla glpi_profiles_users
-            $userProfile = DB::table('glpi_profiles_users')
+            $userProfileId = DB::table('glpi_profiles_users')
                 ->where('users_id', $currentUser->id) // Relacionar el usuario autenticado con su ID
+                ->whereIn('profiles_id', UserProfiles::values()) // Obtener el ID del perfil del usuario
                 ->value('profiles_id'); // Obtener el ID del perfil del usuario
 
             // Verificar si el perfil obtenido coincide con alguno de los roles permitidos
             foreach ($route_roles_array as $role) {
                 $roleValue = UserProfiles::fromName($role); // Usar Enum para obtener el valor correspondiente al nombre del rol
 
-                if ($roleValue && $roleValue->value == $userProfile) {
+                if ($roleValue && $roleValue->value == $userProfileId) {
                     return $next($request); // Continuar si el rol coincide
                 }
             }

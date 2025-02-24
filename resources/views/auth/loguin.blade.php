@@ -75,6 +75,18 @@
             <!-- Page Content -->
             <div class="hero-static content content-full bg-body-extra-light">
                 <!-- Header -->
+                @if ($errors->any())
+                    <div class="d-flex justify-content-end">
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <h3 class="alert-heading fs-5 fw-bold mb-1">Error</h3>
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li class="mb-0">{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                @endif
                 <div class="py-4 px-1 text-center mb-4">
                     <a class="link-fx fw-bold" href="index.html">
                         <i class="fa fa-users-cog"></i>
@@ -98,7 +110,7 @@
                                     placeholder="Enter your username">
                                 <label class="form-label" for="name">Usuario</label>
                             </div>
-{{--                             <div class="form-floating mb-4">
+                            {{--                             <div class="form-floating mb-4">
                                 <input type="password" class="form-control" id="password" name="password"
                                     placeholder="Enter your password">
                                 <label class="form-label" for="password">Password</label>

@@ -236,12 +236,13 @@
                             @php
                                 $currentUser = Auth::guard('glpi')->user();
 
-                                $userProfile = DB::table('glpi_profiles_users')
+                                $userProfileId = DB::table('glpi_profiles_users')
                                     ->where('users_id', $currentUser->id)
+                                    ->whereIn('profiles_id', \App\Enums\UserProfiles::values())
                                     ->value('profiles_id');
 
                                 // Convertir $userProfile a una instancia de UserProfiles
-                                $userProfileEnum = \App\Enums\UserProfiles::tryFrom($userProfile);
+                                $userProfileEnum = \App\Enums\UserProfiles::tryFrom($userProfileId);
 
                                 // Validar si el perfil es SUPER_ADMIN
                                 //$profileRol = \App\Enums\UserProfiles::isSuperAdmin($userProfileEnum);
